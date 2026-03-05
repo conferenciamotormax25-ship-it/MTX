@@ -1,4 +1,4 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -61,7 +61,6 @@ l<!DOCTYPE html>
             min-width: 1100px;
         }
 
-        /* Destaque para Pedidos Antigos na Busca */
         .pedido-antigo {
             border-left: 5px solid #64748b !important;
             opacity: 0.8;
@@ -133,13 +132,18 @@ l<!DOCTYPE html>
             <h2 id="modalTitle" style="margin:0 0 25px 0; color:var(--accent);">Registrar Pedido</h2>
             
             <input type="hidden" id="editId">
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                 <input type="text" id="numPedido" placeholder="Número Pedido">
                 <input type="date" id="dataPedido">
                 <select id="situacao"><option value="Não">⏳ PENDENTE</option><option value="Sim">✅ LANÇADO</option></select>
             </div>
 
-            <textarea id="obsPedido" placeholder="Observações..." style="width: 100%; height: 80px; margin-top: 15px; border-left: 4px solid var(--accent); resize: none; box-sizing: border-box;"></textarea>
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Quem fez o pedido? (Nome)" style="width: 100%; box-sizing: border-box; text-transform: uppercase;">
+                <datalist id="listaSolicitantes"></datalist>
+            </div>
+
+            <textarea id="obsPedido" placeholder="Observações..." style="width: 100%; height: 80px; margin-top: 5px; border-left: 4px solid var(--accent); resize: none; box-sizing: border-box;"></textarea>
 
             <div style="display: grid; grid-template-columns: 2fr 0.8fr 1.2fr 1fr; gap: 15px; margin-top: 25px;">
                 <input type="text" id="nomeProd" placeholder="Produto">
@@ -189,6 +193,12 @@ l<!DOCTYPE html>
     let itensAtuais = [];
     let zoomLevel = 1.0;
 
+    // GERENCIAMENTO DE NOMES (Sugerindo conforme usa)
+    const atualizarSugestoes = () => {
+        const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
+        document.getElementById('listaSolicitantes').innerHTML = nomes.map(n => `<option value="${n}">`).join('');
+    };
+
     window.ajustarZoom = (delta) => {
         zoomLevel += delta;
         if(zoomLevel < 0.5) zoomLevel = 0.5;
@@ -214,11 +224,13 @@ l<!DOCTYPE html>
     window.toggleModal = (show) => { 
         document.getElementById('modalCadastro').style.display = show ? 'flex' : 'none'; 
         if(!show) window.limparFormulario();
+        if(show) atualizarSugestoes();
     };
 
     window.limparFormulario = () => {
         document.getElementById('editId').value = ''; document.getElementById('numPedido').value = '';
         document.getElementById('obsPedido').value = ''; document.getElementById('nomeProd').value = '';
+        document.getElementById('solicitante').value = '';
         document.getElementById('precoProd').value = ''; document.getElementById('displayItens').innerHTML = '';
         document.getElementById('totalFinal').innerText = '0.00'; itensAtuais = [];
     };
@@ -247,9 +259,31 @@ l<!DOCTYPE html>
 
     window.salvarNaNuvem = async () => {
         const id = document.getElementById('editId').value;
-        const payload = { num: document.getElementById('numPedido').value, data: document.getElementById('dataPedido').value, situacao: document.getElementById('situacao').value, obs: document.getElementById('obsPedido').value || "S/O", itens_detalhados: itensAtuais, total: document.getElementById('totalFinal').innerText, timestamp: Date.now() };
+        const nomeSol = document.getElementById('solicitante').value.toUpperCase().trim();
+        
+        const payload = { 
+            num: document.getElementById('numPedido').value, 
+            data: document.getElementById('dataPedido').value, 
+            situacao: document.getElementById('situacao').value, 
+            solicitante: nomeSol || "NÃO INFORMADO",
+            obs: document.getElementById('obsPedido').value || "S/O", 
+            itens_detalhados: itensAtuais, 
+            total: document.getElementById('totalFinal').innerText, 
+            timestamp: Date.now() 
+        };
+
         if(!payload.num || itensAtuais.length === 0) return Toast.fire({ icon: 'error', title: 'Adicione produtos!' });
+        
         try {
+            // Salvar nome no histórico local para sugestão futura
+            if(nomeSol) {
+                let historico = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
+                if(!historico.includes(nomeSol)) {
+                    historico.push(nomeSol);
+                    localStorage.setItem('mtx_nomes', JSON.stringify(historico));
+                }
+            }
+
             id ? await updateDoc(doc(db, "pedidos_mtx", id), payload) : await addDoc(pedidosRef, payload);
             Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             window.toggleModal(false);
@@ -284,7 +318,6 @@ l<!DOCTYPE html>
             const row = document.createElement('div'); 
             row.className = 'pedido-row animar-entrada';
             
-            // Lógica: Se não for de hoje, oculta inicialmente e aplica classe de destaque
             if(p.data !== hojeISO) {
                 row.classList.add('pedido-antigo');
                 row.style.display = 'none';
@@ -292,7 +325,16 @@ l<!DOCTYPE html>
 
             const prodHTML = p.itens_detalhados.map(i => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;"><span class="qty-badge" style="font-size:10px;">${i.qtd}x</span><span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span><button style="background:none; color:#94a3b8; border:1px solid var(--border); border-radius:4px; font-size:9px; cursor:pointer;" onclick="navigator.clipboard.writeText('${i.nome}')">copiar</button></div>`).join('');
             
-            row.innerHTML = `<div><div class="num-destaque">#${p.num}</div></div><div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px;">📅 ${p.data.split('-').reverse().join('/')}</div><div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class="obs-box"><b>OBS:</b> ${p.obs}</div>` : ''}</div><div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div><div style="text-align:center;"><span class="status-badge status-${p.situacao}" onclick="window.mudarStatus('${p.id}', '${p.situacao}')">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div><div style="text-align:right; display:flex; flex-direction:column; gap:10px;"><button onclick="window.editarPedido('${p.id}')" style="background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;">EDITAR</button><button onclick="window.excluirPedido('${p.id}')" style="background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;">EXCLUIR</button></div>`;
+            row.innerHTML = `
+                <div>
+                    <div class="num-destaque">#${p.num}</div>
+                    <div style="font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(56, 189, 248, 0.1); padding: 4px; border-radius: 6px;">👤 ${p.solicitante || 'S/N'}</div>
+                </div>
+                <div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px;">📅 ${p.data.split('-').reverse().join('/')}</div>
+                <div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class="obs-box"><b>OBS:</b> ${p.obs}</div>` : ''}</div>
+                <div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div>
+                <div style="text-align:center;"><span class="status-badge status-${p.situacao}" onclick="window.mudarStatus('${p.id}', '${p.situacao}')">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:10px;"><button onclick="window.editarPedido('${p.id}')" style="background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;">EDITAR</button><button onclick="window.excluirPedido('${p.id}')" style="background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;">EXCLUIR</button></div>`;
             corpo.appendChild(row);
         });
     });
@@ -335,6 +377,7 @@ l<!DOCTYPE html>
             const d = snap.data(); document.getElementById('editId').value = id;
             document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data;
             document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs;
+            document.getElementById('solicitante').value = d.solicitante || '';
             itensAtuais = d.itens_detalhados; renderizarItens(); window.toggleModal(true);
         }
     };
