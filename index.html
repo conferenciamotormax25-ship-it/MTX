@@ -1,0 +1,343 @@
+l<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTX - Controle de Pedidos MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --bg: #0f172a; 
+            --card: rgba(30, 41, 59, 0.7); 
+            --text: #f8fafc; 
+            --border: rgba(255, 255, 255, 0.1); 
+            --success: #10b981; 
+            --warning: #f59e0b;
+            --accent: #38bdf8;
+            --danger: #fb7185;
+            --zoom-level: 1;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top right, #1e293b, #0f172a); 
+            color: var(--text); 
+            padding: 20px; 
+            min-height: 100vh; 
+            margin: 0; 
+            zoom: var(--zoom-level);
+            transition: zoom 0.2s ease;
+        }
+
+        .container { max-width: 1300px; margin: auto; padding: 20px; }
+
+        #areaPedidos {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+        
+        #areaPedidos::-webkit-scrollbar { height: 8px; }
+        #areaPedidos::-webkit-scrollbar-track { background: var(--bg); }
+        #areaPedidos::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animar-entrada { animation: fadeInUp 0.4s ease-out forwards; }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi-card { 
+            background: var(--card); backdrop-filter: blur(12px); border: 1px solid var(--border); 
+            border-radius: 18px; padding: 20px; cursor: pointer; transition: 0.3s;
+        }
+        .kpi-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+        .pedido-row {
+            background: var(--card); backdrop-filter: blur(10px); border: 1px solid var(--border);
+            margin-bottom: 15px; border-radius: 20px; transition: 0.3s;
+            display: grid; grid-template-columns: 140px 140px 1fr 140px 150px 120px;
+            align-items: center; padding: 20px;
+            min-width: 1100px;
+        }
+
+        /* Destaque para Pedidos Antigos na Busca */
+        .pedido-antigo {
+            border-left: 5px solid #64748b !important;
+            opacity: 0.8;
+        }
+
+        .zoom-controls {
+            position: fixed; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 2000;
+        }
+        .btn-zoom {
+            background: var(--primary); color: white; border: none; width: 45px; height: 45px;
+            border-radius: 50%; font-size: 20px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: 0.2s;
+        }
+        .btn-zoom:hover { transform: scale(1.1); background: var(--accent); }
+
+        .progress-container { width: 100%; height: 8px; background: var(--border); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.8s ease; }
+        .main-actions { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
+        .btn-open-modal { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 16px 30px; border-radius: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+        .search-container { position: relative; flex-grow: 1; }
+        .search-input { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: 16px; padding: 16px 110px 16px 50px; color: white; outline: none; }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #64748b; }
+        
+        #modalCadastro { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(15px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; border: 1px solid var(--border); border-radius: 30px; width: 95%; max-width: 1000px; padding: 35px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 25px; right: 25px; color: #94a3b8; cursor: pointer; font-size: 30px; }
+        .obs-box { background: rgba(56, 189, 248, 0.05); border-left: 3px solid var(--accent); padding: 12px; border-radius: 10px; font-size: 12px; margin-top: 10px; font-style: italic; }
+        .qty-badge { background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); }
+        .status-badge { padding: 10px 18px; border-radius: 14px; font-size: 11px; font-weight: 800; cursor: pointer; min-width: 110px; display: inline-block; text-align: center; }
+        .status-Sim { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .status-Não { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+        .num-destaque { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 900; text-align: center; }
+        textarea, input, select { background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: white; outline: none; }
+    </style>
+</head>
+<body>
+
+<div class="zoom-controls">
+    <button class="btn-zoom" onclick="window.ajustarZoom(0.1)" title="Aumentar Zoom">＋</button>
+    <button class="btn-zoom" onclick="window.ajustarZoom(-0.1)" title="Diminuir Zoom">－</button>
+</div>
+
+<div class="container">
+    <div class="kpi-label" style="margin-bottom: 8px; display: flex; justify-content: space-between;">
+        <span>🚀 STATUS DE LANÇAMENTOS</span>
+        <span id="percProgresso">0%</span>
+    </div>
+    <div class="progress-container"><div id="mainProgressBar" class="progress-bar"></div></div>
+
+    <div class="dashboard-grid">
+        <div class="kpi-card" onclick="window.filtrarHoje()"><span class="kpi-label">📅 Hoje</span><span class="kpi-value" id="countHoje">0</span></div>
+        <div class="kpi-card" onclick="window.limparFiltro()"><span class="kpi-label">📦 Total</span><span class="kpi-value" id="totalPedidosCount">0</span></div>
+        <div class="kpi-card" onclick="window.filtrarPorStatus('Não')"><span class="kpi-label">⏳ Pendentes</span><span class="kpi-value" id="countPendentes" style="color: var(--danger);">0</span></div>
+        <div class="kpi-card" style="border-color: var(--accent);"><span class="kpi-label">🕒 Horário</span><span class="kpi-value" id="relogioDinamico" style="font-size: 20px;">00:00:00</span><div id="dataDinamica" style="font-size: 11px; color: #94a3b8; margin-top: 5px; font-weight: 600;">---</div></div>
+    </div>
+
+    <div class="main-actions">
+        <button class="btn-open-modal" onclick="window.abrirNovoPedido()"><span>➕</span> NOVO PEDIDO</button>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="inputBusca" class="search-input" placeholder="Digite para buscar..." onkeyup="window.filtrarPedidos()">
+            <button onclick="window.limparFiltro()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--primary); border: none; color: white; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 10px; font-weight: bold;">VER TUDO</button>
+        </div>
+    </div>
+
+    <div id="modalCadastro">
+        <div class="modal-content animar-entrada">
+            <span class="close-modal" onclick="window.toggleModal(false)">&times;</span>
+            <h2 id="modalTitle" style="margin:0 0 25px 0; color:var(--accent);">Registrar Pedido</h2>
+            
+            <input type="hidden" id="editId">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <input type="text" id="numPedido" placeholder="Número Pedido">
+                <input type="date" id="dataPedido">
+                <select id="situacao"><option value="Não">⏳ PENDENTE</option><option value="Sim">✅ LANÇADO</option></select>
+            </div>
+
+            <textarea id="obsPedido" placeholder="Observações..." style="width: 100%; height: 80px; margin-top: 15px; border-left: 4px solid var(--accent); resize: none; box-sizing: border-box;"></textarea>
+
+            <div style="display: grid; grid-template-columns: 2fr 0.8fr 1.2fr 1fr; gap: 15px; margin-top: 25px;">
+                <input type="text" id="nomeProd" placeholder="Produto">
+                <input type="number" id="qtdProd" value="1">
+                <input type="number" id="precoProd" step="0.01" placeholder="Preço" onkeydown="if(event.key==='Enter') window.adicionarItem()">
+                <button class="btn-open-modal" onclick="window.adicionarItem()" style="background: var(--success); justify-content: center;">INSERIR</button>
+            </div>
+
+            <div style="margin-top: 25px; border-radius: 15px; overflow: hidden; border: 1px solid var(--border);">
+                <table style="width:100%; border-collapse: collapse; background: rgba(15, 23, 42, 0.4);">
+                    <tbody id="displayItens"></tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 25px; padding: 25px; background: rgba(15, 23, 42, 0.6); border-radius: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <span class="kpi-label">TOTAL</span>
+                <strong style="font-size: 32px;">R$ <span id="totalFinal">0.00</span></strong>
+            </div>
+
+            <button class="btn-open-modal" style="width:100%; justify-content: center; margin-top:20px; height:65px;" onclick="window.salvarNaNuvem()">💾 SALVAR NA NUVEM</button>
+        </div>
+    </div>
+
+    <div id="areaPedidos">
+        <div id="tabelaCorpo" class="animar-entrada"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0_kv4kQfcTdT7D5_Imf5NrG4EvY1p0lQ",
+        authDomain: "base-de-dados-pedidos-mtx.firebaseapp.com",
+        projectId: "base-de-dados-pedidos-mtx",
+        storageBucket: "base-de-dados-pedidos-mtx.firebasestorage.app",
+        messagingSenderId: "702134531011",
+        appId: "1:702134531011:web:debe80ae3577602aec8376"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const pedidosRef = collection(db, "pedidos_mtx");
+    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, background: '#1e293b', color: '#fff' });
+
+    let itensAtuais = [];
+    let zoomLevel = 1.0;
+
+    window.ajustarZoom = (delta) => {
+        zoomLevel += delta;
+        if(zoomLevel < 0.5) zoomLevel = 0.5;
+        if(zoomLevel > 1.5) zoomLevel = 1.5;
+        document.body.style.zoom = zoomLevel;
+    };
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') window.toggleModal(false);
+        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && e.key.length === 1) {
+            document.getElementById('inputBusca').focus();
+        }
+    });
+
+    function atualizarRelogio() {
+        const agora = new Date();
+        document.getElementById('relogioDinamico').innerText = agora.toLocaleTimeString('pt-BR');
+        document.getElementById('dataDinamica').innerText = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).toUpperCase();
+    }
+    setInterval(atualizarRelogio, 1000);
+    atualizarRelogio();
+
+    window.toggleModal = (show) => { 
+        document.getElementById('modalCadastro').style.display = show ? 'flex' : 'none'; 
+        if(!show) window.limparFormulario();
+    };
+
+    window.limparFormulario = () => {
+        document.getElementById('editId').value = ''; document.getElementById('numPedido').value = '';
+        document.getElementById('obsPedido').value = ''; document.getElementById('nomeProd').value = '';
+        document.getElementById('precoProd').value = ''; document.getElementById('displayItens').innerHTML = '';
+        document.getElementById('totalFinal').innerText = '0.00'; itensAtuais = [];
+    };
+
+    window.abrirNovoPedido = () => { window.toggleModal(true); document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0]; };
+
+    window.adicionarItem = () => {
+        const n = document.getElementById('nomeProd'), q = document.getElementById('qtdProd'), p = document.getElementById('precoProd');
+        if(!n.value || !p.value) return;
+        itensAtuais.push({ nome: n.value.toUpperCase(), qtd: parseFloat(q.value), preco: parseFloat(p.value), subtotal: q.value * p.value });
+        n.value = ''; p.value = ''; q.value = '1'; n.focus();
+        renderizarItens();
+    };
+
+    const renderizarItens = () => {
+        const d = document.getElementById('displayItens');
+        d.innerHTML = ''; let t = 0;
+        itensAtuais.forEach((i, idx) => {
+            t += i.subtotal;
+            d.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td><td style="color:white; font-weight:600;">${i.nome}</td><td style="text-align:right;">R$ ${i.preco.toFixed(2)}</td><td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${i.subtotal.toFixed(2)}</td><td style="text-align:center;"><button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer;">&times;</button></td></tr>`;
+        });
+        document.getElementById('totalFinal').innerText = t.toFixed(2);
+    };
+
+    window.removerItem = (i) => { itensAtuais.splice(i, 1); renderizarItens(); };
+
+    window.salvarNaNuvem = async () => {
+        const id = document.getElementById('editId').value;
+        const payload = { num: document.getElementById('numPedido').value, data: document.getElementById('dataPedido').value, situacao: document.getElementById('situacao').value, obs: document.getElementById('obsPedido').value || "S/O", itens_detalhados: itensAtuais, total: document.getElementById('totalFinal').innerText, timestamp: Date.now() };
+        if(!payload.num || itensAtuais.length === 0) return Toast.fire({ icon: 'error', title: 'Adicione produtos!' });
+        try {
+            id ? await updateDoc(doc(db, "pedidos_mtx", id), payload) : await addDoc(pedidosRef, payload);
+            Toast.fire({ icon: 'success', title: 'Sincronizado!' });
+            window.toggleModal(false);
+        } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
+    };
+
+    window.excluirPedido = async (id) => {
+        const r = await Swal.fire({ title: 'Excluir?', text: "Apagar permanentemente!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fb7185', background: '#1e293b', color: '#fff' });
+        if (r.isConfirmed) { await deleteDoc(doc(db, "pedidos_mtx", id)); Toast.fire({ icon: 'success', title: 'Excluído!' }); }
+    };
+
+    onSnapshot(pedidosRef, (snap) => {
+        const corpo = document.getElementById('tabelaCorpo');
+        corpo.innerHTML = '';
+        let conc = 0, hj = 0, lista = [];
+        const hojeISO = new Date().toISOString().split('T')[0];
+
+        snap.forEach(d => {
+            const data = d.data(); lista.push({id: d.id, ...data});
+            if(data.situacao === 'Sim') conc++;
+            if(data.data === hojeISO) hj++;
+        });
+
+        document.getElementById('totalPedidosCount').innerText = snap.size;
+        document.getElementById('countPendentes').innerText = snap.size - conc;
+        document.getElementById('countHoje').innerText = hj;
+        const perc = snap.size > 0 ? Math.round((conc / snap.size) * 100) : 0;
+        document.getElementById('mainProgressBar').style.width = perc + '%';
+        document.getElementById('percProgresso').innerText = perc + '%';
+
+        lista.sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
+            const row = document.createElement('div'); 
+            row.className = 'pedido-row animar-entrada';
+            
+            // Lógica: Se não for de hoje, oculta inicialmente e aplica classe de destaque
+            if(p.data !== hojeISO) {
+                row.classList.add('pedido-antigo');
+                row.style.display = 'none';
+            }
+
+            const prodHTML = p.itens_detalhados.map(i => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;"><span class="qty-badge" style="font-size:10px;">${i.qtd}x</span><span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span><button style="background:none; color:#94a3b8; border:1px solid var(--border); border-radius:4px; font-size:9px; cursor:pointer;" onclick="navigator.clipboard.writeText('${i.nome}')">copiar</button></div>`).join('');
+            
+            row.innerHTML = `<div><div class="num-destaque">#${p.num}</div></div><div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px;">📅 ${p.data.split('-').reverse().join('/')}</div><div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class="obs-box"><b>OBS:</b> ${p.obs}</div>` : ''}</div><div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div><div style="text-align:center;"><span class="status-badge status-${p.situacao}" onclick="window.mudarStatus('${p.id}', '${p.situacao}')">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div><div style="text-align:right; display:flex; flex-direction:column; gap:10px;"><button onclick="window.editarPedido('${p.id}')" style="background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;">EDITAR</button><button onclick="window.excluirPedido('${p.id}')" style="background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;">EXCLUIR</button></div>`;
+            corpo.appendChild(row);
+        });
+    });
+
+    window.mudarStatus = async (id, s) => { await updateDoc(doc(db, "pedidos_mtx", id), { situacao: s === "Sim" ? "Não" : "Sim" }); };
+    
+    window.limparFiltro = () => { 
+        document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); 
+        document.getElementById('inputBusca').value = '';
+    };
+
+    window.filtrarHoje = () => { 
+        const hjBR = new Date().toLocaleDateString('pt-BR'); 
+        document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(hjBR) ? '' : 'none'); 
+    };
+
+    window.filtrarPorStatus = (s) => { 
+        const texto = s === 'Sim' ? 'LANÇADO' : 'PENDENTE'; 
+        document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(texto) ? '' : 'none'); 
+    };
+
+    window.filtrarPedidos = () => {
+        const t = document.getElementById('inputBusca').value.toLowerCase();
+        const linhas = document.querySelectorAll('.pedido-row');
+        const hojeBR = new Date().toLocaleDateString('pt-BR');
+
+        linhas.forEach(r => {
+            const textoLinha = r.innerText.toLowerCase();
+            if (t === "") {
+                r.style.display = textoLinha.includes(hojeBR) ? '' : 'none';
+            } else {
+                r.style.display = textoLinha.includes(t) ? '' : 'none';
+            }
+        });
+    };
+
+    window.editarPedido = async (id) => {
+        const snap = await getDoc(doc(db, "pedidos_mtx", id));
+        if(snap.exists()) {
+            const d = snap.data(); document.getElementById('editId').value = id;
+            document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data;
+            document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs;
+            itensAtuais = d.itens_detalhados; renderizarItens(); window.toggleModal(true);
+        }
+    };
+</script>
+</body>
+</html>
