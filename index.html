@@ -94,6 +94,25 @@
         .status-Não { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid var(--danger); }
         .num-destaque { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 900; text-align: center; }
         textarea, input, select { background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: white; outline: none; }
+        
+        /* NOVO ESTILO DO BOTAO COPIAR */
+        .btn-copiar {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94a3b8;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 3px 8px;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn-copiar:hover {
+            background: var(--accent);
+            color: #0f172a;
+            border-color: var(--accent);
+        }
+        .btn-copiar:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
@@ -104,9 +123,9 @@
 </div>
 
 <div class="container">
-    <div class="kpi-label" style="margin-bottom: 8px; display: flex; justify-content: space-between;">
-        <span>🚀 STATUS DE LANÇAMENTOS</span>
-        <span id="percProgresso">0%</span>
+    <div class="kpi-label" style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span id="txtStatusLanca" style="font-weight: 800; letter-spacing: 0.5px;">🚀 CALCULANDO STATUS...</span>
+        <span id="percProgresso" style="background: var(--accent); color: #0f172a; padding: 2px 8px; border-radius: 6px; font-weight: 900; font-size: 12px;">0%</span>
     </div>
     <div class="progress-container"><div id="mainProgressBar" class="progress-bar"></div></div>
 
@@ -188,12 +207,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const pedidosRef = collection(db, "pedidos_mtx");
-    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, background: '#1e293b', color: '#fff' });
+    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, background: '#1e293b', color: '#fff', customClass: { popup: 'animar-entrada' } });
 
     let itensAtuais = [];
     let zoomLevel = 1.0;
 
-    // GERENCIAMENTO DE NOMES (Sugerindo conforme usa)
+    // FUNÇÃO MELHORADA DE COPIAR
+    window.copiarTexto = (texto) => {
+        navigator.clipboard.writeText(texto).then(() => {
+            Toast.fire({
+                icon: 'success',
+                title: 'Copiado: ' + texto
+            });
+        });
+    };
+
     const atualizarSugestoes = () => {
         const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
         document.getElementById('listaSolicitantes').innerHTML = nomes.map(n => `<option value="${n}">`).join('');
@@ -275,7 +303,6 @@
         if(!payload.num || itensAtuais.length === 0) return Toast.fire({ icon: 'error', title: 'Adicione produtos!' });
         
         try {
-            // Salvar nome no histórico local para sugestão futura
             if(nomeSol) {
                 let historico = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
                 if(!historico.includes(nomeSol)) {
@@ -283,7 +310,6 @@
                     localStorage.setItem('mtx_nomes', JSON.stringify(historico));
                 }
             }
-
             id ? await updateDoc(doc(db, "pedidos_mtx", id), payload) : await addDoc(pedidosRef, payload);
             Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             window.toggleModal(false);
@@ -307,12 +333,26 @@
             if(data.data === hojeISO) hj++;
         });
 
-        document.getElementById('totalPedidosCount').innerText = snap.size;
-        document.getElementById('countPendentes').innerText = snap.size - conc;
+        const total = snap.size;
+        const pendentes = total - conc;
+        
+        document.getElementById('totalPedidosCount').innerText = total;
+        document.getElementById('countPendentes').innerText = pendentes;
         document.getElementById('countHoje').innerText = hj;
-        const perc = snap.size > 0 ? Math.round((conc / snap.size) * 100) : 0;
+        
+        const perc = total > 0 ? Math.round((conc / total) * 100) : 0;
         document.getElementById('mainProgressBar').style.width = perc + '%';
         document.getElementById('percProgresso').innerText = perc + '%';
+
+        // LÓGICA DE MENSAGEM DA BARRA
+        const labelStatus = document.getElementById('txtStatusLanca');
+        if (perc === 100 && total > 0) {
+            labelStatus.innerText = "✅ TUDO LANÇADO! BOM TRABALHO";
+            labelStatus.style.color = "var(--success)";
+        } else {
+            labelStatus.innerText = `⏳ FALTAM ${pendentes} PEDIDO${pendentes !== 1 ? 'S' : ''} PARA LANÇAR`;
+            labelStatus.style.color = "white";
+        }
 
         lista.sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
             const row = document.createElement('div'); 
@@ -323,7 +363,12 @@
                 row.style.display = 'none';
             }
 
-            const prodHTML = p.itens_detalhados.map(i => `<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;"><span class="qty-badge" style="font-size:10px;">${i.qtd}x</span><span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span><button style="background:none; color:#94a3b8; border:1px solid var(--border); border-radius:4px; font-size:9px; cursor:pointer;" onclick="navigator.clipboard.writeText('${i.nome}')">copiar</button></div>`).join('');
+            const prodHTML = p.itens_detalhados.map(i => `
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+                    <span class="qty-badge" style="font-size:10px;">${i.qtd}x</span>
+                    <span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span>
+                    <button class="btn-copiar" onclick="window.copiarTexto('${i.nome}')">COPIAR</button>
+                </div>`).join('');
             
             row.innerHTML = `
                 <div>
