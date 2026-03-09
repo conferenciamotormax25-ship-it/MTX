@@ -15,12 +15,11 @@
             --border: rgba(255, 255, 255, 0.1); 
             --success: #10b981; 
             --warning: #f59e0b;
-            --accent: #00f2ff; /* Ciano Neon */
+            --accent: #00f2ff; 
             --danger: #fb7185;
             --zoom-level: 1;
         }
 
-        /* --- OVERLAY DE BOAS-VINDAS PREMIUM --- */
         #welcomeOverlay {
             position: fixed;
             top: 0;
@@ -51,7 +50,6 @@
             font-weight: 900;
             margin: 0;
             line-height: 1;
-            /* Gradiente Animado no Texto */
             background: linear-gradient(90deg, #fff, var(--accent), #fff);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -75,7 +73,6 @@
             text-transform: uppercase;
         }
 
-        /* Restante do CSS preservado e melhorado */
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
@@ -260,7 +257,6 @@
 </div>
 
 <script type="module">
-    // ... Todo o código Firebase original preservado ...
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -329,7 +325,6 @@
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
 
-    // Restante das funções do seu sistema (Firebase, Filtros, CRUD) permanecem intocadas abaixo.
     const atualizarSugestoes = () => {
         const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
         document.getElementById('listaSolicitantes').innerHTML = nomes.map(n => `<option value="${n}">`).join('');
@@ -353,6 +348,7 @@
         document.getElementById('totalFinal').innerText = '0.00'; itensAtuais = [];
     };
     window.abrirNovoPedido = () => { window.toggleModal(true); document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0]; };
+    
     window.adicionarItem = () => {
         const n = document.getElementById('nomeProd'), q = document.getElementById('qtdProd'), p = document.getElementById('precoProd');
         if(!n.value || !p.value) return;
@@ -360,16 +356,42 @@
         n.value = ''; p.value = ''; q.value = '1'; n.focus();
         renderizarItens();
     };
+
+    // FUNÇÃO MELHORADA COM BOTÃO DE EDIÇÃO DE PRODUTO
     const renderizarItens = () => {
         const d = document.getElementById('displayItens');
         d.innerHTML = ''; let t = 0;
         itensAtuais.forEach((i, idx) => {
             t += i.subtotal;
-            d.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td><td style="color:white; font-weight:600;">${i.nome}</td><td style="text-align:right;">R$ ${i.preco.toFixed(2)}</td><td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${i.subtotal.toFixed(2)}</td><td style="text-align:center;"><button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer;">&times;</button></td></tr>`;
+            d.innerHTML += `
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td>
+                    <td style="color:white; font-weight:600;">${i.nome}</td>
+                    <td style="text-align:right;">R$ ${i.preco.toFixed(2)}</td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${i.subtotal.toFixed(2)}</td>
+                    <td style="text-align:center; display:flex; gap:10px; justify-content:center; padding: 12px 0;">
+                        <button onclick="window.corrigirItem(${idx})" style="background:none; color:var(--warning); border:none; cursor:pointer; font-size:16px;" title="Editar Item">✏️</button>
+                        <button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:20px;" title="Remover Item">&times;</button>
+                    </td>
+                </tr>`;
         });
         document.getElementById('totalFinal').innerText = t.toFixed(2);
     };
+
+    // NOVA FUNÇÃO PARA CORRIGIR ERROS NO ITEM
+    window.corrigirItem = (idx) => {
+        const item = itensAtuais[idx];
+        document.getElementById('nomeProd').value = item.nome;
+        document.getElementById('qtdProd').value = item.qtd;
+        document.getElementById('precoProd').value = item.preco;
+        itensAtuais.splice(idx, 1);
+        renderizarItens();
+        document.getElementById('nomeProd').focus();
+        Toast.fire({ icon: 'info', title: 'Corrija e insira novamente!' });
+    };
+
     window.removerItem = (i) => { itensAtuais.splice(i, 1); renderizarItens(); };
+
     window.salvarNaNuvem = async () => {
         const id = document.getElementById('editId').value;
         const nomeSol = document.getElementById('solicitante').value.toUpperCase().trim();
@@ -397,6 +419,7 @@
             window.toggleModal(false);
         } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
     };
+
     onSnapshot(pedidosRef, (snap) => {
         const corpo = document.getElementById('tabelaCorpo');
         corpo.innerHTML = '';
@@ -443,6 +466,7 @@
             corpo.appendChild(row);
         });
     });
+
     window.mudarStatus = async (id, s) => { await updateDoc(doc(db, "pedidos_mtx", id), { situacao: s === "Sim" ? "Não" : "Sim" }); };
     window.limparFiltro = () => { document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); document.getElementById('inputBusca').value = ''; };
     window.filtrarHoje = () => { const hjBR = new Date().toLocaleDateString('pt-BR'); document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(hjBR) ? '' : 'none'); };
