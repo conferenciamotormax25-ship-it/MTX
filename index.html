@@ -357,7 +357,6 @@
         renderizarItens();
     };
 
-    // FUNÇÃO MELHORADA COM BOTÃO DE EDIÇÃO DE PRODUTO
     const renderizarItens = () => {
         const d = document.getElementById('displayItens');
         d.innerHTML = ''; let t = 0;
@@ -378,7 +377,6 @@
         document.getElementById('totalFinal').innerText = t.toFixed(2);
     };
 
-    // NOVA FUNÇÃO PARA CORRIGIR ERROS NO ITEM
     window.corrigirItem = (idx) => {
         const item = itensAtuais[idx];
         document.getElementById('nomeProd').value = item.nome;
@@ -450,14 +448,29 @@
             const row = document.createElement('div'); 
             row.className = 'pedido-row animar-entrada';
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
+            
+            // MAP DE PRODUTOS COM CÓPIA DE QUANTIDADE (SEM O X) E PREÇO UNITÁRIO
             const prodHTML = p.itens_detalhados.map(i => `
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
-                    <span class="qty-badge" style="font-size:10px;">${i.qtd}x</span>
-                    <span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span>
-                    <button class="btn-copiar" onclick="window.copiarTexto('${i.nome}', this)">COPIAR</button>
+                <div style="display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button class="btn-copiar" onclick="window.copiarTexto('${i.qtd}', this)" style="background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;">${i.qtd}x</button>
+                        <span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span>
+                        <button class="btn-copiar" onclick="window.copiarTexto('${i.nome}', this)">COPIAR</button>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px; margin-left: 55px;">
+                        <span style="font-size:11px; color:#94a3b8;">Unit: R$ ${i.preco.toFixed(2)}</span>
+                        <button class="btn-copiar" onclick="window.copiarTexto('${i.preco.toFixed(2)}', this)" style="font-size:9px; padding: 1px 5px;">COPIAR VALOR</button>
+                    </div>
                 </div>`).join('');
+
             row.innerHTML = `
-                <div><div class="num-destaque">#${p.num}</div><div style="font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;">👤 ${p.solicitante || 'S/N'}</div></div>
+                <div>
+                    <div class="num-destaque" style="display:flex; flex-direction:column; gap:5px; align-items:center;">
+                        #${p.num}
+                        <button class="btn-copiar" onclick="window.copiarTexto('${p.num}', this)" style="font-size:9px; background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;">COPIAR Nº</button>
+                    </div>
+                    <div style="font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;">👤 ${p.solicitante || 'S/N'}</div>
+                </div>
                 <div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px;">📅 ${p.data.split('-').reverse().join('/')}</div>
                 <div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class="obs-box"><b>OBS:</b> ${p.obs}</div>` : ''}</div>
                 <div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div>
