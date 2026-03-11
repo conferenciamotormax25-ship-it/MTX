@@ -173,6 +173,16 @@
             font-weight: 800;
         }
         .btn-copiar:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+
+        /* Estilo Discreto para Histórico de Edição */
+        .historico-edicao {
+            font-size: 9px;
+            color: #64748b;
+            margin-top: 5px;
+            font-style: italic;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 4px;
+        }
     </style>
 </head>
 <body onload="iniciarBoasVindas()">
@@ -276,6 +286,7 @@
 
     let itensAtuais = [];
     let zoomLevel = 1.0;
+    let historicoEdicaoOriginal = []; // Para manter as modificações anteriores
 
     window.iniciarBoasVindas = () => {
         setTimeout(() => {
@@ -346,6 +357,7 @@
         document.getElementById('solicitante').value = '';
         document.getElementById('precoProd').value = ''; document.getElementById('displayItens').innerHTML = '';
         document.getElementById('totalFinal').innerText = '0.00'; itensAtuais = [];
+        historicoEdicaoOriginal = [];
     };
     window.abrirNovoPedido = () => { window.toggleModal(true); document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0]; };
     
@@ -393,9 +405,14 @@
     window.salvarNaNuvem = async () => {
         const id = document.getElementById('editId').value;
         const nomeSol = document.getElementById('solicitante').value.toUpperCase().trim();
+        const agora = new Date();
+        const horaAtual = agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        const dataAtual = agora.toLocaleDateString('pt-BR');
+
         const payload = { 
             num: document.getElementById('numPedido').value, 
             data: document.getElementById('dataPedido').value, 
+            hora: horaAtual,
             situacao: document.getElementById('situacao').value, 
             solicitante: nomeSol || "NÃO INFORMADO",
             obs: document.getElementById('obsPedido').value || "S/O", 
@@ -403,7 +420,9 @@
             total: document.getElementById('totalFinal').innerText, 
             timestamp: Date.now() 
         };
+
         if(!payload.num || itensAtuais.length === 0) return Toast.fire({ icon: 'error', title: 'Adicione produtos!' });
+
         try {
             if(nomeSol) {
                 let historico = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
@@ -412,7 +431,21 @@
                     localStorage.setItem('mtx_nomes', JSON.stringify(historico));
                 }
             }
-            id ? await updateDoc(doc(db, "pedidos_mtx", id), payload) : await addDoc(pedidosRef, payload);
+
+            if(id) {
+                // Se é uma edição, adicionamos ao histórico de log
+                const logEdicao = {
+                    quem: nomeSol || "DESCONHECIDO",
+                    quando: `${dataAtual} às ${horaAtual}`
+                };
+                payload.historico_logs = [...historicoEdicaoOriginal, logEdicao];
+                // Mantemos a hora original de criação se quiser, ou sobrescrevemos conforme o STD anterior
+                await updateDoc(doc(db, "pedidos_mtx", id), payload);
+            } else {
+                payload.historico_logs = []; // Novo pedido não tem histórico de edição ainda
+                await addDoc(pedidosRef, payload);
+            }
+
             Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             window.toggleModal(false);
         } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
@@ -449,7 +482,6 @@
             row.className = 'pedido-row animar-entrada';
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
             
-            // MAP DE PRODUTOS COM CÓPIA DE QUANTIDADE (SEM O X) E PREÇO UNITÁRIO
             const prodHTML = p.itens_detalhados.map(i => `
                 <div style="display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
                     <div style="display:flex; align-items:center; gap:10px;">
@@ -463,6 +495,13 @@
                     </div>
                 </div>`).join('');
 
+            // Lógica para mostrar o histórico de modificações
+            let htmlLog = "";
+            if(p.historico_logs && p.historico_logs.length > 0) {
+                const ultimoLog = p.historico_logs[p.historico_logs.length - 1];
+                htmlLog = `<div class="historico-edicao" title="Total de ${p.historico_logs.length} edições">📝 Editado por: ${ultimoLog.quem} em ${ultimoLog.quando}</div>`;
+            }
+
             row.innerHTML = `
                 <div>
                     <div class="num-destaque" style="display:flex; flex-direction:column; gap:5px; align-items:center;">
@@ -471,7 +510,11 @@
                     </div>
                     <div style="font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;">👤 ${p.solicitante || 'S/N'}</div>
                 </div>
-                <div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px;">📅 ${p.data.split('-').reverse().join('/')}</div>
+                <div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px; display: flex; flex-direction: column;">
+                    <span>📅 ${p.data.split('-').reverse().join('/')}</span>
+                    <span style="font-size: 11px; color: var(--accent); opacity: 0.8;">🕒 ${p.hora || '--:--'}</span>
+                    ${htmlLog}
+                </div>
                 <div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class="obs-box"><b>OBS:</b> ${p.obs}</div>` : ''}</div>
                 <div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div>
                 <div style="text-align:center;"><span class="status-badge status-${p.situacao}" onclick="window.mudarStatus('${p.id}', '${p.situacao}')">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div>
@@ -480,7 +523,24 @@
         });
     });
 
-    window.mudarStatus = async (id, s) => { await updateDoc(doc(db, "pedidos_mtx", id), { situacao: s === "Sim" ? "Não" : "Sim" }); };
+    window.mudarStatus = async (id, s) => { 
+        const statusNovo = s === "Sim" ? "Não" : "Sim";
+        const snap = await getDoc(doc(db, "pedidos_mtx", id));
+        if(snap.exists()){
+            const d = snap.data();
+            const agora = new Date();
+            const logEdicao = {
+                quem: "SISTEMA (Status)",
+                quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`
+            };
+            const historico = d.historico_logs || [];
+            await updateDoc(doc(db, "pedidos_mtx", id), { 
+                situacao: statusNovo,
+                historico_logs: [...historico, logEdicao]
+            }); 
+        }
+    };
+
     window.limparFiltro = () => { document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); document.getElementById('inputBusca').value = ''; };
     window.filtrarHoje = () => { const hjBR = new Date().toLocaleDateString('pt-BR'); document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(hjBR) ? '' : 'none'); };
     window.filtrarPorStatus = (s) => { const texto = s === 'Sim' ? 'LANÇADO' : 'PENDENTE'; document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(texto) ? '' : 'none'); };
@@ -501,7 +561,9 @@
             document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data;
             document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs;
             document.getElementById('solicitante').value = d.solicitante || '';
-            itensAtuais = d.itens_detalhados; renderizarItens(); window.toggleModal(true);
+            itensAtuais = d.itens_detalhados; 
+            historicoEdicaoOriginal = d.historico_logs || []; // Armazena o log existente
+            renderizarItens(); window.toggleModal(true);
         }
     };
     window.excluirPedido = async (id) => {
