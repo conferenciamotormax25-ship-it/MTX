@@ -174,7 +174,6 @@
         }
         .btn-copiar:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); }
 
-        /* Estilo Discreto para Histórico de Edição */
         .historico-edicao {
             font-size: 9px;
             color: #64748b;
@@ -182,6 +181,23 @@
             font-style: italic;
             border-top: 1px solid rgba(255,255,255,0.05);
             padding-top: 4px;
+        }
+        
+        .swal-history-btn {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
     </style>
 </head>
@@ -286,16 +302,16 @@
 
     let itensAtuais = [];
     let zoomLevel = 1.0;
-    let historicoEdicaoOriginal = []; // Para manter as modificações anteriores
+    let historicoEdicaoOriginal = [];
 
     window.iniciarBoasVindas = () => {
         setTimeout(() => {
             const overlay = document.getElementById('welcomeOverlay');
-            overlay.style.opacity = '0';
-            overlay.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                overlay.style.visibility = 'hidden';
-            }, 1000);
+            if(overlay) {
+                overlay.style.opacity = '0';
+                overlay.style.transform = 'scale(1.2)';
+                setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1000);
+            }
         }, 2000);
     };
 
@@ -309,47 +325,74 @@
 
     function atualizarRelogio() {
         const agora = new Date();
-        document.getElementById('relogioDinamico').innerText = agora.toLocaleTimeString('pt-BR');
-        document.getElementById('dataDinamica').innerText = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).toUpperCase();
-
-        const fim = new Date();
-        fim.setHours(18, 0, 0, 0);
+        const relogio = document.getElementById('relogioDinamico');
+        const dataDinamica = document.getElementById('dataDinamica');
         const divLib = document.getElementById('contagemLiberdade');
 
-        if (agora < fim && agora.getHours() >= 8) {
-            const diff = fim - agora;
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            divLib.innerHTML = `🚀 ${h}h ${m}m ${s}s PARA A LIBERDADE! ✨`;
-            divLib.style.background = "linear-gradient(90deg, #2563eb, #00f2ff)";
-            divLib.style.color = "#000";
-        } else if (agora.getHours() >= 18) {
-            divLib.innerHTML = `🥳 HORA DE IR PRA CASA!`;
-            divLib.style.background = "var(--success)";
-            divLib.style.color = "#fff";
-        } else {
-            divLib.innerHTML = `🌅 BOM DIA DE TRABALHO!`;
-            divLib.style.background = "#64748b";
+        if(relogio) relogio.innerText = agora.toLocaleTimeString('pt-BR');
+        if(dataDinamica) dataDinamica.innerText = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).toUpperCase();
+
+        if(divLib) {
+            const fim = new Date();
+            fim.setHours(18, 0, 0, 0);
+            if (agora < fim && agora.getHours() >= 8) {
+                const diff = fim - agora;
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                divLib.innerHTML = `🚀 ${h}h ${m}m ${s}s PARA A LIBERDADE! ✨`;
+                divLib.style.background = "linear-gradient(90deg, #2563eb, #00f2ff)";
+                divLib.style.color = "#000";
+            } else if (agora.getHours() >= 18) {
+                divLib.innerHTML = `🥳 HORA DE IR PRA CASA!`;
+                divLib.style.background = "var(--success)";
+                divLib.style.color = "#fff";
+            } else {
+                divLib.innerHTML = `🌅 BOM DIA DE TRABALHO!`;
+                divLib.style.background = "#64748b";
+            }
         }
     }
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
 
-    const atualizarSugestoes = () => {
+    window.abrirHistoricoNomes = async () => {
         const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
-        document.getElementById('listaSolicitantes').innerHTML = nomes.map(n => `<option value="${n}">`).join('');
+        if(nomes.length === 0) return Toast.fire({ icon: 'info', title: 'Nenhum nome no histórico!' });
+
+        const { value: nomeSelecionado } = await Swal.fire({
+            title: 'SELECIONAR NOME',
+            input: 'select',
+            inputOptions: nomes.reduce((acc, n) => ({ ...acc, [n]: n }), {}),
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+            background: '#1e293b',
+            color: '#fff'
+        });
+
+        if(nomeSelecionado) {
+            const swalInput = document.querySelector('.swal2-input');
+            if(swalInput) {
+                swalInput.value = nomeSelecionado.toUpperCase();
+            } else {
+                const solicitanteInput = document.getElementById('solicitante');
+                if(solicitanteInput) solicitanteInput.value = nomeSelecionado.toUpperCase();
+            }
+        }
     };
+
     window.ajustarZoom = (delta) => {
         zoomLevel += delta;
-        if(zoomLevel < 0.5) zoomLevel = 0.5;
-        if(zoomLevel > 1.5) zoomLevel = 1.5;
+        zoomLevel = Math.max(0.5, Math.min(1.5, zoomLevel));
         document.body.style.zoom = zoomLevel;
     };
     window.toggleModal = (show) => { 
         document.getElementById('modalCadastro').style.display = show ? 'flex' : 'none'; 
         if(!show) window.limparFormulario();
-        if(show) atualizarSugestoes();
+        if(show) {
+            const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
+            document.getElementById('listaSolicitantes').innerHTML = nomes.map(n => `<option value="${n}">`).join('');
+        }
     };
     window.limparFormulario = () => {
         document.getElementById('editId').value = ''; document.getElementById('numPedido').value = '';
@@ -404,48 +447,62 @@
 
     window.salvarNaNuvem = async () => {
         const id = document.getElementById('editId').value;
-        const nomeSol = document.getElementById('solicitante').value.toUpperCase().trim();
+        const numPed = document.getElementById('numPedido').value;
+        if(!numPed || itensAtuais.length === 0) return Toast.fire({ icon: 'error', title: 'Adicione produtos!' });
+
+        const { value: nomeOperador } = await Swal.fire({
+            title: 'IDENTIFIQUE-SE',
+            html: `
+                <button onclick="window.abrirHistoricoNomes()" class="swal-history-btn">🕒 HISTÓRICO</button>
+                <div style="margin-top:20px">Nome para o registro de ${id ? 'ALTERAÇÃO' : 'LANÇAMENTO'}</div>
+            `,
+            input: 'text',
+            inputValue: document.getElementById('solicitante').value.toUpperCase(),
+            showCancelButton: true,
+            confirmButtonText: 'SALVAR 🚀',
+            background: '#1e293b',
+            color: '#fff',
+            confirmButtonColor: '#2563eb',
+            inputAttributes: { style: 'text-transform: uppercase;' },
+            inputValidator: (v) => !v && 'Digite seu nome!'
+        });
+
+        if (!nomeOperador) return;
+
         const agora = new Date();
-        const horaAtual = agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-        const dataAtual = agora.toLocaleDateString('pt-BR');
+        const nomeFinal = nomeOperador.toUpperCase().trim();
+        const infoLog = { 
+            quem: nomeFinal, 
+            quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`,
+            tipo: id ? 'edicao' : 'criacao' 
+        };
 
         const payload = { 
-            num: document.getElementById('numPedido').value, 
+            num: numPed, 
             data: document.getElementById('dataPedido').value, 
-            hora: horaAtual,
+            hora: agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
             situacao: document.getElementById('situacao').value, 
-            solicitante: nomeSol || "NÃO INFORMADO",
+            solicitante: nomeFinal,
             obs: document.getElementById('obsPedido').value || "S/O", 
             itens_detalhados: itensAtuais, 
             total: document.getElementById('totalFinal').innerText, 
             timestamp: Date.now() 
         };
 
-        if(!payload.num || itensAtuais.length === 0) return Toast.fire({ icon: 'error', title: 'Adicione produtos!' });
-
         try {
-            if(nomeSol) {
-                let historico = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
-                if(!historico.includes(nomeSol)) {
-                    historico.push(nomeSol);
-                    localStorage.setItem('mtx_nomes', JSON.stringify(historico));
-                }
+            let histLocal = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
+            if(!histLocal.includes(nomeFinal)) {
+                histLocal.push(nomeFinal);
+                localStorage.setItem('mtx_nomes', JSON.stringify(histLocal));
             }
 
             if(id) {
-                // Se é uma edição, adicionamos ao histórico de log
-                const logEdicao = {
-                    quem: nomeSol || "DESCONHECIDO",
-                    quando: `${dataAtual} às ${horaAtual}`
-                };
-                payload.historico_logs = [...historicoEdicaoOriginal, logEdicao];
-                // Mantemos a hora original de criação se quiser, ou sobrescrevemos conforme o STD anterior
+                payload.historico_logs = [...historicoEdicaoOriginal, infoLog];
                 await updateDoc(doc(db, "pedidos_mtx", id), payload);
             } else {
-                payload.historico_logs = []; // Novo pedido não tem histórico de edição ainda
+                payload.historico_logs = [infoLog];
                 await addDoc(pedidosRef, payload);
             }
-
             Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             window.toggleModal(false);
         } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
@@ -456,11 +513,13 @@
         corpo.innerHTML = '';
         let conc = 0, hj = 0, lista = [];
         const hojeISO = new Date().toISOString().split('T')[0];
+        
         snap.forEach(d => {
             const data = d.data(); lista.push({id: d.id, ...data});
             if(data.situacao === 'Sim') conc++;
             if(data.data === hojeISO) hj++;
         });
+
         const total = snap.size;
         const pendentes = total - conc;
         document.getElementById('totalPedidosCount').innerText = total;
@@ -469,6 +528,7 @@
         const perc = total > 0 ? Math.round((conc / total) * 100) : 0;
         document.getElementById('mainProgressBar').style.width = perc + '%';
         document.getElementById('percProgresso').innerText = perc + '%';
+
         const labelStatus = document.getElementById('txtStatusLanca');
         if (perc === 100 && total > 0) {
             labelStatus.innerText = "✅ TUDO LANÇADO! BOM TRABALHO";
@@ -477,6 +537,7 @@
             labelStatus.innerText = `⏳ FALTAM ${pendentes} PEDIDOS PARA LANÇAR`;
             labelStatus.style.color = "white";
         }
+
         lista.sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
             const row = document.createElement('div'); 
             row.className = 'pedido-row animar-entrada';
@@ -489,24 +550,33 @@
                         <span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span>
                         <button class="btn-copiar" onclick="window.copiarTexto('${i.nome}', this)">COPIAR</button>
                     </div>
-                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px; margin-left: 55px;">
-                        <span style="font-size:11px; color:#94a3b8;">Unit: R$ ${i.preco.toFixed(2)}</span>
-                        <button class="btn-copiar" onclick="window.copiarTexto('${i.preco.toFixed(2)}', this)" style="font-size:9px; padding: 1px 5px;">COPIAR VALOR</button>
-                    </div>
                 </div>`).join('');
 
-            // Lógica para mostrar o histórico de modificações
+            // MENSAGENS DE HISTÓRICO DIFERENCIADAS
             let htmlLog = "";
             if(p.historico_logs && p.historico_logs.length > 0) {
-                const ultimoLog = p.historico_logs[p.historico_logs.length - 1];
-                htmlLog = `<div class="historico-edicao" title="Total de ${p.historico_logs.length} edições">📝 Editado por: ${ultimoLog.quem} em ${ultimoLog.quando}</div>`;
+                const primeiro = p.historico_logs[0];
+                const ultimo = p.historico_logs[p.historico_logs.length - 1];
+                
+                // Mensagem de Criação Inicial
+                htmlLog += `<div class="historico-edicao">🚀 Criado por: ${primeiro.quem} em ${primeiro.quando}</div>`;
+                
+                // Se houver mais de um log, mostra a última alteração (Edição ou Status)
+                if(p.historico_logs.length > 1) {
+                    const isStatus = ultimo.tipo === 'status';
+                    const icone = isStatus ? '✅' : '📝';
+                    const acao = isStatus ? 'Status alterado' : 'Alterado';
+                    const cor = isStatus ? 'var(--success)' : 'var(--warning)';
+                    
+                    htmlLog += `<div class="historico-edicao" style="color:${cor}; border:none; padding-top:0;">${icone} ${acao} por: ${ultimo.quem} em ${ultimo.quando}</div>`;
+                }
             }
 
             row.innerHTML = `
                 <div>
-                    <div class="num-destaque" style="display:flex; flex-direction:column; gap:5px; align-items:center;">
+                    <div class="num-destaque">
                         #${p.num}
-                        <button class="btn-copiar" onclick="window.copiarTexto('${p.num}', this)" style="font-size:9px; background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;">COPIAR Nº</button>
+                        <button class="btn-copiar" onclick="window.copiarTexto('${p.num}', this)" style="font-size:9px; background: rgba(255,255,255,0.2); color: white; border: none; width: 100%; margin-top:5px;">COPIAR Nº</button>
                     </div>
                     <div style="font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;">👤 ${p.solicitante || 'S/N'}</div>
                 </div>
@@ -525,19 +595,38 @@
 
     window.mudarStatus = async (id, s) => { 
         const statusNovo = s === "Sim" ? "Não" : "Sim";
+        const { value: nomeStatus } = await Swal.fire({
+            title: 'ALTERAR STATUS',
+            html: `
+                <button onclick="window.abrirHistoricoNomes()" class="swal-history-btn">🕒 HISTÓRICO</button>
+                <div style="margin-top:20px">Confirmar alteração para ${statusNovo === 'Sim' ? 'LANÇADO' : 'PENDENTE'}?</div>
+            `,
+            input: 'text',
+            inputPlaceholder: 'Quem está alterando?',
+            showCancelButton: true,
+            confirmButtonText: 'ATUALIZAR ✅',
+            background: '#1e293b',
+            color: '#fff',
+            confirmButtonColor: '#10b981',
+            inputValidator: (v) => !v && 'Identifique-se!'
+        });
+
+        if (!nomeStatus) return;
+
         const snap = await getDoc(doc(db, "pedidos_mtx", id));
         if(snap.exists()){
             const d = snap.data();
             const agora = new Date();
-            const logEdicao = {
-                quem: "SISTEMA (Status)",
-                quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`
+            const logStatus = {
+                quem: nomeStatus.toUpperCase(),
+                quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`,
+                tipo: 'status'
             };
-            const historico = d.historico_logs || [];
             await updateDoc(doc(db, "pedidos_mtx", id), { 
                 situacao: statusNovo,
-                historico_logs: [...historico, logEdicao]
+                historico_logs: [...(d.historico_logs || []), logStatus]
             }); 
+            Toast.fire({ icon: 'success', title: 'Status Atualizado!' });
         }
     };
 
@@ -562,7 +651,7 @@
             document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs;
             document.getElementById('solicitante').value = d.solicitante || '';
             itensAtuais = d.itens_detalhados; 
-            historicoEdicaoOriginal = d.historico_logs || []; // Armazena o log existente
+            historicoEdicaoOriginal = d.historico_logs || [];
             renderizarItens(); window.toggleModal(true);
         }
     };
