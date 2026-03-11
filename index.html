@@ -545,10 +545,14 @@
             
             const prodHTML = p.itens_detalhados.map(i => `
                 <div style="display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-                    <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
                         <button class="btn-copiar" onclick="window.copiarTexto('${i.qtd}', this)" style="background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;">${i.qtd}x</button>
                         <span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span>
                         <button class="btn-copiar" onclick="window.copiarTexto('${i.nome}', this)">COPIAR</button>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;">
+                        <span>Un: R$ ${i.preco.toFixed(2)}</span>
+                        <button class="btn-copiar" onclick="window.copiarTexto('${i.preco.toFixed(2)}', this)" style="padding: 1px 5px; font-size: 8px;">COPIAR VALOR</button>
                     </div>
                 </div>`).join('');
 
