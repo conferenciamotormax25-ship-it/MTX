@@ -239,7 +239,7 @@
         <div class="search-container">
             <span class="search-icon">🔍</span>
             <input type="text" id="inputBusca" class="search-input" placeholder="Digite para buscar..." onkeyup="window.filtrarPedidos()">
-            <button onclick="window.limparFiltro()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--primary); border: none; color: white; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 10px; font-weight: bold;">VER TUDO</button>
+            <button onclick="window.limparFiltro()" style="position: absolute; right: 10px; top: 50%; transform: translateY(50%); background: var(--primary); border: none; color: white; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 10px; font-weight: bold;">VER TUDO</button>
         </div>
     </div>
 
@@ -499,11 +499,29 @@
             if(id) {
                 payload.historico_logs = [...historicoEdicaoOriginal, infoLog];
                 await updateDoc(doc(db, "pedidos_mtx", id), payload);
+                Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             } else {
                 payload.historico_logs = [infoLog];
                 await addDoc(pedidosRef, payload);
+                
+                // MENSAGEM EXPLOSIVA NOVO PEDIDO - MARCOS
+                Swal.fire({
+                    title: '🚀 PEDIDO CONCLUÍDO!',
+                    html: `
+                        <div style="font-size: 1.2rem; margin-bottom: 15px;">Pedido registrado com sucesso!</div>
+                        <div style="background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">
+                            ⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> 
+                            PARA DAR ENTRADA QUANDO A MERCADORIA CHEGAR!
+                        </div>
+                    `,
+                    icon: 'success',
+                    background: '#0f172a',
+                    color: '#fff',
+                    confirmButtonText: 'PODE DEIXAR!',
+                    confirmButtonColor: '#2563eb',
+                    backdrop: `rgba(0,242,255,0.3) url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJpbmZic3R5bmZ6bnR6bmZ6bnR6bmZ6bnR6bmZ6bnR6bmZ6biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/iY8mSi87iVC86yP8Y6/giphy.gif") center center no-repeat`
+                });
             }
-            Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             window.toggleModal(false);
         } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
     };
@@ -514,10 +532,18 @@
         let conc = 0, hj = 0, lista = [];
         const hojeISO = new Date().toISOString().split('T')[0];
         
+        // Objeto para agrupar pedidos por solicitante
+        let resumoPorPessoa = {};
+
         snap.forEach(d => {
-            const data = d.data(); lista.push({id: d.id, ...data});
+            const data = d.data(); 
+            lista.push({id: d.id, ...data});
             if(data.situacao === 'Sim') conc++;
-            if(data.data === hojeISO) hj++;
+            if(data.data === hojeISO) {
+                hj++;
+                const nome = data.solicitante || "SEM NOME";
+                resumoPorPessoa[nome] = (resumoPorPessoa[nome] || 0) + 1;
+            }
         });
 
         const total = snap.size;
@@ -525,6 +551,29 @@
         document.getElementById('totalPedidosCount').innerText = total;
         document.getElementById('countPendentes').innerText = pendentes;
         document.getElementById('countHoje').innerText = hj;
+
+        // ALERTA DE ENTRADA - PERSONALIZADO POR PESSOA
+        if (!window.alertaInicialExibido && hj > 0) {
+            let htmlResumo = "";
+            for (let pessoa in resumoPorPessoa) {
+                htmlResumo += `<div style="margin-bottom:5px;"><b>${pessoa}:</b> ${resumoPorPessoa[pessoa]} pedido(s)</div>`;
+            }
+
+            Swal.fire({
+                title: 'PEDIDOS DE HOJE',
+                html: `<div style="text-align:left; font-size:14px; border-top:1px solid #444; padding-top:10px;">${htmlResumo}</div>`,
+                icon: 'info',
+                timer: 6000,
+                showConfirmButton: false,
+                background: '#1e293b',
+                color: '#fff',
+                toast: true,
+                position: 'top-start'
+            });
+            window.alertaInicialExibido = true;
+            setTimeout(() => window.filtrarHoje(), 500);
+        }
+
         const perc = total > 0 ? Math.round((conc / total) * 100) : 0;
         document.getElementById('mainProgressBar').style.width = perc + '%';
         document.getElementById('percProgresso').innerText = perc + '%';
@@ -556,22 +605,16 @@
                     </div>
                 </div>`).join('');
 
-            // MENSAGENS DE HISTÓRICO DIFERENCIADAS
             let htmlLog = "";
             if(p.historico_logs && p.historico_logs.length > 0) {
                 const primeiro = p.historico_logs[0];
                 const ultimo = p.historico_logs[p.historico_logs.length - 1];
-                
-                // Mensagem de Criação Inicial
                 htmlLog += `<div class="historico-edicao">🚀 Criado por: ${primeiro.quem} em ${primeiro.quando}</div>`;
-                
-                // Se houver mais de um log, mostra a última alteração (Edição ou Status)
                 if(p.historico_logs.length > 1) {
                     const isStatus = ultimo.tipo === 'status';
                     const icone = isStatus ? '✅' : '📝';
                     const acao = isStatus ? 'Status alterado' : 'Alterado';
                     const cor = isStatus ? 'var(--success)' : 'var(--warning)';
-                    
                     htmlLog += `<div class="historico-edicao" style="color:${cor}; border:none; padding-top:0;">${icone} ${acao} por: ${ultimo.quem} em ${ultimo.quando}</div>`;
                 }
             }
