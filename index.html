@@ -130,7 +130,6 @@
 
         .pedido-antigo { border-left: 5px solid #64748b !important; opacity: 0.8; }
 
-        /* ESTILO PEDIDO URGENTE */
         @keyframes blink-border {
             0% { border-color: var(--border); box-shadow: none; }
             50% { border-color: #ff4d4d; box-shadow: 0 0 15px #ff4d4d; }
@@ -151,12 +150,33 @@
 
         .progress-container { width: 100%; height: 8px; background: var(--border); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.8s ease; }
-        .main-actions { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
-        .btn-open-modal { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 16px 30px; border-radius: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 12px; }
-        .search-container { position: relative; flex-grow: 1; }
-        .search-input { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: 16px; padding: 16px 110px 16px 50px; color: white; outline: none; }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #64748b; }
         
+        /* AÇÕES PRINCIPAIS E BUSCA */
+        .main-actions { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
+        .btn-open-modal { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 16px 30px; border-radius: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 12px; height: 55px; }
+        
+        .search-container { position: relative; flex-grow: 1; display: flex; align-items: center; }
+        .search-input { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: 16px; padding: 16px 120px 16px 50px; color: white; outline: none; transition: 0.3s; height: 55px; box-sizing: border-box; }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+        .search-icon { position: absolute; left: 20px; color: #64748b; pointer-events: none; }
+        
+        .btn-ver-tudo { 
+            position: absolute; 
+            right: 8px; 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            border-radius: 10px; 
+            padding: 8px 15px; 
+            cursor: pointer; 
+            font-size: 11px; 
+            font-weight: 800; 
+            transition: 0.2s; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+        .btn-ver-tudo:hover { background: var(--accent); color: #000; transform: translateY(-1px); }
+
         #modalCadastro { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(15px); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #1e293b; border: 1px solid var(--border); border-radius: 30px; width: 95%; max-width: 1000px; padding: 35px; position: relative; max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 25px; right: 25px; color: #94a3b8; cursor: pointer; font-size: 30px; }
@@ -251,8 +271,8 @@
         <button class="btn-open-modal" onclick="window.abrirNovoPedido()"><span>➕</span> NOVO PEDIDO</button>
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" id="inputBusca" class="search-input" placeholder="Digite para buscar..." onkeyup="window.filtrarPedidos()">
-            <button onclick="window.limparFiltro()" style="position: absolute; right: 10px; top: 50%; transform: translateY(50%); background: var(--primary); border: none; color: white; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 10px; font-weight: bold;">VER TUDO</button>
+            <input type="text" id="inputBusca" class="search-input" placeholder="Buscar pedido, produto ou solicitante..." onkeyup="window.filtrarPedidos()">
+            <button class="btn-ver-tudo" onclick="window.limparFiltro()">Ver Tudo</button>
         </div>
     </div>
 
@@ -334,8 +354,6 @@
                 setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1000);
             }
         }, 2000);
-        
-        // DISPARA CONFETE SE FOR DIA DE GRANA
         verificarDiaPagamentoConfete();
     };
 
@@ -369,7 +387,6 @@
 
         if(relogio) relogio.innerText = agora.toLocaleTimeString('pt-BR');
         
-        // Lógica de Mensagens Vermelhas
         let msgEspecial = "";
         const diaAtual = agora.getDate();
         const getQuintoDiaUtil = (date) => {
@@ -387,7 +404,6 @@
             dataDinamica.innerHTML = dataTexto + (msgEspecial ? `<br>${msgEspecial}` : "");
         }
 
-        // Lógica de Humor por Horário (Modifica o texto do progresso)
         const hora = agora.getHours();
         if(labelStatus && !labelStatus.innerText.includes("TUDO LANÇADO")) {
             let humor = "🚀 STATUS DO DIA";
@@ -504,7 +520,7 @@
             situacao: document.getElementById('situacao').value, solicitante: nomeFinal,
             obs: document.getElementById('obsPedido').value || "S/O", itens_detalhados: itensAtuais, 
             total: document.getElementById('totalFinal').innerText, timestamp: Date.now(),
-            urgente: document.getElementById('checkUrgente').checked // CAMPO NOVO
+            urgente: document.getElementById('checkUrgente').checked 
         };
 
         try {
@@ -548,7 +564,7 @@
             const row = document.createElement('div'); 
             row.className = 'pedido-row animar-entrada';
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
-            if(p.urgente) row.classList.add('pedido-urgente'); // APLICA PISCA-PISCA
+            if(p.urgente) row.classList.add('pedido-urgente');
 
             const prodHTML = p.itens_detalhados.map(i => `<div style=\"display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;\"><div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\"><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;\">${i.qtd}x</button><span style=\"font-size:14px; font-weight:700; color:white;\">${i.nome}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\">COPIAR</button></div><div style=\"display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;\"><span>Un: R$ ${i.preco.toFixed(2)}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.preco.toFixed(2)}', this)\" style=\"padding: 1px 5px; font-size: 8px;\">COPIAR VALOR</button></div></div>`).join('');
 
@@ -586,14 +602,20 @@
         }
     };
 
-    window.limparFiltro = () => { document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); document.getElementById('inputBusca').value = ''; };
+    window.limparFiltro = () => { 
+        document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); 
+        document.getElementById('inputBusca').value = ''; 
+    };
+
     window.filtrarHoje = () => { const hjBR = new Date().toLocaleDateString('pt-BR'); document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(hjBR) ? '' : 'none'); };
     window.filtrarPorStatus = (s) => { const texto = s === 'Sim' ? 'LANÇADO' : 'PENDENTE'; document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(texto) ? '' : 'none'); };
+    
     window.filtrarPedidos = () => {
         const t = document.getElementById('inputBusca').value.toLowerCase();
         const linhas = document.querySelectorAll('.pedido-row'); const hojeBR = new Date().toLocaleDateString('pt-BR');
         linhas.forEach(r => { const textoLinha = r.innerText.toLowerCase(); if (t === "") { r.style.display = textoLinha.includes(hojeBR) ? '' : 'none'; } else { r.style.display = textoLinha.includes(t) ? '' : 'none'; } });
     };
+
     window.editarPedido = async (id) => {
         const snap = await getDoc(doc(db, "pedidos_mtx", id));
         if(snap.exists()) {
@@ -602,6 +624,7 @@
             itensAtuais = d.itens_detalhados; historicoEdicaoOriginal = d.historico_logs || []; renderizarItens(); window.toggleModal(true);
         }
     };
+
     window.excluirPedido = async (id) => {
         const r = await Swal.fire({ title: 'Excluir?', text: "Apagar!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fb7185', background: '#1e293b', color: '#fff' });
         if (r.isConfirmed) { await deleteDoc(doc(db, "pedidos_mtx", id)); Toast.fire({ icon: 'success', title: 'Excluído!' }); }
