@@ -6,6 +6,7 @@
     <title>MTX - Controle de Pedidos </title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { 
             --primary: #2563eb; 
@@ -124,9 +125,21 @@
             display: grid; grid-template-columns: 140px 140px 1fr 140px 150px 120px;
             align-items: center; padding: 20px;
             min-width: 1100px;
+            position: relative;
         }
 
         .pedido-antigo { border-left: 5px solid #64748b !important; opacity: 0.8; }
+
+        /* ESTILO PEDIDO URGENTE */
+        @keyframes blink-border {
+            0% { border-color: var(--border); box-shadow: none; }
+            50% { border-color: #ff4d4d; box-shadow: 0 0 15px #ff4d4d; }
+            100% { border-color: var(--border); box-shadow: none; }
+        }
+        .pedido-urgente {
+            border: 2px solid #ff4d4d !important;
+            animation: blink-border 1.5s infinite !important;
+        }
 
         .zoom-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 2000; }
         .btn-zoom {
@@ -253,10 +266,18 @@
                 <input type="date" id="dataPedido">
                 <select id="situacao"><option value="Não">⏳ PENDENTE</option><option value="Sim">✅ LANÇADO</option></select>
             </div>
-            <div style="margin-bottom: 15px;">
-                <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Quem fez o pedido? (Nome)" style="width: 100%; box-sizing: border-box; text-transform: uppercase;">
-                <datalist id="listaSolicitantes"></datalist>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
+                <div style="flex-grow: 1;">
+                    <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Quem fez o pedido? (Nome)" style="width: 100%; box-sizing: border-box; text-transform: uppercase;">
+                    <datalist id="listaSolicitantes"></datalist>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(251, 113, 133, 0.1); padding: 10px; border-radius: 12px; border: 1px solid var(--danger);">
+                    <input type="checkbox" id="checkUrgente" style="width: 20px; height: 20px; cursor: pointer;">
+                    <label for="checkUrgente" style="color: var(--danger); font-weight: 800; font-size: 12px; cursor: pointer;">🚨 URGENTE</label>
+                </div>
             </div>
+
             <textarea id="obsPedido" placeholder="Observações..." style="width: 100%; height: 80px; margin-top: 5px; border-left: 4px solid var(--accent); resize: none; box-sizing: border-box;"></textarea>
             <div style="display: grid; grid-template-columns: 2fr 0.8fr 1.2fr 1fr; gap: 15px; margin-top: 25px;">
                 <input type="text" id="nomeProd" placeholder="Produto">
@@ -313,7 +334,23 @@
                 setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1000);
             }
         }, 2000);
+        
+        // DISPARA CONFETE SE FOR DIA DE GRANA
+        verificarDiaPagamentoConfete();
     };
+
+    function verificarDiaPagamentoConfete() {
+        const agora = new Date();
+        const dia = agora.getDate();
+        const getQuintoDiaUtil = (date) => {
+            let count = 0; let d = new Date(date.getFullYear(), date.getMonth(), 1);
+            while (count < 5) { let dayOfWeek = d.getDay(); if (dayOfWeek !== 0 && dayOfWeek !== 6) count++; if (count < 5) d.setDate(d.getDate() + 1); }
+            return d.getDate();
+        };
+        if (dia === 20 || dia === getQuintoDiaUtil(agora)) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff0000', '#00f2ff', '#ffffff'] });
+        }
+    }
 
     window.copiarTexto = (texto, btn) => {
         navigator.clipboard.writeText(texto).then(() => {
@@ -328,9 +365,40 @@
         const relogio = document.getElementById('relogioDinamico');
         const dataDinamica = document.getElementById('dataDinamica');
         const divLib = document.getElementById('contagemLiberdade');
+        const labelStatus = document.getElementById('txtStatusLanca');
 
         if(relogio) relogio.innerText = agora.toLocaleTimeString('pt-BR');
-        if(dataDinamica) dataDinamica.innerText = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).toUpperCase();
+        
+        // Lógica de Mensagens Vermelhas
+        let msgEspecial = "";
+        const diaAtual = agora.getDate();
+        const getQuintoDiaUtil = (date) => {
+            let count = 0; let d = new Date(date.getFullYear(), date.getMonth(), 1);
+            while (count < 5) { let dayOfWeek = d.getDay(); if (dayOfWeek !== 0 && dayOfWeek !== 6) count++; if (count < 5) d.setDate(d.getDate() + 1); }
+            return d.getDate();
+        };
+        const quintoDiaUtil = getQuintoDiaUtil(agora);
+
+        if (diaAtual === 20) msgEspecial = " 🔥 <span style='color:#ff4d4d; text-shadow: 0 0 10px #ff0000; font-weight:800;'>HJ É DIA DO ADIANTAMENTO TE MOTIVA!</span>";
+        else if (diaAtual === quintoDiaUtil) msgEspecial = " 💰 <span style='color:#ff4d4d; text-shadow: 0 0 10px #ff0000; font-weight:800;'>HJ É DIA DO SALÁRIO, FAZ O TEU MELHOR AII!</span>";
+
+        if(dataDinamica) {
+            const dataTexto = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).toUpperCase();
+            dataDinamica.innerHTML = dataTexto + (msgEspecial ? `<br>${msgEspecial}` : "");
+        }
+
+        // Lógica de Humor por Horário (Modifica o texto do progresso)
+        const hora = agora.getHours();
+        if(labelStatus && !labelStatus.innerText.includes("TUDO LANÇADO")) {
+            let humor = "🚀 STATUS DO DIA";
+            if(hora < 10) humor = "☕ CAFÉ NO BULE E FOCO NO ENVIO!";
+            else if(hora >= 11 && hora < 13) humor = "🍕 QUASE HORA DO RACHA! FOME BATEU?";
+            else if(hora >= 14 && hora < 16) humor = "⚡ ENERGIA RENOVADA, BORA ZERAR ISSO!";
+            else if(hora >= 17) humor = "🏁 RETA FINAL! ÚLTIMO GÁS!";
+            
+            const pendentes = document.getElementById('countPendentes').innerText;
+            labelStatus.innerText = `${humor} (FALTAM ${pendentes})`;
+        }
 
         if(divLib) {
             const fim = new Date();
@@ -359,33 +427,15 @@
     window.abrirHistoricoNomes = async () => {
         const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
         if(nomes.length === 0) return Toast.fire({ icon: 'info', title: 'Nenhum nome no histórico!' });
-
-        const { value: nomeSelecionado } = await Swal.fire({
-            title: 'SELECIONAR NOME',
-            input: 'select',
-            inputOptions: nomes.reduce((acc, n) => ({ ...acc, [n]: n }), {}),
-            showCancelButton: true,
-            confirmButtonText: 'OK',
-            background: '#1e293b',
-            color: '#fff'
-        });
-
+        const { value: nomeSelecionado } = await Swal.fire({ title: 'SELECIONAR NOME', input: 'select', inputOptions: nomes.reduce((acc, n) => ({ ...acc, [n]: n }), {}), showCancelButton: true, confirmButtonText: 'OK', background: '#1e293b', color: '#fff' });
         if(nomeSelecionado) {
             const swalInput = document.querySelector('.swal2-input');
-            if(swalInput) {
-                swalInput.value = nomeSelecionado.toUpperCase();
-            } else {
-                const solicitanteInput = document.getElementById('solicitante');
-                if(solicitanteInput) solicitanteInput.value = nomeSelecionado.toUpperCase();
-            }
+            if(swalInput) swalInput.value = nomeSelecionado.toUpperCase();
+            else { const solicitanteInput = document.getElementById('solicitante'); if(solicitanteInput) solicitanteInput.value = nomeSelecionado.toUpperCase(); }
         }
     };
 
-    window.ajustarZoom = (delta) => {
-        zoomLevel += delta;
-        zoomLevel = Math.max(0.5, Math.min(1.5, zoomLevel));
-        document.body.style.zoom = zoomLevel;
-    };
+    window.ajustarZoom = (delta) => { zoomLevel += delta; zoomLevel = Math.max(0.5, Math.min(1.5, zoomLevel)); document.body.style.zoom = zoomLevel; };
     window.toggleModal = (show) => { 
         document.getElementById('modalCadastro').style.display = show ? 'flex' : 'none'; 
         if(!show) window.limparFormulario();
@@ -397,7 +447,7 @@
     window.limparFormulario = () => {
         document.getElementById('editId').value = ''; document.getElementById('numPedido').value = '';
         document.getElementById('obsPedido').value = ''; document.getElementById('nomeProd').value = '';
-        document.getElementById('solicitante').value = '';
+        document.getElementById('solicitante').value = ''; document.getElementById('checkUrgente').checked = false;
         document.getElementById('precoProd').value = ''; document.getElementById('displayItens').innerHTML = '';
         document.getElementById('totalFinal').innerText = '0.00'; itensAtuais = [];
         historicoEdicaoOriginal = [];
@@ -417,29 +467,14 @@
         d.innerHTML = ''; let t = 0;
         itensAtuais.forEach((i, idx) => {
             t += i.subtotal;
-            d.innerHTML += `
-                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                    <td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td>
-                    <td style="color:white; font-weight:600;">${i.nome}</td>
-                    <td style="text-align:right;">R$ ${i.preco.toFixed(2)}</td>
-                    <td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${i.subtotal.toFixed(2)}</td>
-                    <td style="text-align:center; display:flex; gap:10px; justify-content:center; padding: 12px 0;">
-                        <button onclick="window.corrigirItem(${idx})" style="background:none; color:var(--warning); border:none; cursor:pointer; font-size:16px;" title="Editar Item">✏️</button>
-                        <button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:20px;" title="Remover Item">&times;</button>
-                    </td>
-                </tr>`;
+            d.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td><td style="color:white; font-weight:600;">${i.nome}</td><td style="text-align:right;">R$ ${i.preco.toFixed(2)}</td><td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${i.subtotal.toFixed(2)}</td><td style="text-align:center; display:flex; gap:10px; justify-content:center; padding: 12px 0;"><button onclick="window.corrigirItem(${idx})" style="background:none; color:var(--warning); border:none; cursor:pointer; font-size:16px;">✏️</button><button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:20px;">&times;</button></td></tr>`;
         });
         document.getElementById('totalFinal').innerText = t.toFixed(2);
     };
 
     window.corrigirItem = (idx) => {
-        const item = itensAtuais[idx];
-        document.getElementById('nomeProd').value = item.nome;
-        document.getElementById('qtdProd').value = item.qtd;
-        document.getElementById('precoProd').value = item.preco;
-        itensAtuais.splice(idx, 1);
-        renderizarItens();
-        document.getElementById('nomeProd').focus();
+        const item = itensAtuais[idx]; document.getElementById('nomeProd').value = item.nome; document.getElementById('qtdProd').value = item.qtd; document.getElementById('precoProd').value = item.preco;
+        itensAtuais.splice(idx, 1); renderizarItens(); document.getElementById('nomeProd').focus();
         Toast.fire({ icon: 'info', title: 'Corrija e insira novamente!' });
     };
 
@@ -452,49 +487,29 @@
 
         const { value: nomeOperador } = await Swal.fire({
             title: 'IDENTIFIQUE-SE',
-            html: `
-                <button onclick="window.abrirHistoricoNomes()" class="swal-history-btn">🕒 HISTÓRICO</button>
-                <div style="margin-top:20px">Nome para o registro de ${id ? 'ALTERAÇÃO' : 'LANÇAMENTO'}</div>
-            `,
-            input: 'text',
-            inputValue: document.getElementById('solicitante').value.toUpperCase(),
-            showCancelButton: true,
-            confirmButtonText: 'SALVAR 🚀',
-            background: '#1e293b',
-            color: '#fff',
-            confirmButtonColor: '#2563eb',
-            inputAttributes: { style: 'text-transform: uppercase;' },
-            inputValidator: (v) => !v && 'Digite seu nome!'
+            html: `<button onclick="window.abrirHistoricoNomes()" class="swal-history-btn">🕒 HISTÓRICO</button><div style="margin-top:20px">Nome para o registro de ${id ? 'ALTERAÇÃO' : 'LANÇAMENTO'}</div>`,
+            input: 'text', inputValue: document.getElementById('solicitante').value.toUpperCase(),
+            showCancelButton: true, confirmButtonText: 'SALVAR 🚀', background: '#1e293b', color: '#fff', confirmButtonColor: '#2563eb',
+            inputAttributes: { style: 'text-transform: uppercase;' }, inputValidator: (v) => !v && 'Digite seu nome!'
         });
 
         if (!nomeOperador) return;
 
         const agora = new Date();
         const nomeFinal = nomeOperador.toUpperCase().trim();
-        const infoLog = { 
-            quem: nomeFinal, 
-            quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`,
-            tipo: id ? 'edicao' : 'criacao' 
-        };
+        const infoLog = { quem: nomeFinal, quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`, tipo: id ? 'edicao' : 'criacao' };
 
         const payload = { 
-            num: numPed, 
-            data: document.getElementById('dataPedido').value, 
-            hora: agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
-            situacao: document.getElementById('situacao').value, 
-            solicitante: nomeFinal,
-            obs: document.getElementById('obsPedido').value || "S/O", 
-            itens_detalhados: itensAtuais, 
-            total: document.getElementById('totalFinal').innerText, 
-            timestamp: Date.now() 
+            num: numPed, data: document.getElementById('dataPedido').value, hora: agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
+            situacao: document.getElementById('situacao').value, solicitante: nomeFinal,
+            obs: document.getElementById('obsPedido').value || "S/O", itens_detalhados: itensAtuais, 
+            total: document.getElementById('totalFinal').innerText, timestamp: Date.now(),
+            urgente: document.getElementById('checkUrgente').checked // CAMPO NOVO
         };
 
         try {
             let histLocal = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
-            if(!histLocal.includes(nomeFinal)) {
-                histLocal.push(nomeFinal);
-                localStorage.setItem('mtx_nomes', JSON.stringify(histLocal));
-            }
+            if(!histLocal.includes(nomeFinal)) { histLocal.push(nomeFinal); localStorage.setItem('mtx_nomes', JSON.stringify(histLocal)); }
 
             if(id) {
                 payload.historico_logs = [...historicoEdicaoOriginal, infoLog];
@@ -503,47 +518,20 @@
             } else {
                 payload.historico_logs = [infoLog];
                 await addDoc(pedidosRef, payload);
-                
-                // MENSAGEM EXPLOSIVA NOVO PEDIDO - MARCOS
-                Swal.fire({
-                    title: '🚀 PEDIDO CONCLUÍDO!',
-                    html: `
-                        <div style="font-size: 1.2rem; margin-bottom: 15px;">Pedido registrado com sucesso!</div>
-                        <div style="background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">
-                            ⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> 
-                            PARA DAR ENTRADA QUANDO A MERCADORIA CHEGAR!
-                        </div>
-                    `,
-                    icon: 'success',
-                    background: '#0f172a',
-                    color: '#fff',
-                    confirmButtonText: 'PODE DEIXAR!',
-                    confirmButtonColor: '#2563eb',
-                    backdrop: `rgba(0,242,255,0.3) url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJpbmZic3R5bmZ6bnR6bmZ6bnR6bmZ6bnR6bmZ6bnR6bmZ6biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/iY8mSi87iVC86yP8Y6/giphy.gif") center center no-repeat`
-                });
+                Swal.fire({ title: '🚀 PEDIDO CONCLUÍDO!', html: `<div style=\"font-size: 1.2rem; margin-bottom: 15px;\">Pedido registrado com sucesso!</div><div style=\"background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;\">⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> PARA DAR ENTRADA QUANDO A MERCADORIA CHEGAR!</div>`, icon: 'success', background: '#0f172a', color: '#fff', confirmButtonText: 'PODE DEIXAR!', confirmButtonColor: '#2563eb' });
             }
             window.toggleModal(false);
         } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
     };
 
     onSnapshot(pedidosRef, (snap) => {
-        const corpo = document.getElementById('tabelaCorpo');
-        corpo.innerHTML = '';
+        const corpo = document.getElementById('tabelaCorpo'); corpo.innerHTML = '';
         let conc = 0, hj = 0, lista = [];
         const hojeISO = new Date().toISOString().split('T')[0];
-        
-        // Objeto para agrupar pedidos por solicitante
-        let resumoPorPessoa = {};
-
         snap.forEach(d => {
-            const data = d.data(); 
-            lista.push({id: d.id, ...data});
+            const data = d.data(); lista.push({id: d.id, ...data});
             if(data.situacao === 'Sim') conc++;
-            if(data.data === hojeISO) {
-                hj++;
-                const nome = data.solicitante || "SEM NOME";
-                resumoPorPessoa[nome] = (resumoPorPessoa[nome] || 0) + 1;
-            }
+            if(data.data === hojeISO) hj++;
         });
 
         const total = snap.size;
@@ -552,127 +540,48 @@
         document.getElementById('countPendentes').innerText = pendentes;
         document.getElementById('countHoje').innerText = hj;
 
-        // ALERTA DE ENTRADA - PERSONALIZADO POR PESSOA
-        if (!window.alertaInicialExibido && hj > 0) {
-            let htmlResumo = "";
-            for (let pessoa in resumoPorPessoa) {
-                htmlResumo += `<div style="margin-bottom:5px;"><b>${pessoa}:</b> ${resumoPorPessoa[pessoa]} pedido(s)</div>`;
-            }
-
-            Swal.fire({
-                title: 'PEDIDOS DE HOJE',
-                html: `<div style="text-align:left; font-size:14px; border-top:1px solid #444; padding-top:10px;">${htmlResumo}</div>`,
-                icon: 'info',
-                timer: 6000,
-                showConfirmButton: false,
-                background: '#1e293b',
-                color: '#fff',
-                toast: true,
-                position: 'top-start'
-            });
-            window.alertaInicialExibido = true;
-            setTimeout(() => window.filtrarHoje(), 500);
-        }
-
         const perc = total > 0 ? Math.round((conc / total) * 100) : 0;
         document.getElementById('mainProgressBar').style.width = perc + '%';
         document.getElementById('percProgresso').innerText = perc + '%';
-
-        const labelStatus = document.getElementById('txtStatusLanca');
-        if (perc === 100 && total > 0) {
-            labelStatus.innerText = "✅ TUDO LANÇADO! BOM TRABALHO";
-            labelStatus.style.color = "var(--success)";
-        } else {
-            labelStatus.innerText = `⏳ FALTAM ${pendentes} PEDIDOS PARA LANÇAR`;
-            labelStatus.style.color = "white";
-        }
 
         lista.sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
             const row = document.createElement('div'); 
             row.className = 'pedido-row animar-entrada';
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
-            
-            const prodHTML = p.itens_detalhados.map(i => `
-                <div style="display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-                    <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
-                        <button class="btn-copiar" onclick="window.copiarTexto('${i.qtd}', this)" style="background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;">${i.qtd}x</button>
-                        <span style="font-size:14px; font-weight:700; color:white;">${i.nome}</span>
-                        <button class="btn-copiar" onclick="window.copiarTexto('${i.nome}', this)">COPIAR</button>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;">
-                        <span>Un: R$ ${i.preco.toFixed(2)}</span>
-                        <button class="btn-copiar" onclick="window.copiarTexto('${i.preco.toFixed(2)}', this)" style="padding: 1px 5px; font-size: 8px;">COPIAR VALOR</button>
-                    </div>
-                </div>`).join('');
+            if(p.urgente) row.classList.add('pedido-urgente'); // APLICA PISCA-PISCA
+
+            const prodHTML = p.itens_detalhados.map(i => `<div style=\"display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;\"><div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\"><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;\">${i.qtd}x</button><span style=\"font-size:14px; font-weight:700; color:white;\">${i.nome}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\">COPIAR</button></div><div style=\"display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;\"><span>Un: R$ ${i.preco.toFixed(2)}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.preco.toFixed(2)}', this)\" style=\"padding: 1px 5px; font-size: 8px;\">COPIAR VALOR</button></div></div>`).join('');
 
             let htmlLog = "";
             if(p.historico_logs && p.historico_logs.length > 0) {
-                const primeiro = p.historico_logs[0];
-                const ultimo = p.historico_logs[p.historico_logs.length - 1];
-                htmlLog += `<div class="historico-edicao">🚀 Criado por: ${primeiro.quem} em ${primeiro.quando}</div>`;
+                const primeiro = p.historico_logs[0]; const ultimo = p.historico_logs[p.historico_logs.length - 1];
+                htmlLog += `<div class=\"historico-edicao\">🚀 Criado por: ${primeiro.quem} em ${primeiro.quando}</div>`;
                 if(p.historico_logs.length > 1) {
-                    const isStatus = ultimo.tipo === 'status';
-                    const icone = isStatus ? '✅' : '📝';
-                    const acao = isStatus ? 'Status alterado' : 'Alterado';
-                    const cor = isStatus ? 'var(--success)' : 'var(--warning)';
-                    htmlLog += `<div class="historico-edicao" style="color:${cor}; border:none; padding-top:0;">${icone} ${acao} por: ${ultimo.quem} em ${ultimo.quando}</div>`;
+                    const isStatus = ultimo.tipo === 'status'; const icone = isStatus ? '✅' : '📝';
+                    htmlLog += `<div class=\"historico-edicao\" style=\"color:${isStatus ? 'var(--success)' : 'var(--warning)'}; border:none; padding-top:0;\">${icone} por: ${ultimo.quem} em ${ultimo.quando}</div>`;
                 }
             }
 
-            row.innerHTML = `
-                <div>
-                    <div class="num-destaque">
-                        #${p.num}
-                        <button class="btn-copiar" onclick="window.copiarTexto('${p.num}', this)" style="font-size:9px; background: rgba(255,255,255,0.2); color: white; border: none; width: 100%; margin-top:5px;">COPIAR Nº</button>
-                    </div>
-                    <div style="font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;">👤 ${p.solicitante || 'S/N'}</div>
-                </div>
-                <div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px; display: flex; flex-direction: column;">
-                    <span>📅 ${p.data.split('-').reverse().join('/')}</span>
-                    <span style="font-size: 11px; color: var(--accent); opacity: 0.8;">🕒 ${p.hora || '--:--'}</span>
-                    ${htmlLog}
-                </div>
-                <div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class="obs-box"><b>OBS:</b> ${p.obs}</div>` : ''}</div>
-                <div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div>
-                <div style="text-align:center;"><span class="status-badge status-${p.situacao}" onclick="window.mudarStatus('${p.id}', '${p.situacao}')">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div>
-                <div style="text-align:right; display:flex; flex-direction:column; gap:10px;"><button onclick="window.editarPedido('${p.id}')" style="background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;">EDITAR</button><button onclick="window.excluirPedido('${p.id}')" style="background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;">EXCLUIR</button></div>`;
+            row.innerHTML = `<div><div class=\"num-destaque\">#${p.num}<button class=\"btn-copiar\" onclick=\"window.copiarTexto('${p.num}', this)\" style=\"font-size:9px; background: rgba(255,255,255,0.2); color: white; border: none; width: 100%; margin-top:5px;\">COPIAR Nº</button></div><div style=\"font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;\">👤 ${p.solicitante || 'S/N'}</div></div><div style=\"color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px; display: flex; flex-direction: column;\"><span>📅 ${p.data.split('-').reverse().join('/')}</span><span style=\"font-size: 11px; color: var(--accent); opacity: 0.8;\">🕒 ${p.hora || '--:--'}</span>${htmlLog}</div><div style=\"padding:0 25px;\">${prodHTML}${p.obs !== "S/O" ? `<div class=\"obs-box\"><b>OBS:</b> ${p.obs}</div>` : ''}</div><div style=\"text-align:right; font-weight:900; font-size:20px;\">R$ ${p.total}</div><div style=\"text-align:center;\"><span class=\"status-badge status-${p.situacao}\" onclick=\"window.mudarStatus('${p.id}', '${p.situacao}')\">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div><div style=\"text-align:right; display:flex; flex-direction:column; gap:10px;\"><button onclick=\"window.editarPedido('${p.id}')\" style=\"background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;\">EDITAR</button><button onclick=\"window.excluirPedido('${p.id}')\" style=\"background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;\">EXCLUIR</button></div>`;
+            if(p.urgente) {
+                const badge = document.createElement('div');
+                badge.style = "position:absolute; top:-5px; left:-5px; background:var(--danger); color:white; padding:4px 8px; border-radius:8px; font-size:10px; font-weight:900; border:2px solid #fff;";
+                badge.innerText = "🚨 URGENTE";
+                row.appendChild(badge);
+            }
             corpo.appendChild(row);
         });
     });
 
     window.mudarStatus = async (id, s) => { 
         const statusNovo = s === "Sim" ? "Não" : "Sim";
-        const { value: nomeStatus } = await Swal.fire({
-            title: 'ALTERAR STATUS',
-            html: `
-                <button onclick="window.abrirHistoricoNomes()" class="swal-history-btn">🕒 HISTÓRICO</button>
-                <div style="margin-top:20px">Confirmar alteração para ${statusNovo === 'Sim' ? 'LANÇADO' : 'PENDENTE'}?</div>
-            `,
-            input: 'text',
-            inputPlaceholder: 'Quem está alterando?',
-            showCancelButton: true,
-            confirmButtonText: 'ATUALIZAR ✅',
-            background: '#1e293b',
-            color: '#fff',
-            confirmButtonColor: '#10b981',
-            inputValidator: (v) => !v && 'Identifique-se!'
-        });
-
+        const { value: nomeStatus } = await Swal.fire({ title: 'ALTERAR STATUS', html: `<button onclick=\"window.abrirHistoricoNomes()\" class=\"swal-history-btn\">🕒 HISTÓRICO</button><div style=\"margin-top:20px\">Confirmar alteração para ${statusNovo === 'Sim' ? 'LANÇADO' : 'PENDENTE'}?</div>`, input: 'text', inputPlaceholder: 'Quem está alterando?', showCancelButton: true, confirmButtonText: 'ATUALIZAR ✅', background: '#1e293b', color: '#fff', confirmButtonColor: '#10b981', inputValidator: (v) => !v && 'Identifique-se!' });
         if (!nomeStatus) return;
-
         const snap = await getDoc(doc(db, "pedidos_mtx", id));
         if(snap.exists()){
-            const d = snap.data();
-            const agora = new Date();
-            const logStatus = {
-                quem: nomeStatus.toUpperCase(),
-                quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`,
-                tipo: 'status'
-            };
-            await updateDoc(doc(db, "pedidos_mtx", id), { 
-                situacao: statusNovo,
-                historico_logs: [...(d.historico_logs || []), logStatus]
-            }); 
+            const d = snap.data(); const agora = new Date();
+            const logStatus = { quem: nomeStatus.toUpperCase(), quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`, tipo: 'status' };
+            await updateDoc(doc(db, "pedidos_mtx", id), { situacao: statusNovo, historico_logs: [...(d.historico_logs || []), logStatus] }); 
             Toast.fire({ icon: 'success', title: 'Status Atualizado!' });
         }
     };
@@ -682,24 +591,15 @@
     window.filtrarPorStatus = (s) => { const texto = s === 'Sim' ? 'LANÇADO' : 'PENDENTE'; document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(texto) ? '' : 'none'); };
     window.filtrarPedidos = () => {
         const t = document.getElementById('inputBusca').value.toLowerCase();
-        const linhas = document.querySelectorAll('.pedido-row');
-        const hojeBR = new Date().toLocaleDateString('pt-BR');
-        linhas.forEach(r => {
-            const textoLinha = r.innerText.toLowerCase();
-            if (t === "") { r.style.display = textoLinha.includes(hojeBR) ? '' : 'none'; } 
-            else { r.style.display = textoLinha.includes(t) ? '' : 'none'; }
-        });
+        const linhas = document.querySelectorAll('.pedido-row'); const hojeBR = new Date().toLocaleDateString('pt-BR');
+        linhas.forEach(r => { const textoLinha = r.innerText.toLowerCase(); if (t === "") { r.style.display = textoLinha.includes(hojeBR) ? '' : 'none'; } else { r.style.display = textoLinha.includes(t) ? '' : 'none'; } });
     };
     window.editarPedido = async (id) => {
         const snap = await getDoc(doc(db, "pedidos_mtx", id));
         if(snap.exists()) {
-            const d = snap.data(); document.getElementById('editId').value = id;
-            document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data;
-            document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs;
-            document.getElementById('solicitante').value = d.solicitante || '';
-            itensAtuais = d.itens_detalhados; 
-            historicoEdicaoOriginal = d.historico_logs || [];
-            renderizarItens(); window.toggleModal(true);
+            const d = snap.data(); document.getElementById('editId').value = id; document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data; document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs; document.getElementById('solicitante').value = d.solicitante || '';
+            document.getElementById('checkUrgente').checked = d.urgente || false;
+            itensAtuais = d.itens_detalhados; historicoEdicaoOriginal = d.historico_logs || []; renderizarItens(); window.toggleModal(true);
         }
     };
     window.excluirPedido = async (id) => {
