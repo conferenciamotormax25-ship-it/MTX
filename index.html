@@ -407,13 +407,13 @@
         const hora = agora.getHours();
         if(labelStatus && !labelStatus.innerText.includes("TUDO LANÇADO")) {
             let humor = "🚀 STATUS DO DIA";
-            if(hora < 10) humor = "☕ CAFÉ NO BULE E FOCO NO ENVIO!";
-            else if(hora >= 11 && hora < 13) humor = "🍕 QUASE HORA DO RACHA! FOME BATEU?";
-            else if(hora >= 14 && hora < 16) humor = "⚡ ENERGIA RENOVADA, BORA ZERAR ISSO!";
-            else if(hora >= 17) humor = "🏁 RETA FINAL! ÚLTIMO GÁS!";
+            if(hora < 10) humor = "☕ MAIS UM DIA,DE VIDA FOCO NO TRABALHO!!";
+            else if(hora >= 11 && hora < 13) humor = "🍕 QUASE HORA DA PARA TECNICA! FOME BATEU?";
+            else if(hora >= 14 && hora < 16) humor = "⚡ ENERGIA RENOVADA, BORA TRABALHAR!";
+            else if(hora >= 17) humor = "🏁 RETA FINAL! QUASE NA HORA!";
             
             const pendentes = document.getElementById('countPendentes').innerText;
-            labelStatus.innerText = `${humor} (FALTAM ${pendentes})`;
+            labelStatus.innerText = `${humor} (PEDIDOS A SER LANÇADOS ${pendentes})`;
         }
 
         if(divLib) {
@@ -424,7 +424,7 @@
                 const h = Math.floor(diff / 3600000);
                 const m = Math.floor((diff % 3600000) / 60000);
                 const s = Math.floor((diff % 60000) / 1000);
-                divLib.innerHTML = `🚀 ${h}h ${m}m ${s}s PARA A LIBERDADE! ✨`;
+                divLib.innerHTML = `🚀 ${h}h ${m}m ${s}s PARA O FINAL DO EXPEDIENTE! ✨`;
                 divLib.style.background = "linear-gradient(90deg, #2563eb, #00f2ff)";
                 divLib.style.color = "#000";
             } else if (agora.getHours() >= 18) {
@@ -534,7 +534,7 @@
             } else {
                 payload.historico_logs = [infoLog];
                 await addDoc(pedidosRef, payload);
-                Swal.fire({ title: '🚀 PEDIDO CONCLUÍDO!', html: `<div style=\"font-size: 1.2rem; margin-bottom: 15px;\">Pedido registrado com sucesso!</div><div style=\"background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;\">⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> PARA DAR ENTRADA QUANDO A MERCADORIA CHEGAR!</div>`, icon: 'success', background: '#0f172a', color: '#fff', confirmButtonText: 'PODE DEIXAR!', confirmButtonColor: '#2563eb' });
+                Swal.fire({ title: '🚀 PEDIDO CONCLUÍDO!', html: `<div style=\"font-size: 1.2rem; margin-bottom: 15px;\">Pedido registrado com sucesso!</div><div style=\"background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;\">⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> PARA DAR ENTRADA NESSE PEDIDO!</div>`, icon: 'success', background: '#0f172a', color: '#fff', confirmButtonText: 'VOU AVISAR!', confirmButtonColor: '#2563eb' });
             }
             window.toggleModal(false);
         } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
