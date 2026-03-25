@@ -151,7 +151,6 @@
         .progress-container { width: 100%; height: 8px; background: var(--border); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.8s ease; }
         
-        /* AÇÕES PRINCIPAIS E BUSCA */
         .main-actions { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         .btn-open-modal { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 16px 30px; border-radius: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 12px; height: 55px; }
         
@@ -217,20 +216,40 @@
         }
         
         .swal-history-btn {
-            position: absolute;
-            right: 15px;
-            top: 15px;
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 5px 10px;
+            padding: 8px 15px;
             cursor: pointer;
             font-size: 12px;
             font-weight: bold;
             display: flex;
             align-items: center;
             gap: 5px;
+            margin: 0 auto 15px auto;
+        }
+
+        /* Estilo para os chips de nome */
+        .name-chip {
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid var(--primary);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            text-transform: uppercase;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .name-chip:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
     </style>
 </head>
@@ -288,8 +307,9 @@
             </div>
             
             <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
-                <div style="flex-grow: 1;">
-                    <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Quem fez o pedido? (Nome)" style="width: 100%; box-sizing: border-box; text-transform: uppercase;">
+                <div style="flex-grow: 1; position: relative; display: flex; gap: 10px;">
+                    <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Quem fez o pedido? (Nome)" style="flex-grow: 1; text-transform: uppercase;">
+                    <button onclick="window.abrirHistoricoNomes()" style="background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 12px; cursor: pointer; font-size: 18px;" title="Selecionar do histórico">🕒</button>
                     <datalist id="listaSolicitantes"></datalist>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px; background: rgba(251, 113, 133, 0.1); padding: 10px; border-radius: 12px; border: 1px solid var(--danger);">
@@ -312,7 +332,7 @@
             </div>
             <div style="margin-top: 25px; padding: 25px; background: rgba(15, 23, 42, 0.6); border-radius: 20px; display: flex; justify-content: space-between; align-items: center;">
                 <span class="kpi-label">TOTAL</span>
-                <strong style="font-size: 32px; font-family: 'Montserrat', sans-serif;">R$ <span id="totalFinal">0.00</span></strong>
+                <strong style="font-size: 32px; font-family: 'Montserrat', sans-serif;">R$ <span id="totalFinal">0,00</span></strong>
             </div>
             <button class="btn-open-modal" style="width:100%; justify-content: center; margin-top:20px; height:65px;" onclick="window.salvarNaNuvem()">💾 SALVAR NA NUVEM</button>
         </div>
@@ -344,6 +364,12 @@
     let itensAtuais = [];
     let zoomLevel = 1.0;
     let historicoEdicaoOriginal = [];
+
+    // Helper para formatar moeda PT-BR
+    const formatBRL = (valor) => {
+        const n = typeof valor === 'string' ? parseFloat(valor.replace(',','.')) : valor;
+        return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
 
     window.iniciarBoasVindas = () => {
         setTimeout(() => {
@@ -440,15 +466,31 @@
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
 
+    // REFINAMENTO: SELETOR DE NOMES MODERNO
     window.abrirHistoricoNomes = async () => {
         const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
         if(nomes.length === 0) return Toast.fire({ icon: 'info', title: 'Nenhum nome no histórico!' });
-        const { value: nomeSelecionado } = await Swal.fire({ title: 'SELECIONAR NOME', input: 'select', inputOptions: nomes.reduce((acc, n) => ({ ...acc, [n]: n }), {}), showCancelButton: true, confirmButtonText: 'OK', background: '#1e293b', color: '#fff' });
-        if(nomeSelecionado) {
-            const swalInput = document.querySelector('.swal2-input');
-            if(swalInput) swalInput.value = nomeSelecionado.toUpperCase();
-            else { const solicitanteInput = document.getElementById('solicitante'); if(solicitanteInput) solicitanteInput.value = nomeSelecionado.toUpperCase(); }
-        }
+        
+        const botoesHTML = nomes.map(n => 
+            `<button onclick="Swal.clickConfirm(); window.selecionarNomeRapido('${n}')" class="name-chip">👤 ${n}</button>`
+        ).join('');
+
+        await Swal.fire({ 
+            title: 'SELECIONAR OPERADOR', 
+            html: `<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 15px;">${botoesHTML}</div>`,
+            showConfirmButton: false, 
+            showCancelButton: true, 
+            cancelButtonText: 'FECHAR',
+            background: '#1e293b', 
+            color: '#fff' 
+        });
+    };
+
+    window.selecionarNomeRapido = (nome) => {
+        const solicitanteInput = document.getElementById('solicitante');
+        if(solicitanteInput) solicitanteInput.value = nome.toUpperCase();
+        const swalInput = document.querySelector('.swal2-input');
+        if(swalInput) swalInput.value = nome.toUpperCase();
     };
 
     window.ajustarZoom = (delta) => { zoomLevel += delta; zoomLevel = Math.max(0.5, Math.min(1.5, zoomLevel)); document.body.style.zoom = zoomLevel; };
@@ -465,11 +507,12 @@
         document.getElementById('obsPedido').value = ''; document.getElementById('nomeProd').value = '';
         document.getElementById('solicitante').value = ''; document.getElementById('checkUrgente').checked = false;
         document.getElementById('precoProd').value = ''; document.getElementById('displayItens').innerHTML = '';
-        document.getElementById('totalFinal').innerText = '0.00'; itensAtuais = [];
+        document.getElementById('totalFinal').innerText = '0,00'; itensAtuais = [];
         historicoEdicaoOriginal = [];
     };
     window.abrirNovoPedido = () => { window.toggleModal(true); document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0]; };
     
+    // REFINAMENTO: ADIÇÃO COM FORMATAÇÃO
     window.adicionarItem = () => {
         const n = document.getElementById('nomeProd'), q = document.getElementById('qtdProd'), p = document.getElementById('precoProd');
         if(!n.value || !p.value) return;
@@ -478,14 +521,15 @@
         renderizarItens();
     };
 
+    // REFINAMENTO: RENDERIZAÇÃO COM PADRÃO 1.000,00
     const renderizarItens = () => {
         const d = document.getElementById('displayItens');
         d.innerHTML = ''; let t = 0;
         itensAtuais.forEach((i, idx) => {
             t += i.subtotal;
-            d.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td><td style="color:white; font-weight:600;">${i.nome}</td><td style="text-align:right;">R$ ${i.preco.toFixed(2)}</td><td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${i.subtotal.toFixed(2)}</td><td style="text-align:center; display:flex; gap:10px; justify-content:center; padding: 12px 0;"><button onclick="window.corrigirItem(${idx})" style="background:none; color:var(--warning); border:none; cursor:pointer; font-size:16px;">✏️</button><button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:20px;">&times;</button></td></tr>`;
+            d.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td><td style="color:white; font-weight:600;">${i.nome}</td><td style="text-align:right;">R$ ${formatBRL(i.preco)}</td><td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${formatBRL(i.subtotal)}</td><td style="text-align:center; display:flex; gap:10px; justify-content:center; padding: 12px 0;"><button onclick="window.corrigirItem(${idx})" style="background:none; color:var(--warning); border:none; cursor:pointer; font-size:16px;">✏️</button><button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:20px;">&times;</button></td></tr>`;
         });
-        document.getElementById('totalFinal').innerText = t.toFixed(2);
+        document.getElementById('totalFinal').innerText = formatBRL(t);
     };
 
     window.corrigirItem = (idx) => {
@@ -503,7 +547,7 @@
 
         const { value: nomeOperador } = await Swal.fire({
             title: 'IDENTIFIQUE-SE',
-            html: `<button onclick="window.abrirHistoricoNomes()" class="swal-history-btn">🕒 HISTÓRICO</button><div style="margin-top:20px">Nome para o registro de ${id ? 'ALTERAÇÃO' : 'LANÇAMENTO'}</div>`,
+            html: `<div style="margin-top:20px">Nome para o registro de ${id ? 'ALTERAÇÃO' : 'LANÇAMENTO'}</div>`,
             input: 'text', inputValue: document.getElementById('solicitante').value.toUpperCase(),
             showCancelButton: true, confirmButtonText: 'SALVAR 🚀', background: '#1e293b', color: '#fff', confirmButtonColor: '#2563eb',
             inputAttributes: { style: 'text-transform: uppercase;' }, inputValidator: (v) => !v && 'Digite seu nome!'
@@ -566,7 +610,8 @@
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
             if(p.urgente) row.classList.add('pedido-urgente');
 
-            const prodHTML = p.itens_detalhados.map(i => `<div style=\"display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;\"><div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\"><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;\">${i.qtd}x</button><span style=\"font-size:14px; font-weight:700; color:white;\">${i.nome}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\">COPIAR</button></div><div style=\"display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;\"><span>Un: R$ ${i.preco.toFixed(2)}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.preco.toFixed(2)}', this)\" style=\"padding: 1px 5px; font-size: 8px;\">COPIAR VALOR</button></div></div>`).join('');
+            // REFINAMENTO: PREÇOS NO CARD
+            const prodHTML = p.itens_detalhados.map(i => `<div style=\"display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;\"><div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\"><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;\">${i.qtd}x</button><span style=\"font-size:14px; font-weight:700; color:white;\">${i.nome}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\">COPIAR</button></div><div style=\"display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;\"><span>Un: R$ ${formatBRL(i.preco)}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${formatBRL(i.preco)}', this)\" style=\"padding: 1px 5px; font-size: 8px;\">COPIAR VALOR</button></div></div>`).join('');
 
             let htmlLog = "";
             if(p.historico_logs && p.historico_logs.length > 0) {
@@ -578,6 +623,7 @@
                 }
             }
 
+            // REFINAMENTO: TOTAL FORMATADO NO CARD
             row.innerHTML = `<div><div class=\"num-destaque\">#${p.num}<button class=\"btn-copiar\" onclick=\"window.copiarTexto('${p.num}', this)\" style=\"font-size:9px; background: rgba(255,255,255,0.2); color: white; border: none; width: 100%; margin-top:5px;\">COPIAR Nº</button></div><div style=\"font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;\">👤 ${p.solicitante || 'S/N'}</div></div><div style=\"color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px; display: flex; flex-direction: column;\"><span>📅 ${p.data.split('-').reverse().join('/')}</span><span style=\"font-size: 11px; color: var(--accent); opacity: 0.8;\">🕒 ${p.hora || '--:--'}</span>${htmlLog}</div><div style=\"padding:0 25px;\">${prodHTML}${p.obs !== "S/O" ? `<div class=\"obs-box\"><b>OBS:</b> ${p.obs}</div>` : ''}</div><div style=\"text-align:right; font-weight:900; font-size:20px;\">R$ ${p.total}</div><div style=\"text-align:center;\"><span class=\"status-badge status-${p.situacao}\" onclick=\"window.mudarStatus('${p.id}', '${p.situacao}')\">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div><div style=\"text-align:right; display:flex; flex-direction:column; gap:10px;\"><button onclick=\"window.editarPedido('${p.id}')\" style=\"background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;\">EDITAR</button><button onclick=\"window.excluirPedido('${p.id}')\" style=\"background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;\">EXCLUIR</button></div>`;
             if(p.urgente) {
                 const badge = document.createElement('div');
@@ -591,7 +637,18 @@
 
     window.mudarStatus = async (id, s) => { 
         const statusNovo = s === "Sim" ? "Não" : "Sim";
-        const { value: nomeStatus } = await Swal.fire({ title: 'ALTERAR STATUS', html: `<button onclick=\"window.abrirHistoricoNomes()\" class=\"swal-history-btn\">🕒 HISTÓRICO</button><div style=\"margin-top:20px\">Confirmar alteração para ${statusNovo === 'Sim' ? 'LANÇADO' : 'PENDENTE'}?</div>`, input: 'text', inputPlaceholder: 'Quem está alterando?', showCancelButton: true, confirmButtonText: 'ATUALIZAR ✅', background: '#1e293b', color: '#fff', confirmButtonColor: '#10b981', inputValidator: (v) => !v && 'Identifique-se!' });
+        const { value: nomeStatus } = await Swal.fire({ 
+            title: 'ALTERAR STATUS', 
+            html: `<button onclick=\"window.abrirHistoricoNomes()\" class=\"swal-history-btn\">🕒 HISTÓRICO</button><div style=\"margin-top:20px\">Confirmar alteração para ${statusNovo === 'Sim' ? 'LANÇADO' : 'PENDENTE'}?</div>`, 
+            input: 'text', 
+            inputPlaceholder: 'Quem está alterando?', 
+            showCancelButton: true, 
+            confirmButtonText: 'ATUALIZAR ✅', 
+            background: '#1e293b', 
+            color: '#fff', 
+            confirmButtonColor: '#10b981', 
+            inputValidator: (v) => !v && 'Identifique-se!' 
+        });
         if (!nomeStatus) return;
         const snap = await getDoc(doc(db, "pedidos_mtx", id));
         if(snap.exists()){
