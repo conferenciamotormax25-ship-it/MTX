@@ -121,11 +121,46 @@
 
         .pedido-row {
             background: var(--card); backdrop-filter: blur(10px); border: 1px solid var(--border);
-            margin-bottom: 15px; border-radius: 20px; transition: 0.3s;
+            margin-bottom: 35px; 
+            margin-top: 25px;    
+            border-radius: 20px; transition: 0.3s;
             display: grid; grid-template-columns: 140px 140px 1fr 140px 150px 120px;
-            align-items: center; padding: 20px;
+            align-items: center; padding: 30px 20px 20px 20px;
             min-width: 1100px;
             position: relative;
+        }
+
+        .num-destaque {
+            background: linear-gradient(135deg, #2563eb, #00f2ff);
+            color: #020617;
+            padding: 6px 15px;
+            border-radius: 10px;
+            font-weight: 900;
+            text-align: center;
+            position: absolute;
+            top: -18px;
+            left: 25px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3);
+            border: 2px solid #fff;
+            z-index: 10;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .num-destaque:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 242, 255, 0.5);
+        }
+
+        /* ESTADO DE COPIADO PERMANENTE */
+        .btn-copiado-marcado {
+            background: #10b981 !important; /* Verde Sucesso */
+            color: #000 !important;
+            border-color: #fff !important;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
         }
 
         .pedido-antigo { border-left: 5px solid #64748b !important; opacity: 0.8; }
@@ -184,7 +219,7 @@
         .status-badge { padding: 10px 18px; border-radius: 14px; font-size: 11px; font-weight: 800; cursor: pointer; min-width: 110px; display: inline-block; text-align: center; }
         .status-Sim { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
         .status-Não { background: rgba(251, 113, 133, 0.15); color: var(--danger); border: 1px solid var(--danger); }
-        .num-destaque { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 10px; border-radius: 12px; font-weight: 900; text-align: center; }
+        
         textarea, input, select { background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: white; outline: none; }
         
         .btn-copiar {
@@ -197,12 +232,6 @@
             padding: 3px 8px;
             transition: all 0.2s;
             font-weight: 600;
-        }
-        .btn-copiar.copiado-permanente {
-            background: var(--warning) !important;
-            color: #000 !important;
-            border-color: #000 !important;
-            font-weight: 800;
         }
         .btn-copiar:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); }
 
@@ -230,7 +259,6 @@
             margin: 0 auto 15px auto;
         }
 
-        /* Estilo para os chips de nome */
         .name-chip {
             background: rgba(37, 99, 235, 0.15);
             border: 1px solid var(--primary);
@@ -365,10 +393,14 @@
     let zoomLevel = 1.0;
     let historicoEdicaoOriginal = [];
 
-    // Helper para formatar moeda PT-BR
     const formatBRL = (valor) => {
         const n = typeof valor === 'string' ? parseFloat(valor.replace(',','.')) : valor;
         return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    window.copiarValorSistema = (valorFormatado, btn) => {
+        const valorParaSistema = valorFormatado.replace(/\./g, '').replace(',', '.');
+        window.copiarTexto(valorParaSistema, btn);
     };
 
     window.iniciarBoasVindas = () => {
@@ -396,10 +428,19 @@
         }
     }
 
+    // FUNÇÃO DE CÓPIA COM MARCADOR PERMANENTE
     window.copiarTexto = (texto, btn) => {
         navigator.clipboard.writeText(texto).then(() => {
-            btn.classList.add('copiado-permanente');
-            btn.innerText = "COPIADO";
+            // Adiciona a classe que muda a cor permanentemente (até o refresh)
+            btn.classList.add('btn-copiado-marcado');
+            
+            const oldText = btn.innerText;
+            if(!oldText.includes("x") && !oldText.includes("#")) {
+                btn.innerText = "COPIADO";
+                setTimeout(() => { 
+                    btn.innerText = "OK!"; 
+                }, 1000);
+            }
             Toast.fire({ icon: 'success', title: 'Copiado!' });
         });
     };
@@ -433,13 +474,13 @@
         const hora = agora.getHours();
         if(labelStatus && !labelStatus.innerText.includes("TUDO LANÇADO")) {
             let humor = "🚀 STATUS DO DIA";
-            if(hora < 10) humor = "☕ MAIS UM DIA,DE VIDA FOCO NO TRABALHO!!";
-            else if(hora >= 11 && hora < 13) humor = "🍕 QUASE HORA DA PARA TECNICA! FOME BATEU?";
+            if(hora < 10) humor = "☕ MAIS UM DIA DE VIDA, FOCO NO TRABALHO !!";
+            else if(hora >= 11 && humor < 13) humor = "🍕 QUASE HORA DA PARA TECNICA! FOME BATEU?";
             else if(hora >= 14 && hora < 16) humor = "⚡ ENERGIA RENOVADA, BORA TRABALHAR!";
             else if(hora >= 17) humor = "🏁 RETA FINAL! QUASE NA HORA!";
             
             const pendentes = document.getElementById('countPendentes').innerText;
-            labelStatus.innerText = `${humor} (PEDIDOS A SER LANÇADOS ${pendentes})`;
+            labelStatus.innerText = `${humor} (PEDIDOS A SER LANÇADOS ➡➡ ${pendentes})`;
         }
 
         if(divLib) {
@@ -466,7 +507,6 @@
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
 
-    // REFINAMENTO: SELETOR DE NOMES MODERNO
     window.abrirHistoricoNomes = async () => {
         const nomes = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
         if(nomes.length === 0) return Toast.fire({ icon: 'info', title: 'Nenhum nome no histórico!' });
@@ -512,7 +552,6 @@
     };
     window.abrirNovoPedido = () => { window.toggleModal(true); document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0]; };
     
-    // REFINAMENTO: ADIÇÃO COM FORMATAÇÃO
     window.adicionarItem = () => {
         const n = document.getElementById('nomeProd'), q = document.getElementById('qtdProd'), p = document.getElementById('precoProd');
         if(!n.value || !p.value) return;
@@ -521,7 +560,6 @@
         renderizarItens();
     };
 
-    // REFINAMENTO: RENDERIZAÇÃO COM PADRÃO 1.000,00
     const renderizarItens = () => {
         const d = document.getElementById('displayItens');
         d.innerHTML = ''; let t = 0;
@@ -610,8 +648,20 @@
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
             if(p.urgente) row.classList.add('pedido-urgente');
 
-            // REFINAMENTO: PREÇOS NO CARD
-            const prodHTML = p.itens_detalhados.map(i => `<div style=\"display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;\"><div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\"><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;\">${i.qtd}x</button><span style=\"font-size:14px; font-weight:700; color:white;\">${i.nome}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\">COPIAR</button></div><div style=\"display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;\"><span>Un: R$ ${formatBRL(i.preco)}</span><button class=\"btn-copiar\" onclick=\"window.copiarTexto('${formatBRL(i.preco)}', this)\" style=\"padding: 1px 5px; font-size: 8px;\">COPIAR VALOR</button></div></div>`).join('');
+            const prodHTML = p.itens_detalhados.map(i => {
+                const precoFormatado = formatBRL(i.preco);
+                return `<div style=\"display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;\">
+                    <div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\">
+                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;\">${i.qtd}x</button>
+                        <span style=\"font-size:14px; font-weight:700; color:white;\">${i.nome}</span>
+                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\">COPIAR</button>
+                    </div>
+                    <div style=\"display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;\">
+                        <span>Un: R$ ${precoFormatado}</span>
+                        <button class=\"btn-copiar\" onclick=\"window.copiarValorSistema('${precoFormatado}', this)\" style=\"padding: 1px 5px; font-size: 8px;\">COPIAR </button>
+                    </div>
+                </div>`;
+            }).join('');
 
             let htmlLog = "";
             if(p.historico_logs && p.historico_logs.length > 0) {
@@ -623,8 +673,29 @@
                 }
             }
 
-            // REFINAMENTO: TOTAL FORMATADO NO CARD
-            row.innerHTML = `<div><div class=\"num-destaque\">#${p.num}<button class=\"btn-copiar\" onclick=\"window.copiarTexto('${p.num}', this)\" style=\"font-size:9px; background: rgba(255,255,255,0.2); color: white; border: none; width: 100%; margin-top:5px;\">COPIAR Nº</button></div><div style=\"font-size: 10px; color: var(--accent); margin-top: 8px; text-align: center; font-weight: bold; background: rgba(0, 242, 255, 0.1); padding: 4px; border-radius: 6px;\">👤 ${p.solicitante || 'S/N'}</div></div><div style=\"color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px; display: flex; flex-direction: column;\"><span>📅 ${p.data.split('-').reverse().join('/')}</span><span style=\"font-size: 11px; color: var(--accent); opacity: 0.8;\">🕒 ${p.hora || '--:--'}</span>${htmlLog}</div><div style=\"padding:0 25px;\">${prodHTML}${p.obs !== "S/O" ? `<div class=\"obs-box\"><b>OBS:</b> ${p.obs}</div>` : ''}</div><div style=\"text-align:right; font-weight:900; font-size:20px;\">R$ ${p.total}</div><div style=\"text-align:center;\"><span class=\"status-badge status-${p.situacao}\" onclick=\"window.mudarStatus('${p.id}', '${p.situacao}')\">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span></div><div style=\"text-align:right; display:flex; flex-direction:column; gap:10px;\"><button onclick=\"window.editarPedido('${p.id}')\" style=\"background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;\">EDITAR</button><button onclick=\"window.excluirPedido('${p.id}')\" style=\"background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;\">EXCLUIR</button></div>`;
+            row.innerHTML = `
+                <div>
+                    <div class="num-destaque" onclick="window.copiarTexto('${p.num}', this)">#${p.num}</div>
+                    
+                    <div style="font-size: 10px; color: var(--accent); margin-top: 15px; text-align: center; font-weight: 800; background: rgba(0, 242, 255, 0.1); padding: 5px; border-radius: 8px; border: 1px solid rgba(0, 242, 255, 0.2); text-transform: uppercase;">
+                        👤 ${p.solicitante || 'S/N'}
+                    </div>
+                </div>
+                <div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px; display: flex; flex-direction: column;">
+                    <span>📅 ${p.data.split('-').reverse().join('/')}</span>
+                    <span style="font-size: 11px; color: var(--accent); opacity: 0.8;">🕒 ${p.hora || '--:--'}</span>
+                    ${htmlLog}
+                </div>
+                <div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class=\"obs-box\"><b>OBS:</b> ${p.obs}</div>` : ''}</div>
+                <div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div>
+                <div style="text-align:center;">
+                    <span class=\"status-badge status-${p.situacao}\" onclick=\"window.mudarStatus('${p.id}', '${p.situacao}')\">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span>
+                </div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:10px;">
+                    <button onclick=\"window.editarPedido('${p.id}')\" style=\"background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;\">EDITAR</button>
+                    <button onclick=\"window.excluirPedido('${p.id}')\" style=\"background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;\">EXCLUIR</button>
+                </div>`;
+                
             if(p.urgente) {
                 const badge = document.createElement('div');
                 badge.style = "position:absolute; top:-5px; left:-5px; background:var(--danger); color:white; padding:4px 8px; border-radius:8px; font-size:10px; font-weight:900; border:2px solid #fff;";
