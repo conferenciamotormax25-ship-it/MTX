@@ -150,7 +150,6 @@
             transition: 0.3s;
         }
 
-        /* AJUSTE PARA NÃO SOBREPOR O URGENTE */
         .pedido-urgente .num-destaque {
             left: 115px;
         }
@@ -322,8 +321,8 @@
         <button class="btn-open-modal" onclick="window.abrirNovoPedido()"><span>➕</span> NOVO PEDIDO</button>
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" id="inputBusca" class="search-input" placeholder="Buscar pedido, produto ou solicitante..." onkeyup="window.filtrarPedidos()">
-            <button class="btn-ver-tudo" onclick="window.limparFiltro()">Ver Tudo</button>
+            <input type="text" id="inputBusca" class="search-input" placeholder="Buscar Pedido" onkeyup="window.filtrarPedidos()">
+            <button class="btn-ver-tudo" onclick="window.limparFiltro()">Todos Pedidos</button>
         </div>
     </div>
 
@@ -732,8 +731,9 @@
     };
 
     window.limparFiltro = () => { 
-        document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); 
         document.getElementById('inputBusca').value = ''; 
+        document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); 
+        document.getElementById('inputBusca').blur();
     };
 
     window.filtrarHoje = () => { const hjBR = new Date().toLocaleDateString('pt-BR'); document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(hjBR) ? '' : 'none'); };
@@ -758,6 +758,37 @@
         const r = await Swal.fire({ title: 'Excluir?', text: "Apagar!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fb7185', background: '#1e293b', color: '#fff' });
         if (r.isConfirmed) { await deleteDoc(doc(db, "pedidos_mtx", id)); Toast.fire({ icon: 'success', title: 'Excluído!' }); }
     };
+
+    /* --- SISTEMA DE ATALHOS --- */
+    document.addEventListener('keydown', (e) => {
+        const inputBusca = document.getElementById('inputBusca');
+        const modal = document.getElementById('modalCadastro');
+        const isModalOpen = modal.style.display === 'flex';
+        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+
+        // ESC: Limpa filtro e tira foco
+        if (e.key === 'Escape') {
+            if (isModalOpen) {
+                window.toggleModal(false);
+            } else {
+                window.limparFiltro();
+            }
+            return;
+        }
+
+        // Atalho N: Novo Pedido
+        if (e.key.toLowerCase() === 'n' && !isTyping && !isModalOpen) {
+            e.preventDefault();
+            window.abrirNovoPedido();
+            return;
+        }
+
+        // Digitação Direta: Foca na busca
+        if (!isTyping && !isModalOpen && e.key.length === 1 && /[a-zA-Z0-9]/.test(e.key)) {
+            inputBusca.focus();
+        }
+    });
+
 </script>
 </body>
 </html>
