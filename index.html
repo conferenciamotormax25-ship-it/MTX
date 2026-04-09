@@ -192,10 +192,23 @@
         .main-actions { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         .btn-open-modal { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 16px 30px; border-radius: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 12px; height: 55px; }
         
-        .search-container { position: relative; flex-grow: 1; display: flex; align-items: center; }
-        .search-input { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: 16px; padding: 16px 120px 16px 50px; color: white; outline: none; transition: 0.3s; height: 55px; box-sizing: border-box; }
-        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
-        .search-icon { position: absolute; left: 20px; color: #64748b; pointer-events: none; }
+        /* BARRA DE BUSCA EM DESTAQUE */
+        .search-container { position: relative; flex-grow: 1; display: flex; align-items: center; filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.2)); }
+        .search-input { 
+            width: 100%; 
+            background: rgba(15, 23, 42, 0.9) !important; 
+            border: 2px solid var(--accent) !important; 
+            border-radius: 16px; 
+            padding: 16px 120px 16px 50px; 
+            color: white; 
+            outline: none; 
+            transition: 0.3s; 
+            height: 55px; 
+            box-sizing: border-box;
+            box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.1);
+        }
+        .search-input:focus { border-color: #fff !important; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
+        .search-icon { position: absolute; left: 20px; color: var(--accent); pointer-events: none; font-size: 18px; }
         
         .btn-ver-tudo { 
             position: absolute; 
@@ -282,6 +295,24 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
+
+        /* ESTILOS ASSINATURA MARCOS LUCAS */
+        .signature-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 0 30px 0;
+            gap: 15px;
+            opacity: 0.5;
+            transition: 0.4s;
+        }
+        .signature-container:hover { opacity: 1; }
+        .sig-line { height: 1px; width: 60px; background: linear-gradient(90deg, transparent, var(--accent)); }
+        .sig-line.right { background: linear-gradient(90deg, var(--accent), transparent); }
+        .sig-text { font-size: 10px; letter-spacing: 3px; color: var(--text); font-weight: 600; text-transform: uppercase; }
+        .sig-name { color: var(--accent); font-weight: 800; position: relative; }
+        .sig-name::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background: var(--accent); transform: scaleX(0); transition: 0.3s; }
+        .signature-container:hover .sig-name::after { transform: scaleX(1); }
     </style>
 </head>
 <body onload="iniciarBoasVindas()">
@@ -321,7 +352,7 @@
         <button class="btn-open-modal" onclick="window.abrirNovoPedido()"><span>➕</span> NOVO PEDIDO</button>
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" id="inputBusca" class="search-input" placeholder="Buscar Pedido" onkeyup="window.filtrarPedidos()">
+            <input type="text" id="inputBusca" class="search-input" placeholder="Buscar Pedido..." onkeyup="window.filtrarPedidos()">
             <button class="btn-ver-tudo" onclick="window.limparFiltro()">Todos Pedidos</button>
         </div>
     </div>
@@ -371,6 +402,12 @@
 
     <div id="areaPedidos">
         <div id="tabelaCorpo" class="animar-entrada"></div>
+    </div>
+
+    <div class="signature-container">
+        <div class="sig-line"></div>
+        <div class="sig-text">Criado por <span class="sig-name">Marcos Lucas</span></div>
+        <div class="sig-line right"></div>
     </div>
 </div>
 
@@ -759,14 +796,13 @@
         if (r.isConfirmed) { await deleteDoc(doc(db, "pedidos_mtx", id)); Toast.fire({ icon: 'success', title: 'Excluído!' }); }
     };
 
-    /* --- SISTEMA DE ATALHOS --- */
+    /* SISTEMA DE ATALHOS */
     document.addEventListener('keydown', (e) => {
         const inputBusca = document.getElementById('inputBusca');
         const modal = document.getElementById('modalCadastro');
         const isModalOpen = modal.style.display === 'flex';
         const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
 
-        // ESC: Limpa filtro e tira foco
         if (e.key === 'Escape') {
             if (isModalOpen) {
                 window.toggleModal(false);
@@ -776,14 +812,12 @@
             return;
         }
 
-        // Atalho N: Novo Pedido
         if (e.key.toLowerCase() === 'n' && !isTyping && !isModalOpen) {
             e.preventDefault();
             window.abrirNovoPedido();
             return;
         }
 
-        // Digitação Direta: Foca na busca
         if (!isTyping && !isModalOpen && e.key.length === 1 && /[a-zA-Z0-9]/.test(e.key)) {
             inputBusca.focus();
         }
