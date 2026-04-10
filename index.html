@@ -18,6 +18,7 @@
             --warning: #f59e0b;
             --accent: #00f2ff; 
             --danger: #fb7185;
+            --purple: #8b5cf6;
             --zoom-level: 1;
         }
 
@@ -159,11 +160,27 @@
             box-shadow: 0 6px 20px rgba(0, 242, 255, 0.5);
         }
 
-        .btn-copiado-marcado {
-            background: #10b981 !important; 
+        /* BOTÃO COPIAR INTELIGENTE */
+        .btn-copiar {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 4px 10px;
+            transition: all 0.2s;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .btn-copiar:hover { background: var(--accent); color: #0f172a; }
+
+        /* ESTADO PERMANENTE PÓS CLIQUE */
+        .btn-checked {
+            background: var(--success) !important;
             color: #000 !important;
             border-color: #fff !important;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
         .pedido-antigo { border-left: 5px solid #64748b !important; opacity: 0.8; }
@@ -192,7 +209,6 @@
         .main-actions { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         .btn-open-modal { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 16px 30px; border-radius: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 12px; height: 55px; }
         
-        /* BARRA DE BUSCA EM DESTAQUE */
         .search-container { position: relative; flex-grow: 1; display: flex; align-items: center; filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.2)); }
         .search-input { 
             width: 100%; 
@@ -238,19 +254,6 @@
         
         textarea, input, select { background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: white; outline: none; }
         
-        .btn-copiar {
-            background: rgba(148, 163, 184, 0.1);
-            color: #94a3b8;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 10px;
-            cursor: pointer;
-            padding: 3px 8px;
-            transition: all 0.2s;
-            font-weight: 600;
-        }
-        .btn-copiar:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); }
-
         .historico-edicao {
             font-size: 9px;
             color: #64748b;
@@ -296,7 +299,6 @@
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
-        /* ESTILOS ASSINATURA MARCOS LUCAS */
         .signature-container {
             display: flex;
             justify-content: center;
@@ -468,15 +470,12 @@
         }
     }
 
+    // FUNÇÃO DE CÓPIA ATUALIZADA COM CHECK VISUAL
     window.copiarTexto = (texto, btn) => {
         navigator.clipboard.writeText(texto).then(() => {
-            btn.classList.add('btn-copiado-marcado');
-            const oldText = btn.innerText;
-            if(!oldText.includes("x") && !oldText.includes("#")) {
-                btn.innerText = "COPIADO";
-                setTimeout(() => { 
-                    btn.innerText = "OK!"; 
-                }, 1000);
+            btn.classList.add('btn-checked');
+            if(btn.tagName === "BUTTON") {
+                btn.innerText = "OK! ✅";
             }
             Toast.fire({ icon: 'success', title: 'Copiado!' });
         });
@@ -687,15 +686,14 @@
 
             const prodHTML = p.itens_detalhados.map(i => {
                 const precoFormatado = formatBRL(i.preco);
-                return `<div style=\"display:flex; flex-direction:column; margin-bottom:10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;\">
+                return `<div style=\"display:flex; flex-direction:column; margin-bottom:12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;\">
                     <div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\">
-                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"background: #1e293b; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 800; border: 1px solid var(--border); min-width: 45px;\">${i.qtd}x</button>
-                        <span style=\"font-size:14px; font-weight:700; color:white;\">${i.nome}</span>
-                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\">COPIAR</button>
+                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"min-width: 45px;\">${i.qtd}x</button>
+                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\" style=\"background:var(--purple); color:white; border-color:var(--purple); font-size:13px; padding:6px 12px;\">${i.nome}</button>
                     </div>
-                    <div style=\"display:flex; align-items:center; gap:8px; margin-top:4px; font-size:11px; color:#94a3b8;\">
-                        <span>Un: R$ ${precoFormatado}</span>
-                        <button class=\"btn-copiar\" onclick=\"window.copiarValorSistema('${precoFormatado}', this)\" style=\"padding: 1px 5px; font-size: 8px;\">COPIAR </button>
+                    <div style=\"display:flex; align-items:center; gap:8px; margin-top:6px; font-size:11px; color:#94a3b8;\">
+                        <span style=\"font-weight:600;\">Un: R$ ${precoFormatado}</span>
+                        <button class=\"btn-copiar\" onclick=\"window.copiarValorSistema('${precoFormatado}', this)\" style=\"padding: 2px 6px; font-size: 9px;\">COPIAR VALOR</button>
                     </div>
                 </div>`;
             }).join('');
