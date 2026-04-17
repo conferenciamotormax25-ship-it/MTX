@@ -175,7 +175,7 @@
         }
         .btn-copiar:hover { background: var(--accent); color: #0f172a; }
 
-        /* ESTADO PERMANENTE PÓS CLIQUE */
+        /* ESTADO PERMANENTE PÓS CLIQUE - COR VERDE SEM SUMIR O TEXTO */
         .btn-checked {
             background: var(--success) !important;
             color: #000 !important;
@@ -470,13 +470,11 @@
         }
     }
 
-    // FUNÇÃO DE CÓPIA ATUALIZADA COM CHECK VISUAL
+    // FUNÇÃO DE CÓPIA ATUALIZADA: FICA VERDE MAS NÃO MUDA O TEXTO (MANTÉM O CÓDIGO/VALOR VISÍVEL)
     window.copiarTexto = (texto, btn) => {
         navigator.clipboard.writeText(texto).then(() => {
             btn.classList.add('btn-checked');
-            if(btn.tagName === "BUTTON") {
-                btn.innerText = "OK! ✅";
-            }
+            // Removido o btn.innerText = "OK! ✅" para manter o código original visível em verde
             Toast.fire({ icon: 'success', title: 'Copiado!' });
         });
     };
