@@ -120,6 +120,17 @@
         }
         .kpi-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
+        /* KPI PULSANTE PARA PENDENTES */
+        @keyframes pulse-danger {
+            0% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(251, 113, 133, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0); }
+        }
+        .kpi-pendente-ativo {
+            border-color: var(--danger) !important;
+            animation: pulse-danger 2s infinite;
+        }
+
         .pedido-row {
             background: var(--card); backdrop-filter: blur(10px); border: 1px solid var(--border);
             margin-bottom: 35px; 
@@ -129,6 +140,21 @@
             align-items: center; padding: 30px 20px 20px 20px;
             min-width: 1100px;
             position: relative;
+        }
+
+        /* ESTILO: PEDIDO LANÇADO (PROFISSIONAL) */
+        .pedido-finalizado {
+            background: rgba(15, 23, 42, 0.4) !important;
+            border-left: 6px solid var(--success) !important;
+            opacity: 0.7;
+            filter: grayscale(0.2);
+            transition: 0.4s;
+            transform: scale(0.98);
+        }
+        .pedido-finalizado:hover {
+            opacity: 1;
+            filter: grayscale(0);
+            transform: scale(1);
         }
 
         .num-destaque {
@@ -160,7 +186,6 @@
             box-shadow: 0 6px 20px rgba(0, 242, 255, 0.5);
         }
 
-        /* BOTÃO COPIAR INTELIGENTE */
         .btn-copiar {
             background: rgba(0, 242, 255, 0.1);
             color: var(--accent);
@@ -175,7 +200,6 @@
         }
         .btn-copiar:hover { background: var(--accent); color: #0f172a; }
 
-        /* ESTADO PERMANENTE PÓS CLIQUE - COR VERDE SEM SUMIR O TEXTO */
         .btn-checked {
             background: var(--success) !important;
             color: #000 !important;
@@ -341,7 +365,7 @@
     <div class="dashboard-grid">
         <div class="kpi-card" onclick="window.filtrarHoje()"><span class="kpi-label">📅 Hoje</span><span class="kpi-value" id="countHoje">0</span></div>
         <div class="kpi-card" onclick="window.limparFiltro()"><span class="kpi-label">📦 Total</span><span class="kpi-value" id="totalPedidosCount">0</span></div>
-        <div class="kpi-card" onclick="window.filtrarPorStatus('Não')"><span class="kpi-label">⏳ Pendentes</span><span class="kpi-value" id="countPendentes" style="color: var(--danger);">0</span></div>
+        <div id="kpiPendentes" class="kpi-card" onclick="window.filtrarPorStatus('Não')"><span class="kpi-label">⏳ Pendentes</span><span class="kpi-value" id="countPendentes" style="color: var(--danger);">0</span></div>
         <div class="kpi-card" style="border-color: var(--accent); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <span class="kpi-label">🕒 Horário</span>
             <span class="kpi-value" id="relogioDinamico" style="font-size: 24px; font-family: 'Montserrat', sans-serif; letter-spacing: 1px;">00:00:00</span>
@@ -470,11 +494,9 @@
         }
     }
 
-    // FUNÇÃO DE CÓPIA ATUALIZADA: FICA VERDE MAS NÃO MUDA O TEXTO (MANTÉM O CÓDIGO/VALOR VISÍVEL)
     window.copiarTexto = (texto, btn) => {
         navigator.clipboard.writeText(texto).then(() => {
             btn.classList.add('btn-checked');
-            // Removido o btn.innerText = "OK! ✅" para manter o código original visível em verde
             Toast.fire({ icon: 'success', title: 'Copiado!' });
         });
     };
@@ -672,13 +694,27 @@
         document.getElementById('countPendentes').innerText = pendentes;
         document.getElementById('countHoje').innerText = hj;
 
+        // KPI PENDENTE PULSANTE
+        const kpiP = document.getElementById('kpiPendentes');
+        if(pendentes > 0) kpiP.classList.add('kpi-pendente-ativo');
+        else kpiP.classList.remove('kpi-pendente-ativo');
+
         const perc = total > 0 ? Math.round((conc / total) * 100) : 0;
         document.getElementById('mainProgressBar').style.width = perc + '%';
         document.getElementById('percProgresso').innerText = perc + '%';
 
-        lista.sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
+        // ORDENAÇÃO INTELIGENTE (STICKY URGENTES NO TOPO)
+        lista.sort((a, b) => {
+            if (a.urgente && a.situacao !== 'Sim' && (!b.urgente || b.situacao === 'Sim')) return -1;
+            if (b.urgente && b.situacao !== 'Sim' && (!a.urgente || a.situacao === 'Sim')) return 1;
+            return b.timestamp - a.timestamp;
+        });
+
+        lista.forEach(p => {
             const row = document.createElement('div'); 
             row.className = 'pedido-row animar-entrada';
+            
+            if(p.situacao === 'Sim') row.classList.add('pedido-finalizado');
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
             if(p.urgente) row.classList.add('pedido-urgente');
 
@@ -792,7 +828,6 @@
         if (r.isConfirmed) { await deleteDoc(doc(db, "pedidos_mtx", id)); Toast.fire({ icon: 'success', title: 'Excluído!' }); }
     };
 
-    /* SISTEMA DE ATALHOS */
     document.addEventListener('keydown', (e) => {
         const inputBusca = document.getElementById('inputBusca');
         const modal = document.getElementById('modalCadastro');
