@@ -944,8 +944,8 @@
         }
 
         .modal-content {
-            max-width: 980px !important;
-            padding: 32px !important;
+            max-width: 1120px !important;
+            padding: 0 !important;
             color: var(--text) !important;
             background: #ffffff !important;
             border-color: #dfe5ec !important;
@@ -953,15 +953,528 @@
             box-shadow: 0 28px 80px rgba(9, 24, 43, 0.28);
         }
 
+        .order-modal-header {
+            min-height: 104px;
+            padding: 24px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 88% 20%, rgba(66, 133, 244, 0.28), transparent 27%),
+                var(--navy);
+            border-bottom: 3px solid var(--accent);
+            z-index: 20;
+        }
+
+        .modal-title-group {
+            min-width: 0;
+        }
+
+        .modal-eyebrow {
+            display: block;
+            margin-bottom: 7px;
+            color: #ffb15e;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+        }
+
         #modalTitle {
-            color: var(--navy) !important;
+            margin: 0 !important;
+            color: #ffffff !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 22px;
-            letter-spacing: -0.4px;
+            font-size: 24px;
+            letter-spacing: -0.7px;
+        }
+
+        #modalSubtitle {
+            margin: 6px 0 0;
+            color: #b9c8d9;
+            font-size: 11px;
         }
 
         .close-modal {
-            color: #7d8998 !important;
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            position: static !important;
+            flex: 0 0 auto;
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            line-height: 1;
+            transition: 0.18s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--navy) !important;
+            background: #ffffff;
+            transform: rotate(4deg);
+        }
+
+        .modal-layout {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 300px;
+            align-items: start;
+            gap: 18px;
+            background: #f3f5f8;
+        }
+
+        .modal-main-column {
+            min-width: 0;
+            display: grid;
+            gap: 18px;
+        }
+
+        .form-section {
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 8px 22px rgba(23, 42, 68, 0.04);
+        }
+
+        .section-heading {
+            margin-bottom: 19px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .section-heading-main {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .section-number {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            color: #ffffff;
+            background: var(--primary);
+            border-radius: 9px 9px 9px 3px;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .section-heading h3 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 14px;
+            letter-spacing: -0.2px;
+        }
+
+        .section-heading p {
+            margin: 3px 0 0;
+            color: #8a96a5;
+            font-size: 10px;
+        }
+
+        .item-counter {
+            padding: 6px 10px;
+            color: var(--primary);
+            background: var(--soft-blue);
+            border: 1px solid #cfdeee;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .form-fields-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .form-fields-grid.three {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .requester-grid {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 180px;
+            align-items: end;
+            gap: 14px;
+        }
+
+        .field-group {
+            min-width: 0;
+            display: grid;
+            gap: 7px;
+        }
+
+        .field-group > label,
+        .field-label {
+            color: #506177;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.15px;
+        }
+
+        .field-group > label small,
+        .field-label small {
+            color: var(--danger);
+        }
+
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            width: 100%;
+            min-height: 43px;
+        }
+
+        .input-with-action {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 43px;
+            gap: 8px;
+        }
+
+        .history-button {
+            width: 43px;
+            border: 0;
+            border-radius: 9px;
+            color: #ffffff;
+            background: var(--primary);
+            font-size: 16px;
+            transition: 0.18s ease;
+        }
+
+        .history-button:hover {
+            background: var(--navy);
+            transform: translateY(-1px);
+        }
+
+        .priority-card {
+            min-height: 43px;
+            padding: 0 13px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #a03f47;
+            background: #fff4f5;
+            border: 1px solid #f1c9cd;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .priority-card input {
+            width: 18px !important;
+            height: 18px !important;
+            min-height: 0 !important;
+            flex: 0 0 auto;
+        }
+
+        .obs-field {
+            margin-top: 14px;
+        }
+
+        #obsPedido {
+            min-height: 88px !important;
+            margin: 0 !important;
+            border-left: 4px solid var(--primary) !important;
+            resize: vertical !important;
+        }
+
+        .product-entry-grid {
+            padding: 14px;
+            display: grid;
+            grid-template-columns: minmax(220px, 2fr) minmax(90px, .65fr) minmax(140px, 1fr) 120px;
+            align-items: end;
+            gap: 11px;
+            border: 1px dashed #cbd6e2;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .insert-item-button {
+            height: 43px !important;
+            padding: 0 14px !important;
+            justify-content: center;
+            border-color: var(--success) !important;
+            background: var(--success) !important;
+        }
+
+        .items-table-wrap {
+            margin-top: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff !important;
+        }
+
+        .items-table thead {
+            background: #f4f7fa;
+        }
+
+        .items-table th {
+            padding: 10px 12px;
+            color: #7c899a;
+            text-align: left;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: .65px;
+            text-transform: uppercase;
+        }
+
+        .items-table th:nth-child(3),
+        .items-table th:nth-child(4) {
+            text-align: right;
+        }
+
+        .items-table th:last-child {
+            text-align: center;
+        }
+
+        .item-empty-state {
+            min-height: 82px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #8b97a7;
+            background: #ffffff;
+            font-size: 10px;
+        }
+
+        .item-empty-state span {
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: var(--soft-blue);
+            font-size: 15px;
+        }
+
+        .modal-summary {
+            padding: 21px;
+            position: sticky;
+            top: 128px;
+            overflow: hidden;
+            isolation: isolate;
+            border: 1px solid #d4deea;
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at 100% 0%, rgba(36, 95, 166, 0.11), transparent 34%),
+                #ffffff;
+            box-shadow: 0 18px 42px rgba(23, 42, 68, 0.11);
+        }
+
+        .modal-summary::before {
+            content: "";
+            height: 5px;
+            position: absolute;
+            inset: 0 0 auto;
+            background: linear-gradient(90deg, #ff9d2f, #ff4f72 50%, #6b5cff);
+        }
+
+        .summary-label {
+            margin: 3px 0 5px;
+            color: var(--primary);
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .modal-summary h3 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 19px;
+            letter-spacing: -0.45px;
+        }
+
+        .summary-total-card {
+            min-height: 150px;
+            margin-top: 17px;
+            padding: 21px 20px 18px;
+            position: relative;
+            overflow: hidden;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 96% 8%, rgba(255, 255, 255, 0.34), transparent 23%),
+                linear-gradient(135deg, #ff922b 0%, #ff4f72 49%, #6b5cff 100%);
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            border-radius: 16px;
+            box-shadow: 0 14px 30px rgba(217, 67, 102, 0.28);
+        }
+
+        .summary-total-card::after {
+            content: "";
+            width: 92px;
+            height: 92px;
+            position: absolute;
+            right: -37px;
+            bottom: -48px;
+            border: 18px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .summary-total-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .summary-total-topline > span:first-child {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .summary-total-icon {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 900;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .summary-total-value {
+            margin: 13px 0 0;
+            display: flex;
+            align-items: baseline;
+            gap: 7px;
+            position: relative;
+            z-index: 1;
+            min-width: 0;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(34px, 3vw, 43px);
+            line-height: 1;
+            letter-spacing: -1.9px;
+            white-space: nowrap;
+            text-shadow: 0 3px 12px rgba(83, 33, 90, 0.28);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .summary-currency {
+            flex: 0 0 auto;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: -0.3px;
+            opacity: 0.9;
+        }
+
+        #totalFinal {
+            min-width: 0;
+            color: inherit;
+            font: inherit;
+            letter-spacing: inherit;
+        }
+
+        .summary-total-caption {
+            display: block;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .summary-checklist {
+            margin: 18px 0;
+            padding: 0;
+            display: grid;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .summary-checklist li {
+            min-height: 36px;
+            padding: 7px 9px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #56677d;
+            background: rgba(244, 247, 251, 0.88);
+            border: 1px solid #e5eaf1;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .summary-checklist li::before {
+            content: "✓";
+            width: 19px;
+            height: 19px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            color: var(--success);
+            background: #eaf7f1;
+            border-radius: 50%;
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+        .summary-checklist li:nth-child(2)::before {
+            color: var(--primary);
+            background: #eaf2fc;
+        }
+
+        .summary-checklist li:nth-child(3)::before {
+            color: var(--purple);
+            background: #f0edfb;
+        }
+
+        .save-order-button {
+            width: 100%;
+            height: 56px !important;
+            justify-content: center;
+            border-color: transparent !important;
+            background: linear-gradient(135deg, #245fa6, #574fbd) !important;
+            box-shadow: 0 10px 22px rgba(36, 95, 166, 0.23);
+            letter-spacing: 0.25px;
+        }
+
+        .save-order-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(36, 95, 166, 0.3);
+        }
+
+        .save-hint {
+            margin: 10px 0 0;
+            color: #98a3b1;
+            font-size: 9px;
+            line-height: 1.5;
+            text-align: center;
         }
 
         textarea, input, select {
@@ -998,12 +1511,6 @@
 
         .modal-content table {
             background: #f8fafc !important;
-        }
-
-        .modal-content div:has(> strong #totalFinal) {
-            background: #f4f7fa !important;
-            border: 1px solid var(--border);
-            border-radius: 12px !important;
         }
 
         .qty-badge {
@@ -1088,6 +1595,22 @@
                 min-width: 100%;
                 order: 3;
             }
+
+            .modal-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-summary {
+                position: static;
+            }
+
+            .summary-total-value {
+                font-size: clamp(42px, 7vw, 58px);
+            }
+
+            .summary-checklist {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @media (max-width: 700px) {
@@ -1120,7 +1643,38 @@
             }
 
             .modal-content {
-                padding: 24px 16px !important;
+                padding: 0 !important;
+            }
+
+            .order-modal-header {
+                min-height: 90px;
+                padding: 20px 18px;
+            }
+
+            #modalTitle {
+                font-size: 20px;
+            }
+
+            .modal-layout {
+                padding: 13px;
+            }
+
+            .form-section {
+                padding: 17px 14px;
+            }
+
+            .form-fields-grid.three,
+            .requester-grid,
+            .product-entry-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .priority-card {
+                min-height: 46px;
+            }
+
+            .summary-checklist {
+                grid-template-columns: 1fr;
             }
 
             .modal-content > div[style*="grid-template-columns: 1fr 1fr 1fr"],
@@ -1189,44 +1743,141 @@
 
     <div id="modalCadastro">
         <div class="modal-content animar-entrada">
-            <span class="close-modal" onclick="window.toggleModal(false)">&times;</span>
-            <h2 id="modalTitle" style="margin:0 0 25px 0; color:var(--accent); font-family: 'Montserrat', sans-serif;">Registrar Pedido</h2>
-            <input type="hidden" id="editId">
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                <input type="text" id="numPedido" placeholder="Número Pedido">
-                <input type="date" id="dataPedido">
-                <select id="situacao"><option value="Não">⏳ PENDENTE</option><option value="Sim">✅ LANÇADO</option></select>
-            </div>
-            
-            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
-                <div style="flex-grow: 1; position: relative; display: flex; gap: 10px;">
-                    <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Quem fez o pedido? (Nome)" style="flex-grow: 1; text-transform: uppercase;">
-                    <button onclick="window.abrirHistoricoNomes()" style="background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 12px; cursor: pointer; font-size: 18px;" title="Selecionar do histórico">🕒</button>
-                    <datalist id="listaSolicitantes"></datalist>
+            <header class="order-modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-eyebrow">GESTÃO DE COMPRAS</span>
+                    <h2 id="modalTitle">Registrar novo pedido</h2>
+                    <p id="modalSubtitle">Preencha os dados abaixo para incluir um pedido no controle.</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px; background: rgba(251, 113, 133, 0.1); padding: 10px; border-radius: 12px; border: 1px solid var(--danger);">
-                    <input type="checkbox" id="checkUrgente" style="width: 20px; height: 20px; cursor: pointer;">
-                    <label for="checkUrgente" style="color: var(--danger); font-weight: 800; font-size: 12px; cursor: pointer;">🚨 URGENTE</label>
-                </div>
-            </div>
+                <span class="close-modal" onclick="window.toggleModal(false)" title="Fechar">&times;</span>
+            </header>
 
-            <textarea id="obsPedido" placeholder="Observações..." style="width: 100%; height: 80px; margin-top: 5px; border-left: 4px solid var(--accent); resize: none; box-sizing: border-box;"></textarea>
-            <div style="display: grid; grid-template-columns: 2fr 0.8fr 1.2fr 1fr; gap: 15px; margin-top: 25px;">
-                <input type="text" id="nomeProd" placeholder="Produto">
-                <input type="number" id="qtdProd" value="1">
-                <input type="number" id="precoProd" step="0.01" placeholder="Preço" onkeydown="if(event.key==='Enter') window.adicionarItem()">
-                <button class="btn-open-modal" onclick="window.adicionarItem()" style="background: var(--success); justify-content: center;">INSERIR</button>
+            <input type="hidden" id="editId">
+
+            <div class="modal-layout">
+                <div class="modal-main-column">
+                    <section class="form-section">
+                        <div class="section-heading">
+                            <div class="section-heading-main">
+                                <span class="section-number">01</span>
+                                <div>
+                                    <h3>Dados do pedido</h3>
+                                    <p>Identificação, data, situação e responsável.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-fields-grid three">
+                            <div class="field-group">
+                                <label for="numPedido">Número do pedido <small>*</small></label>
+                                <input type="text" id="numPedido" placeholder="Ex.: 180644">
+                            </div>
+                            <div class="field-group">
+                                <label for="dataPedido">Data do pedido</label>
+                                <input type="date" id="dataPedido">
+                            </div>
+                            <div class="field-group">
+                                <label for="situacao">Situação atual</label>
+                                <select id="situacao"><option value="Não">⏳ PENDENTE</option><option value="Sim">✅ LANÇADO</option></select>
+                            </div>
+                        </div>
+
+                        <div class="requester-grid">
+                            <div class="field-group">
+                                <label for="solicitante">Responsável pelo pedido</label>
+                                <div class="input-with-action">
+                                    <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Nome de quem solicitou" style="text-transform: uppercase;">
+                                    <button type="button" class="history-button" onclick="window.abrirHistoricoNomes()" title="Selecionar do histórico">🕒</button>
+                                    <datalist id="listaSolicitantes"></datalist>
+                                </div>
+                            </div>
+                            <label class="priority-card" for="checkUrgente">
+                                <input type="checkbox" id="checkUrgente">
+                                <span>🚨 MARCAR URGENTE</span>
+                            </label>
+                        </div>
+
+                        <div class="field-group obs-field">
+                            <label for="obsPedido">Observações e instruções</label>
+                            <textarea id="obsPedido" placeholder="Ex.: retirada, entrega, prazo, condição especial ou orientação para entrada..."></textarea>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <div class="section-heading">
+                            <div class="section-heading-main">
+                                <span class="section-number">02</span>
+                                <div>
+                                    <h3>Itens do pedido</h3>
+                                    <p>Inclua produto, quantidade e valor unitário.</p>
+                                </div>
+                            </div>
+                            <span class="item-counter" id="itemCount">0 itens</span>
+                        </div>
+
+                        <div class="product-entry-grid">
+                            <div class="field-group">
+                                <label for="nomeProd">Produto / código <small>*</small></label>
+                                <input type="text" id="nomeProd" placeholder="Nome ou código do produto">
+                            </div>
+                            <div class="field-group">
+                                <label for="qtdProd">Quantidade</label>
+                                <input type="number" id="qtdProd" value="1" min="1">
+                            </div>
+                            <div class="field-group">
+                                <label for="precoProd">Valor unitário <small>*</small></label>
+                                <input type="number" id="precoProd" step="0.01" placeholder="0,00" onkeydown="if(event.key==='Enter') window.adicionarItem()">
+                            </div>
+                            <button type="button" class="btn-open-modal insert-item-button" onclick="window.adicionarItem()">＋ INSERIR</button>
+                        </div>
+
+                        <div class="items-table-wrap">
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>Qtd.</th>
+                                        <th>Produto</th>
+                                        <th>Unitário</th>
+                                        <th>Subtotal</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="displayItens"></tbody>
+                            </table>
+                            <div class="item-empty-state" id="itemEmptyState">
+                                <span>📦</span>
+                                <div><strong>Nenhum item inserido</strong><br>Use os campos acima para montar o pedido.</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="modal-summary">
+                    <p class="summary-label">Resumo</p>
+                    <h3>Fechamento do pedido</h3>
+
+                    <div class="summary-total-card">
+                        <div class="summary-total-topline">
+                            <span>Valor total do pedido</span>
+                            <span class="summary-total-icon" aria-hidden="true">R$</span>
+                        </div>
+                        <strong class="summary-total-value" aria-live="polite">
+                            <span class="summary-currency">R$</span>
+                            <span id="totalFinal">0,00</span>
+                        </strong>
+                        <span class="summary-total-caption">Soma automática dos itens inseridos</span>
+                    </div>
+
+                    <ul class="summary-checklist">
+                        <li>Dados identificados</li>
+                        <li>Itens detalhados</li>
+                        <li>Histórico preservado</li>
+                    </ul>
+
+                    <button type="button" class="btn-open-modal save-order-button" onclick="window.salvarNaNuvem()">💾 SALVAR PEDIDO</button>
+                    <p class="save-hint">Ao salvar, será solicitado o nome do operador responsável pelo registro.</p>
+                </aside>
             </div>
-            <div style="margin-top: 25px; border-radius: 15px; overflow: hidden; border: 1px solid var(--border);">
-                <table style="width:100%; border-collapse: collapse; background: rgba(15, 23, 42, 0.4);">
-                    <tbody id="displayItens"></tbody>
-                </table>
-            </div>
-            <div style="margin-top: 25px; padding: 25px; background: rgba(15, 23, 42, 0.6); border-radius: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <span class="kpi-label">TOTAL</span>
-                <strong style="font-size: 32px; font-family: 'Montserrat', sans-serif;">R$ <span id="totalFinal">0,00</span></strong>
-            </div>
-            <button class="btn-open-modal" style="width:100%; justify-content: center; margin-top:20px; height:65px;" onclick="window.salvarNaNuvem()">💾 SALVAR NA NUVEM</button>
         </div>
     </div>
 
@@ -1409,9 +2060,16 @@
         document.getElementById('solicitante').value = ''; document.getElementById('checkUrgente').checked = false;
         document.getElementById('precoProd').value = ''; document.getElementById('displayItens').innerHTML = '';
         document.getElementById('totalFinal').innerText = '0,00'; itensAtuais = [];
+        document.getElementById('itemCount').innerText = '0 itens';
+        document.getElementById('itemEmptyState').style.display = 'flex';
         historicoEdicaoOriginal = [];
     };
-    window.abrirNovoPedido = () => { window.toggleModal(true); document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0]; };
+    window.abrirNovoPedido = () => {
+        document.getElementById('modalTitle').innerText = 'Registrar novo pedido';
+        document.getElementById('modalSubtitle').innerText = 'Preencha os dados abaixo para incluir um pedido no controle.';
+        window.toggleModal(true);
+        document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0];
+    };
     
     window.adicionarItem = () => {
         const n = document.getElementById('nomeProd'), q = document.getElementById('qtdProd'), p = document.getElementById('precoProd');
@@ -1429,6 +2087,8 @@
             d.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td><td style="color:white; font-weight:600;">${i.nome}</td><td style="text-align:right;">R$ ${formatBRL(i.preco)}</td><td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${formatBRL(i.subtotal)}</td><td style="text-align:center; display:flex; gap:10px; justify-content:center; padding: 12px 0;"><button onclick="window.corrigirItem(${idx})" style="background:none; color:var(--warning); border:none; cursor:pointer; font-size:16px;">✏️</button><button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:20px;">&times;</button></td></tr>`;
         });
         document.getElementById('totalFinal').innerText = formatBRL(t);
+        document.getElementById('itemCount').innerText = `${itensAtuais.length} ${itensAtuais.length === 1 ? 'item' : 'itens'}`;
+        document.getElementById('itemEmptyState').style.display = itensAtuais.length > 0 ? 'none' : 'flex';
     };
 
     window.corrigirItem = (idx) => {
@@ -1697,6 +2357,8 @@
         if(snap.exists()) {
             const d = snap.data(); document.getElementById('editId').value = id; document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data; document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs; document.getElementById('solicitante').value = d.solicitante || '';
             document.getElementById('checkUrgente').checked = d.urgente || false;
+            document.getElementById('modalTitle').innerText = `Editar pedido #${d.num}`;
+            document.getElementById('modalSubtitle').innerText = 'Revise os dados, ajuste os itens e salve para manter o histórico atualizado.';
             itensAtuais = d.itens_detalhados; historicoEdicaoOriginal = d.historico_logs || []; renderizarItens(); window.toggleModal(true);
         }
     };
