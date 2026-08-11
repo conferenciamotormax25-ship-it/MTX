@@ -1,0 +1,12 @@
+{
+  "name": "mtx-push-gratis",
+  "version": "1.0.0",
+  "private": true,
+  "main": "push-pendentes.js",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.2.0"
+  }
+}

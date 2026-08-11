@@ -1,0 +1,34 @@
+NÃO APAGUE AS REGRAS QUE JÁ EXISTEM.
+
+Use este bloco somente se o botão ATIVAR LEMBRETES mostrar erro de permissão.
+No Firebase, abra Firestore > Regras e insira o bloco abaixo dentro de:
+
+match /databases/{database}/documents {
+    ...COLE AQUI...
+}
+
+Bloco para adicionar:
+
+match /push_subscriptions/{tokenId} {
+    allow create, update: if
+        request.resource.data.keys().hasOnly([
+            'token',
+            'ativo',
+            'origem',
+            'navegador',
+            'atualizadoEm'
+        ]) &&
+        request.resource.data.token is string &&
+        request.resource.data.token.size() >= 40 &&
+        request.resource.data.token.size() <= 2048 &&
+        request.resource.data.ativo == true &&
+        request.resource.data.origem == 'https://conferenciamotormax25-ship-it.github.io' &&
+        request.resource.data.navegador is string &&
+        request.resource.data.atualizadoEm is timestamp;
+
+    allow read, delete: if false;
+}
+
+Depois clique em PUBLICAR.
+
+Se tiver dúvida, não altere as regras sozinho: envie uma captura da tela atual.

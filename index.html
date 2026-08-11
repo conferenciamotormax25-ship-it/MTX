@@ -627,6 +627,25 @@
             background: var(--danger) !important;
         }
 
+        #btnAtivarNotificacoes {
+            color: #9a620a !important;
+            background: #fff5e6 !important;
+            border-color: #f0d3a5 !important;
+            white-space: nowrap;
+        }
+
+        #btnAtivarNotificacoes.notifications-active {
+            color: #087a55 !important;
+            background: #eaf7f1 !important;
+            border-color: #9fd7c2 !important;
+        }
+
+        #btnAtivarNotificacoes.notifications-blocked {
+            color: #b4233b !important;
+            background: #fff0f2 !important;
+            border-color: #f3b9c3 !important;
+        }
+
         .search-container {
             filter: none !important;
         }
@@ -908,6 +927,27 @@
             color: #b46b0c !important;
             background: #fff5e6 !important;
             border-color: #f0d3a5 !important;
+        }
+
+        .entrada-reminder {
+            display: block;
+            width: fit-content;
+            margin: 8px auto 0;
+            padding: 5px 9px;
+            border-radius: 8px;
+            background: rgba(251, 113, 133, 0.12);
+            border: 1px solid rgba(251, 113, 133, 0.35);
+            color: #be123c;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.45px;
+            text-transform: uppercase;
+            animation: pulseReminder 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulseReminder {
+            0%, 100% { opacity: 0.72; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.04); }
         }
 
         .zoom-controls {
@@ -1733,10 +1773,11 @@
     <div class="main-actions">
         <button class="btn-open-modal" onclick="window.abrirNovoPedido()"><span>➕</span> NOVO PEDIDO</button>
         <button id="btnExcluirVarios" class="btn-open-modal" onclick="window.excluirSelecionados()" style="background: linear-gradient(135deg, var(--danger), #b91c1c); display: none;"><span>🗑️</span> EXCLUIR SELECIONADOS (<span id="qtdSelecionados">0</span>)</button>
+        <button id="btnAtivarNotificacoes" class="btn-open-modal" onclick="window.ativarNotificacoes()" title="Receber lembretes de pedidos pendentes"><span>🔔</span> ATIVAR LEMBRETES</button>
         
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" id="inputBusca" class="search-input" placeholder="Buscar Pedido..." onkeyup="window.filtrarPedidos()">
+            <input type="text" id="inputBusca" class="search-input" placeholder="Buscar pelo nº do pedido..." oninput="window.filtrarPedidos()">
             <button class="btn-ver-tudo" onclick="window.limparFiltro()">Todos Pedidos</button>
         </div>
     </div>
@@ -1894,7 +1935,8 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB0_kv4kQfcTdT7D5_Imf5NrG4EvY1p0lQ",
@@ -1909,16 +1951,259 @@
     const db = getFirestore(app);
     const pedidosRef = collection(db, "pedidos_mtx");
     const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1200, background: '#1e293b', color: '#fff' });
+    const VAPID_PUBLIC_KEY = "BB7_8xEAPJzuCDLLgTfYgWLK52SiOjfJbrDKNipvvE-eNxMIle5m1GR2y19aedUoIwAgFarEsY8gd5mPY2dDR8I";
 
     let itensAtuais = [];
     let zoomLevel = 1.0;
     let historicoEdicaoOriginal = [];
+    let situacaoOriginalEdicao = null;
     let pedidosSelecionados = []; // Array que guarda os IDs selecionados para exclusão em massa
+    let totalPendentesAtual = 0;
+    let snapshotInicialCarregado = false;
+    let lembreteAberturaAgendado = false;
+    let notificacaoOcultacaoEnviada = false;
+    let messagingFirebase = null;
+    let pushFirebaseInicializado = false;
+    let pushFirebaseSuportado = false;
 
     const formatBRL = (valor) => {
         const n = typeof valor === 'string' ? parseFloat(valor.replace(',','.')) : valor;
         return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
+
+    const notificacoesPermitidas = () => {
+        return 'Notification' in window &&
+            Notification.permission === 'granted' &&
+            localStorage.getItem('mtx_notificacoes_ativas') === 'true';
+    };
+
+    function atualizarBotaoNotificacoes() {
+        const btn = document.getElementById('btnAtivarNotificacoes');
+        if(!btn) return;
+
+        btn.classList.remove('notifications-active', 'notifications-blocked');
+
+        if(!pushFirebaseInicializado) {
+            btn.innerHTML = '<span>⏳</span> CARREGANDO LEMBRETES';
+            return;
+        }
+
+        if(!pushFirebaseSuportado || !('Notification' in window) || !('serviceWorker' in navigator)) {
+            btn.classList.add('notifications-blocked');
+            btn.innerHTML = '<span>🔕</span> LEMBRETES INDISPONÍVEIS';
+            return;
+        }
+
+        if(Notification.permission === 'denied') {
+            btn.classList.add('notifications-blocked');
+            btn.innerHTML = '<span>🔕</span> NOTIFICAÇÕES BLOQUEADAS';
+            return;
+        }
+
+        if(notificacoesPermitidas()) {
+            btn.classList.add('notifications-active');
+            btn.innerHTML = `<span>🔔</span> LEMBRETES ATIVOS${totalPendentesAtual > 0 ? ` (${totalPendentesAtual})` : ''}`;
+            return;
+        }
+
+        btn.innerHTML = '<span>🔔</span> ATIVAR LEMBRETES';
+    }
+
+    async function registrarPushFirebase() {
+        if(!pushFirebaseSuportado || !messagingFirebase) {
+            throw new Error('Push Firebase indisponível neste navegador.');
+        }
+
+        const registroServiceWorker = await navigator.serviceWorker.register('./firebase-messaging-sw.js', { scope: './' });
+        await navigator.serviceWorker.ready;
+
+        const token = await getToken(messagingFirebase, {
+            vapidKey: VAPID_PUBLIC_KEY,
+            serviceWorkerRegistration: registroServiceWorker
+        });
+
+        if(!token) throw new Error('O navegador não gerou o identificador de push.');
+
+        const bytesToken = new TextEncoder().encode(token);
+        const hashToken = await crypto.subtle.digest('SHA-256', bytesToken);
+        const idToken = Array.from(new Uint8Array(hashToken), (byte) => byte.toString(16).padStart(2, '0')).join('');
+
+        await setDoc(doc(db, 'push_subscriptions', idToken), {
+            token,
+            ativo: true,
+            origem: window.location.origin,
+            navegador: navigator.userAgent.slice(0, 500),
+            atualizadoEm: serverTimestamp()
+        }, { merge: true });
+
+        localStorage.setItem('mtx_notificacoes_ativas', 'true');
+        localStorage.setItem('mtx_push_ativo', 'true');
+        atualizarBotaoNotificacoes();
+        return true;
+    }
+
+    async function inicializarPushFirebase() {
+        try {
+            pushFirebaseSuportado = await isSupported();
+            if(pushFirebaseSuportado) {
+                messagingFirebase = getMessaging(app);
+                onMessage(messagingFirebase, (payload) => {
+                    const titulo = payload.data?.title || payload.notification?.title || '🔔 Lembrete MTX';
+                    const mensagem = payload.data?.body || payload.notification?.body || 'Existe um pedido aguardando entrada.';
+                    Toast.fire({ icon: 'warning', title: titulo, text: mensagem, timer: 6500 });
+                });
+            }
+        } catch (error) {
+            pushFirebaseSuportado = false;
+        } finally {
+            pushFirebaseInicializado = true;
+            atualizarBotaoNotificacoes();
+        }
+
+        if(
+            pushFirebaseSuportado &&
+            Notification.permission === 'granted' &&
+            localStorage.getItem('mtx_push_ativo') === 'true'
+        ) {
+            registrarPushFirebase().catch(() => {
+                localStorage.removeItem('mtx_push_ativo');
+                atualizarBotaoNotificacoes();
+            });
+        }
+    }
+
+    function enviarNotificacaoSistema(titulo, mensagem) {
+        if(!notificacoesPermitidas()) return false;
+
+        try {
+            const notificacao = new Notification(titulo, {
+                body: mensagem,
+                tag: 'mtx-pedidos-pendentes',
+                renotify: true,
+                requireInteraction: true
+            });
+
+            notificacao.onclick = () => {
+                window.focus();
+                window.filtrarPorStatus('Não');
+                document.getElementById('areaPedidos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                notificacao.close();
+            };
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    window.ativarNotificacoes = async () => {
+        if(!pushFirebaseSuportado || !('Notification' in window) || !('serviceWorker' in navigator)) {
+            return Swal.fire({
+                title: 'NOTIFICAÇÕES INDISPONÍVEIS',
+                text: 'Abra o endereço publicado em HTTPS usando Chrome ou Edge para ativar o push.',
+                icon: 'info',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#2563eb'
+            });
+        }
+
+        if(Notification.permission === 'denied') {
+            atualizarBotaoNotificacoes();
+            return Swal.fire({
+                title: 'NOTIFICAÇÕES BLOQUEADAS',
+                html: 'Abra as configurações do navegador para este site e altere <b>Notificações</b> para <b>Permitir</b>.',
+                icon: 'warning',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#2563eb'
+            });
+        }
+
+        try {
+            const permissao = await Notification.requestPermission();
+            if(permissao === 'granted') {
+                await registrarPushFirebase();
+                atualizarBotaoNotificacoes();
+                enviarNotificacaoSistema(
+                    '🔔 Push MTX ativado',
+                    totalPendentesAtual > 0
+                        ? `Você tem ${totalPendentesAtual} ${totalPendentesAtual === 1 ? 'pedido pendente' : 'pedidos pendentes'} para dar entrada.`
+                        : 'Tudo certo! Avisaremos quando houver pedidos pendentes.'
+                );
+                return Toast.fire({ icon: 'success', title: 'Push ativado neste computador!' });
+            }
+
+            atualizarBotaoNotificacoes();
+            Swal.fire({
+                title: 'PERMISSÃO NECESSÁRIA',
+                text: 'Para receber o lembrete fora da página, permita as notificações do navegador.',
+                icon: 'info',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#2563eb'
+            });
+        } catch (error) {
+            Swal.fire({
+                title: 'NÃO FOI POSSÍVEL ATIVAR',
+                html: `O push ainda não conseguiu concluir o registro.<br><small style="opacity:.75">${error.message || 'Confira a publicação dos arquivos e tente novamente.'}</small>`,
+                icon: 'info',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#2563eb'
+            });
+        }
+    };
+
+    function agendarLembreteAbertura() {
+        if(lembreteAberturaAgendado || totalPendentesAtual <= 0) return;
+        lembreteAberturaAgendado = true;
+
+        setTimeout(async () => {
+            if(totalPendentesAtual <= 0) return;
+
+            const plural = totalPendentesAtual === 1 ? 'pedido pendente' : 'pedidos pendentes';
+            const resultado = await Swal.fire({
+                title: '🔔 ATENÇÃO AO ABRIR!',
+                html: `<div style="font-size:1.05rem; line-height:1.6;">Você tem <b style="color:#fb7185; font-size:1.35rem;">${totalPendentesAtual}</b> ${plural}.<br>Não esqueça de dar entrada.</div>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'VER PENDENTES',
+                cancelButtonText: 'DEPOIS',
+                confirmButtonColor: '#fb7185',
+                cancelButtonColor: '#64748b',
+                background: '#0f172a',
+                color: '#fff'
+            });
+
+            if(resultado.isConfirmed) {
+                window.filtrarPorStatus('Não');
+                document.getElementById('areaPedidos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 2600);
+    }
+
+    function notificarPendenciasAoOcultar() {
+        if(totalPendentesAtual <= 0 || notificacaoOcultacaoEnviada) return;
+
+        const plural = totalPendentesAtual === 1 ? 'pedido ainda precisa' : 'pedidos ainda precisam';
+        const enviada = enviarNotificacaoSistema(
+            '🔔 Pedidos MTX pendentes',
+            `${totalPendentesAtual} ${plural} dar entrada. Clique para visualizar.`
+        );
+        if(enviada) notificacaoOcultacaoEnviada = true;
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if(document.hidden) {
+            notificarPendenciasAoOcultar();
+        } else {
+            notificacaoOcultacaoEnviada = false;
+        }
+    });
+
+    window.addEventListener('pagehide', notificarPendenciasAoOcultar);
+    atualizarBotaoNotificacoes();
+    inicializarPushFirebase();
 
     window.copiarValorSistema = (valorFormatado, btn) => {
         const valorParaSistema = valorFormatado.replace(/\./g, '').replace(',', '.');
@@ -2063,6 +2348,7 @@
         document.getElementById('itemCount').innerText = '0 itens';
         document.getElementById('itemEmptyState').style.display = 'flex';
         historicoEdicaoOriginal = [];
+        situacaoOriginalEdicao = null;
     };
     window.abrirNovoPedido = () => {
         document.getElementById('modalTitle').innerText = 'Registrar novo pedido';
@@ -2123,7 +2409,8 @@
             situacao: document.getElementById('situacao').value, solicitante: nomeFinal,
             obs: document.getElementById('obsPedido').value || "S/O", itens_detalhados: itensAtuais, 
             total: document.getElementById('totalFinal').innerText, timestamp: Date.now(),
-            urgente: document.getElementById('checkUrgente').checked 
+            urgente: document.getElementById('checkUrgente').checked,
+            lembrete_entrada: document.getElementById('situacao').value !== 'Sim'
         };
 
         try {
@@ -2131,13 +2418,51 @@
             if(!histLocal.includes(nomeFinal)) { histLocal.push(nomeFinal); localStorage.setItem('mtx_nomes', JSON.stringify(histLocal)); }
 
             if(id) {
+                if(payload.situacao === 'Sim') payload.push_github_enviado = true;
+                else if(situacaoOriginalEdicao === 'Sim') payload.push_github_enviado = false;
                 payload.historico_logs = [...historicoEdicaoOriginal, infoLog];
                 await updateDoc(doc(db, "pedidos_mtx", id), payload);
                 Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             } else {
                 payload.historico_logs = [infoLog];
-                await addDoc(pedidosRef, payload);
-                Swal.fire({ title: '🚀 PEDIDO CONCLUÍDO!', html: `<div style=\"font-size: 1.2rem; margin-bottom: 15px;\">Pedido registrado com sucesso!</div><div style=\"background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;\">⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> PARA DAR ENTRADA NESSE PEDIDO!</div>`, icon: 'success', background: '#0f172a', color: '#fff', confirmButtonText: 'VOU AVISAR!', confirmButtonColor: '#2563eb' });
+                payload.push_pronto = false;
+                payload.push_github_enviado = true;
+                const pedidoCriado = await addDoc(pedidosRef, payload);
+                const escolhaEntrada = await Swal.fire({
+                    title: '🚀 PEDIDO CONCLUÍDO!',
+                    html: `<div style=\"font-size: 1.2rem; margin-bottom: 15px;\">Pedido registrado com sucesso!</div><div style=\"background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;\">⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> PARA DAR ENTRADA NESSE PEDIDO!</div><div style=\"margin-top:18px; font-size:14px; font-weight:800; color:#e2e8f0;\">Escolha abaixo como o pedido deve ficar:</div>`,
+                    icon: 'success',
+                    background: '#0f172a',
+                    color: '#fff',
+                    showDenyButton: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    confirmButtonText: '🔔 PRECISA DAR ENTRADA',
+                    denyButtonText: '✅ JÁ DEI ENTRADA',
+                    confirmButtonColor: '#fb7185',
+                    denyButtonColor: '#10b981'
+                });
+
+                const precisaDarEntrada = escolhaEntrada.isConfirmed;
+                const situacaoFinal = precisaDarEntrada ? 'Não' : 'Sim';
+                const logEntrada = {
+                    quem: nomeFinal,
+                    quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`,
+                    tipo: 'status'
+                };
+
+                await updateDoc(pedidoCriado, {
+                    situacao: situacaoFinal,
+                    lembrete_entrada: precisaDarEntrada,
+                    push_pronto: true,
+                    push_github_enviado: !precisaDarEntrada,
+                    historico_logs: [infoLog, logEntrada]
+                });
+
+                Toast.fire({
+                    icon: precisaDarEntrada ? 'warning' : 'success',
+                    title: precisaDarEntrada ? 'Lembrete ativado: dar entrada!' : 'Pedido marcado como lançado!'
+                });
             }
             window.toggleModal(false);
         } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
@@ -2212,9 +2537,22 @@
 
         const total = snap.size;
         const pendentes = total - conc;
+        const pendentesAnteriores = totalPendentesAtual;
+        totalPendentesAtual = pendentes;
         document.getElementById('totalPedidosCount').innerText = total;
         document.getElementById('countPendentes').innerText = pendentes;
         document.getElementById('countHoje').innerText = hj;
+        atualizarBotaoNotificacoes();
+
+        if(!snapshotInicialCarregado) {
+            snapshotInicialCarregado = true;
+            agendarLembreteAbertura();
+        } else if(pendentes > pendentesAnteriores) {
+            enviarNotificacaoSistema(
+                '🔔 Novo pedido pendente',
+                `Agora existem ${pendentes} ${pendentes === 1 ? 'pedido pendente' : 'pedidos pendentes'} para dar entrada.`
+            );
+        }
 
         // KPI PENDENTE PULSANTE
         const kpiP = document.getElementById('kpiPendentes');
@@ -2235,6 +2573,7 @@
         lista.forEach(p => {
             const row = document.createElement('div'); 
             row.className = 'pedido-row animar-entrada';
+            row.dataset.pedidoNumero = String(p.num || '').trim().toLowerCase();
             
             if(p.situacao === 'Sim') row.classList.add('pedido-finalizado');
             if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
@@ -2293,6 +2632,7 @@
                 
                 <div style="text-align:center;">
                     <span class=\"status-badge status-${p.situacao}\" onclick=\"window.mudarStatus('${p.id}', '${p.situacao}')\">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span>
+                    ${p.situacao !== 'Sim' ? '<span class="entrada-reminder">🔔 Precisa dar entrada</span>' : ''}
                 </div>
                 
                 <div style="text-align:right; display:flex; flex-direction:column; gap:10px;">
@@ -2332,7 +2672,7 @@
         if(snap.exists()){
             const d = snap.data(); const agora = new Date();
             const logStatus = { quem: nomeStatus.toUpperCase(), quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`, tipo: 'status' };
-            await updateDoc(doc(db, "pedidos_mtx", id), { situacao: statusNovo, historico_logs: [...(d.historico_logs || []), logStatus] }); 
+            await updateDoc(doc(db, "pedidos_mtx", id), { situacao: statusNovo, lembrete_entrada: statusNovo !== 'Sim', push_github_enviado: statusNovo === 'Sim', historico_logs: [...(d.historico_logs || []), logStatus] }); 
             Toast.fire({ icon: 'success', title: 'Status Atualizado!' });
         }
     };
@@ -2347,9 +2687,27 @@
     window.filtrarPorStatus = (s) => { const texto = s === 'Sim' ? 'LANÇADO' : 'PENDENTE'; document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(texto) ? '' : 'none'); };
     
     window.filtrarPedidos = () => {
-        const t = document.getElementById('inputBusca').value.toLowerCase();
-        const linhas = document.querySelectorAll('.pedido-row'); const hojeBR = new Date().toLocaleDateString('pt-BR');
-        linhas.forEach(r => { const textoLinha = r.innerText.toLowerCase(); if (t === "") { r.style.display = textoLinha.includes(hojeBR) ? '' : 'none'; } else { r.style.display = textoLinha.includes(t) ? '' : 'none'; } });
+        const termoDigitado = document.getElementById('inputBusca').value.trim().toLowerCase();
+        const termoNumero = termoDigitado.replace(/^#/, '').replace(/\s+/g, '');
+        const buscaPorNumero = /^#?[0-9.\-\/\s]+$/.test(termoDigitado);
+        const linhas = document.querySelectorAll('.pedido-row');
+        const hojeBR = new Date().toLocaleDateString('pt-BR');
+
+        linhas.forEach(r => {
+            const textoLinha = r.innerText.toLowerCase();
+
+            if(termoDigitado === '') {
+                r.style.display = textoLinha.includes(hojeBR) ? '' : 'none';
+                return;
+            }
+
+            const numeroPedido = (r.dataset.pedidoNumero || '').replace(/\s+/g, '');
+            const corresponde = buscaPorNumero
+                ? numeroPedido.includes(termoNumero)
+                : textoLinha.includes(termoDigitado);
+
+            r.style.display = corresponde ? '' : 'none';
+        });
     };
 
     window.editarPedido = async (id) => {
@@ -2357,6 +2715,7 @@
         if(snap.exists()) {
             const d = snap.data(); document.getElementById('editId').value = id; document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data; document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs; document.getElementById('solicitante').value = d.solicitante || '';
             document.getElementById('checkUrgente').checked = d.urgente || false;
+            situacaoOriginalEdicao = d.situacao;
             document.getElementById('modalTitle').innerText = `Editar pedido #${d.num}`;
             document.getElementById('modalSubtitle').innerText = 'Revise os dados, ajuste os itens e salve para manter o histórico atualizado.';
             itensAtuais = d.itens_detalhados; historicoEdicaoOriginal = d.historico_logs || []; renderizarItens(); window.toggleModal(true);
