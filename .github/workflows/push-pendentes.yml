@@ -1,0 +1,41 @@
+name: Push gratuito de pedidos pendentes
+
+on:
+  schedule:
+    - cron: '7/15 * * * 1-5'
+      timezone: 'America/Sao_Paulo'
+  workflow_dispatch:
+    inputs:
+      enviar_teste:
+        description: 'Enviar uma notificação de teste agora'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  verificar-pedidos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: automation
+    steps:
+      - name: Baixar os arquivos do repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Instalar dependências
+        run: npm ci --omit=dev
+
+      - name: Verificar pendências e enviar push
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FORCAR_TESTE: ${{ github.event.inputs.enviar_teste || 'false' }}
+        run: node push-pendentes.js
