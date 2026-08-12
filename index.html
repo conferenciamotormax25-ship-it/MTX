@@ -1735,6 +1735,393 @@
                 letter-spacing: 3px !important;
             }
         }
+
+        /* =========================================================
+           PEDIDO GUIADO POR ETAPAS
+           Replica a navegação profissional do Manual de Cadastros
+           sem alterar campos, IDs ou rotinas do pedido.
+           ========================================================= */
+        #modalCadastro .order-step-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            padding: 16px 24px 0;
+            background: #f3f5f8;
+        }
+
+        #modalCadastro .order-step-tab {
+            --step-rgb: 36, 95, 166;
+            min-width: 0;
+            min-height: 74px;
+            padding: 11px 13px;
+            position: relative;
+            display: grid;
+            grid-template-columns: 40px minmax(0, 1fr);
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+            color: #8d9aad;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid rgba(var(--step-rgb), 0.18);
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 8px 22px rgba(23, 42, 68, 0.04);
+            transition: transform 0.2s ease, border-color 0.2s ease,
+                        box-shadow 0.2s ease, color 0.2s ease, background 0.2s ease;
+        }
+
+        #modalCadastro .order-step-tab::before {
+            content: "";
+            width: 4px;
+            position: absolute;
+            inset: 0 auto 0 0;
+            background: rgb(var(--step-rgb));
+            opacity: 0.32;
+            transition: width 0.2s ease, opacity 0.2s ease;
+        }
+
+        #modalCadastro .order-step-tab[data-order-step="items"] {
+            --step-rgb: 22, 135, 92;
+        }
+
+        #modalCadastro .order-step-tab[data-order-step="review"] {
+            --step-rgb: 103, 80, 180;
+        }
+
+        #modalCadastro .order-step-tab:hover {
+            color: #243a56;
+            border-color: rgba(var(--step-rgb), 0.48);
+            background: rgba(var(--step-rgb), 0.045);
+            transform: translateY(-2px);
+        }
+
+        #modalCadastro .order-step-tab:focus-visible {
+            outline: 3px solid rgba(var(--step-rgb), 0.22);
+            outline-offset: 2px;
+        }
+
+        #modalCadastro .order-step-tab.is-active {
+            color: #172a44;
+            border-color: rgba(var(--step-rgb), 0.66);
+            background: linear-gradient(145deg, #ffffff, rgba(var(--step-rgb), 0.085));
+            box-shadow: 0 12px 28px rgba(var(--step-rgb), 0.13),
+                        inset 0 0 0 1px rgba(var(--step-rgb), 0.07);
+            transform: translateY(-2px);
+        }
+
+        #modalCadastro .order-step-tab.is-active::before {
+            width: 6px;
+            opacity: 1;
+        }
+
+        #modalCadastro .order-step-tab-icon {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgb(var(--step-rgb));
+            background: rgba(var(--step-rgb), 0.10);
+            border: 1px solid rgba(var(--step-rgb), 0.24);
+            border-radius: 11px;
+        }
+
+        #modalCadastro .order-step-tab-copy {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.08;
+        }
+
+        #modalCadastro .order-step-tab-number {
+            margin-bottom: 5px;
+            color: rgb(var(--step-rgb));
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .order-step-tab-title {
+            overflow: hidden;
+            color: inherit;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.035em;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .order-step-tab-status {
+            grid-column: 2;
+            margin-top: -3px;
+            overflow: hidden;
+            color: #8d99a8;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .order-step-tab.is-complete .order-step-tab-status {
+            color: #16875c;
+        }
+
+        #modalCadastro .modal-layout.guided-order-layout {
+            display: block !important;
+            min-height: 400px;
+        }
+
+        #modalCadastro .guided-order-layout [hidden] {
+            display: none !important;
+        }
+
+        #modalCadastro .guided-order-layout .modal-main-column {
+            display: block;
+        }
+
+        #modalCadastro .guided-order-layout .form-section {
+            margin: 0;
+        }
+
+        #modalCadastro .guided-order-layout .modal-summary {
+            width: 100%;
+            max-width: none;
+            position: static;
+            box-sizing: border-box;
+        }
+
+        #modalCadastro .order-step-header {
+            --stage-rgb: 36, 95, 166;
+            margin-bottom: 18px;
+            padding: 5px 5px 17px;
+            display: grid;
+            grid-template-columns: 52px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid rgba(var(--stage-rgb), 0.18);
+        }
+
+        #modalCadastro .order-step-header[data-stage="items"] {
+            --stage-rgb: 22, 135, 92;
+        }
+
+        #modalCadastro .order-step-header[data-stage="review"] {
+            --stage-rgb: 103, 80, 180;
+        }
+
+        #modalCadastro .order-step-header-icon {
+            width: 52px;
+            height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgb(var(--stage-rgb));
+            background: rgba(var(--stage-rgb), 0.10);
+            border: 1px solid rgba(var(--stage-rgb), 0.28);
+            border-radius: 15px;
+            box-shadow: 0 10px 24px rgba(var(--stage-rgb), 0.08);
+        }
+
+        #modalCadastro .order-step-header-copy {
+            min-width: 0;
+        }
+
+        #modalCadastro .order-step-kicker {
+            display: block;
+            margin-bottom: 4px;
+            color: rgb(var(--stage-rgb));
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .order-step-title {
+            margin: 0;
+            color: var(--navy);
+            font-size: clamp(18px, 2vw, 23px);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.35px;
+        }
+
+        #modalCadastro .order-step-helper {
+            margin: 6px 0 0;
+            color: #8190a4;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+        #modalCadastro .order-step-status {
+            min-height: 30px;
+            padding: 0 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgb(var(--stage-rgb));
+            background: rgba(var(--stage-rgb), 0.07);
+            border: 1px solid rgba(var(--stage-rgb), 0.24);
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.065em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .order-step-navigation {
+            margin-top: 18px;
+            padding-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-top: 1px solid #dfe5ec;
+        }
+
+        #modalCadastro .order-step-nav-button {
+            min-height: 41px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #47627f;
+            background: #ffffff;
+            border: 1px solid #ccd7e4;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.055em;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, background 0.2s ease,
+                        border-color 0.2s ease, color 0.2s ease;
+        }
+
+        #modalCadastro .order-step-nav-button:hover:not(:disabled) {
+            color: var(--primary);
+            background: var(--soft-blue);
+            border-color: #9eb9d8;
+            transform: translateY(-1px);
+        }
+
+        #modalCadastro .order-step-nav-button:disabled {
+            opacity: 0.32;
+            cursor: default;
+        }
+
+        #modalCadastro .order-step-nav-button.is-next {
+            margin-left: auto;
+            color: #ffffff;
+            background: linear-gradient(135deg, #245fa6, #574fbd);
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(36, 95, 166, 0.20);
+        }
+
+        #modalCadastro .order-step-nav-button.is-next:hover:not(:disabled) {
+            color: #ffffff;
+            background: linear-gradient(135deg, #1f5597, #4d46aa);
+        }
+
+        #modalCadastro .order-step-finish-note {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            color: #16875c;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .order-step-finish-note.is-visible {
+            display: inline-flex;
+        }
+
+        #modalCadastro .order-step-finish-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34a853;
+            box-shadow: 0 0 0 4px rgba(52, 168, 83, 0.10),
+                        0 0 14px rgba(52, 168, 83, 0.45);
+        }
+
+        #modalCadastro .summary-checklist li.is-complete {
+            color: #27664f;
+            background: #f0faf5;
+            border-color: #c8e7d8;
+        }
+
+        @media (max-width: 700px) {
+            #modalCadastro {
+                padding: 7px;
+            }
+
+            #modalCadastro .modal-content {
+                width: 100%;
+                max-height: 97vh;
+                border-radius: 15px !important;
+            }
+
+            #modalCadastro .order-step-tabs {
+                padding: 10px 12px 0;
+                display: flex;
+                gap: 8px;
+                overflow-x: auto;
+                scroll-snap-type: x proximity;
+            }
+
+            #modalCadastro .order-step-tab {
+                min-width: 174px;
+                min-height: 66px;
+                padding: 9px 10px;
+                grid-template-columns: 34px minmax(0, 1fr);
+                scroll-snap-align: start;
+            }
+
+            #modalCadastro .order-step-tab-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 9px;
+            }
+
+            #modalCadastro .order-step-header {
+                grid-template-columns: 44px minmax(0, 1fr);
+                gap: 10px;
+            }
+
+            #modalCadastro .order-step-header-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+            }
+
+            #modalCadastro .order-step-status {
+                grid-column: 1 / -1;
+                justify-self: start;
+            }
+
+            #modalCadastro .order-step-navigation {
+                flex-wrap: wrap;
+            }
+
+            #modalCadastro .order-step-nav-button {
+                flex: 1 1 130px;
+            }
+
+            #modalCadastro .order-step-finish-note {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body onload="iniciarBoasVindas()">
@@ -1935,8 +2322,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB0_kv4kQfcTdT7D5_Imf5NrG4EvY1p0lQ",
@@ -1951,20 +2337,15 @@
     const db = getFirestore(app);
     const pedidosRef = collection(db, "pedidos_mtx");
     const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1200, background: '#1e293b', color: '#fff' });
-    const VAPID_PUBLIC_KEY = "BB7_8xEAPJzuCDLLgTfYgWLK52SiOjfJbrDKNipvvE-eNxMIle5m1GR2y19aedUoIwAgFarEsY8gd5mPY2dDR8I";
 
     let itensAtuais = [];
     let zoomLevel = 1.0;
     let historicoEdicaoOriginal = [];
-    let situacaoOriginalEdicao = null;
     let pedidosSelecionados = []; // Array que guarda os IDs selecionados para exclusão em massa
     let totalPendentesAtual = 0;
     let snapshotInicialCarregado = false;
     let lembreteAberturaAgendado = false;
     let notificacaoOcultacaoEnviada = false;
-    let messagingFirebase = null;
-    let pushFirebaseInicializado = false;
-    let pushFirebaseSuportado = false;
 
     const formatBRL = (valor) => {
         const n = typeof valor === 'string' ? parseFloat(valor.replace(',','.')) : valor;
@@ -1983,12 +2364,7 @@
 
         btn.classList.remove('notifications-active', 'notifications-blocked');
 
-        if(!pushFirebaseInicializado) {
-            btn.innerHTML = '<span>⏳</span> CARREGANDO LEMBRETES';
-            return;
-        }
-
-        if(!pushFirebaseSuportado || !('Notification' in window) || !('serviceWorker' in navigator)) {
+        if(!('Notification' in window)) {
             btn.classList.add('notifications-blocked');
             btn.innerHTML = '<span>🔕</span> LEMBRETES INDISPONÍVEIS';
             return;
@@ -2007,69 +2383,6 @@
         }
 
         btn.innerHTML = '<span>🔔</span> ATIVAR LEMBRETES';
-    }
-
-    async function registrarPushFirebase() {
-        if(!pushFirebaseSuportado || !messagingFirebase) {
-            throw new Error('Push Firebase indisponível neste navegador.');
-        }
-
-        const registroServiceWorker = await navigator.serviceWorker.register('./firebase-messaging-sw.js', { scope: './' });
-        await navigator.serviceWorker.ready;
-
-        const token = await getToken(messagingFirebase, {
-            vapidKey: VAPID_PUBLIC_KEY,
-            serviceWorkerRegistration: registroServiceWorker
-        });
-
-        if(!token) throw new Error('O navegador não gerou o identificador de push.');
-
-        const bytesToken = new TextEncoder().encode(token);
-        const hashToken = await crypto.subtle.digest('SHA-256', bytesToken);
-        const idToken = Array.from(new Uint8Array(hashToken), (byte) => byte.toString(16).padStart(2, '0')).join('');
-
-        await setDoc(doc(db, 'push_subscriptions', idToken), {
-            token,
-            ativo: true,
-            origem: window.location.origin,
-            navegador: navigator.userAgent.slice(0, 500),
-            atualizadoEm: serverTimestamp()
-        }, { merge: true });
-
-        localStorage.setItem('mtx_notificacoes_ativas', 'true');
-        localStorage.setItem('mtx_push_ativo', 'true');
-        atualizarBotaoNotificacoes();
-        return true;
-    }
-
-    async function inicializarPushFirebase() {
-        try {
-            pushFirebaseSuportado = await isSupported();
-            if(pushFirebaseSuportado) {
-                messagingFirebase = getMessaging(app);
-                onMessage(messagingFirebase, (payload) => {
-                    const titulo = payload.data?.title || payload.notification?.title || '🔔 Lembrete MTX';
-                    const mensagem = payload.data?.body || payload.notification?.body || 'Existe um pedido aguardando entrada.';
-                    Toast.fire({ icon: 'warning', title: titulo, text: mensagem, timer: 6500 });
-                });
-            }
-        } catch (error) {
-            pushFirebaseSuportado = false;
-        } finally {
-            pushFirebaseInicializado = true;
-            atualizarBotaoNotificacoes();
-        }
-
-        if(
-            pushFirebaseSuportado &&
-            Notification.permission === 'granted' &&
-            localStorage.getItem('mtx_push_ativo') === 'true'
-        ) {
-            registrarPushFirebase().catch(() => {
-                localStorage.removeItem('mtx_push_ativo');
-                atualizarBotaoNotificacoes();
-            });
-        }
     }
 
     function enviarNotificacaoSistema(titulo, mensagem) {
@@ -2096,10 +2409,10 @@
     }
 
     window.ativarNotificacoes = async () => {
-        if(!pushFirebaseSuportado || !('Notification' in window) || !('serviceWorker' in navigator)) {
+        if(!('Notification' in window)) {
             return Swal.fire({
                 title: 'NOTIFICAÇÕES INDISPONÍVEIS',
-                text: 'Abra o endereço publicado em HTTPS usando Chrome ou Edge para ativar o push.',
+                text: 'Este navegador não permite notificações do sistema para esta página.',
                 icon: 'info',
                 background: '#1e293b',
                 color: '#fff',
@@ -2122,15 +2435,15 @@
         try {
             const permissao = await Notification.requestPermission();
             if(permissao === 'granted') {
-                await registrarPushFirebase();
+                localStorage.setItem('mtx_notificacoes_ativas', 'true');
                 atualizarBotaoNotificacoes();
                 enviarNotificacaoSistema(
-                    '🔔 Push MTX ativado',
+                    '🔔 Lembretes MTX ativados',
                     totalPendentesAtual > 0
                         ? `Você tem ${totalPendentesAtual} ${totalPendentesAtual === 1 ? 'pedido pendente' : 'pedidos pendentes'} para dar entrada.`
                         : 'Tudo certo! Avisaremos quando houver pedidos pendentes.'
                 );
-                return Toast.fire({ icon: 'success', title: 'Push ativado neste computador!' });
+                return Toast.fire({ icon: 'success', title: 'Lembretes ativados!' });
             }
 
             atualizarBotaoNotificacoes();
@@ -2145,7 +2458,7 @@
         } catch (error) {
             Swal.fire({
                 title: 'NÃO FOI POSSÍVEL ATIVAR',
-                html: `O push ainda não conseguiu concluir o registro.<br><small style="opacity:.75">${error.message || 'Confira a publicação dos arquivos e tente novamente.'}</small>`,
+                text: 'Abra o HTML no Chrome ou Edge por um endereço seguro (HTTPS) e tente novamente.',
                 icon: 'info',
                 background: '#1e293b',
                 color: '#fff',
@@ -2203,7 +2516,6 @@
 
     window.addEventListener('pagehide', notificarPendenciasAoOcultar);
     atualizarBotaoNotificacoes();
-    inicializarPushFirebase();
 
     window.copiarValorSistema = (valorFormatado, btn) => {
         const valorParaSistema = valorFormatado.replace(/\./g, '').replace(',', '.');
@@ -2348,7 +2660,6 @@
         document.getElementById('itemCount').innerText = '0 itens';
         document.getElementById('itemEmptyState').style.display = 'flex';
         historicoEdicaoOriginal = [];
-        situacaoOriginalEdicao = null;
     };
     window.abrirNovoPedido = () => {
         document.getElementById('modalTitle').innerText = 'Registrar novo pedido';
@@ -2418,15 +2729,11 @@
             if(!histLocal.includes(nomeFinal)) { histLocal.push(nomeFinal); localStorage.setItem('mtx_nomes', JSON.stringify(histLocal)); }
 
             if(id) {
-                if(payload.situacao === 'Sim') payload.push_github_enviado = true;
-                else if(situacaoOriginalEdicao === 'Sim') payload.push_github_enviado = false;
                 payload.historico_logs = [...historicoEdicaoOriginal, infoLog];
                 await updateDoc(doc(db, "pedidos_mtx", id), payload);
                 Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             } else {
                 payload.historico_logs = [infoLog];
-                payload.push_pronto = false;
-                payload.push_github_enviado = true;
                 const pedidoCriado = await addDoc(pedidosRef, payload);
                 const escolhaEntrada = await Swal.fire({
                     title: '🚀 PEDIDO CONCLUÍDO!',
@@ -2454,8 +2761,6 @@
                 await updateDoc(pedidoCriado, {
                     situacao: situacaoFinal,
                     lembrete_entrada: precisaDarEntrada,
-                    push_pronto: true,
-                    push_github_enviado: !precisaDarEntrada,
                     historico_logs: [infoLog, logEntrada]
                 });
 
@@ -2672,7 +2977,7 @@
         if(snap.exists()){
             const d = snap.data(); const agora = new Date();
             const logStatus = { quem: nomeStatus.toUpperCase(), quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`, tipo: 'status' };
-            await updateDoc(doc(db, "pedidos_mtx", id), { situacao: statusNovo, lembrete_entrada: statusNovo !== 'Sim', push_github_enviado: statusNovo === 'Sim', historico_logs: [...(d.historico_logs || []), logStatus] }); 
+            await updateDoc(doc(db, "pedidos_mtx", id), { situacao: statusNovo, lembrete_entrada: statusNovo !== 'Sim', historico_logs: [...(d.historico_logs || []), logStatus] }); 
             Toast.fire({ icon: 'success', title: 'Status Atualizado!' });
         }
     };
@@ -2715,7 +3020,6 @@
         if(snap.exists()) {
             const d = snap.data(); document.getElementById('editId').value = id; document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data; document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs; document.getElementById('solicitante').value = d.solicitante || '';
             document.getElementById('checkUrgente').checked = d.urgente || false;
-            situacaoOriginalEdicao = d.situacao;
             document.getElementById('modalTitle').innerText = `Editar pedido #${d.num}`;
             document.getElementById('modalSubtitle').innerText = 'Revise os dados, ajuste os itens e salve para manter o histórico atualizado.';
             itensAtuais = d.itens_detalhados; historicoEdicaoOriginal = d.historico_logs || []; renderizarItens(); window.toggleModal(true);
@@ -2752,6 +3056,270 @@
             inputBusca.focus();
         }
     });
+
+    (() => {
+        const icons = {
+            details: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10a2 2 0 0 1 2 2v16H5V5a2 2 0 0 1 2-2Z"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>',
+            items: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m4 7 8-4 8 4-8 4-8-4Z"/><path d="m4 7 8 4 8-4v10l-8 4-8-4V7Z"/><path d="M12 11v10"/></svg>',
+            review: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5 11 14l4-5"/><path d="M7 3h10a2 2 0 0 1 2 2v16H5V5a2 2 0 0 1 2-2Z"/></svg>',
+            previous: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+            next: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>'
+        };
+
+        const stages = [
+            {
+                id: 'details',
+                short: 'Dados',
+                title: 'Dados do pedido',
+                helper: 'Informe a identificação, a data, a situação, o responsável e as orientações do pedido.',
+                icon: icons.details
+            },
+            {
+                id: 'items',
+                short: 'Itens',
+                title: 'Itens do pedido',
+                helper: 'Inclua cada produto com sua quantidade e valor. O total será calculado automaticamente.',
+                icon: icons.items
+            },
+            {
+                id: 'review',
+                short: 'Revisão',
+                title: 'Revisão e fechamento',
+                helper: 'Confira o total e as pendências antes de salvar o pedido e registrar o responsável.',
+                icon: icons.review
+            }
+        ];
+
+        const modal = document.getElementById('modalCadastro');
+        const modalContent = modal?.querySelector('.modal-content');
+        const layout = modal?.querySelector('.modal-layout');
+        const mainColumn = layout?.querySelector('.modal-main-column');
+        const sections = mainColumn ? Array.from(mainColumn.querySelectorAll(':scope > .form-section')) : [];
+        const summary = layout?.querySelector('.modal-summary');
+
+        if (!modal || !modalContent || !layout || !mainColumn || sections.length < 2 || !summary) return;
+
+        layout.classList.add('guided-order-layout');
+        sections[0].dataset.orderStagePanel = 'details';
+        sections[1].dataset.orderStagePanel = 'items';
+        summary.dataset.orderStagePanel = 'review';
+
+        const tabs = document.createElement('div');
+        tabs.className = 'order-step-tabs';
+        tabs.setAttribute('role', 'tablist');
+        tabs.setAttribute('aria-label', 'Etapas do pedido');
+
+        stages.forEach((stage, index) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'order-step-tab';
+            button.dataset.orderStep = stage.id;
+            button.setAttribute('role', 'tab');
+            button.setAttribute('aria-selected', 'false');
+            button.innerHTML =
+                '<span class="order-step-tab-icon" aria-hidden="true">' + stage.icon + '</span>' +
+                '<span class="order-step-tab-copy">' +
+                    '<span class="order-step-tab-number">Etapa ' + String(index + 1).padStart(2, '0') + '</span>' +
+                    '<span class="order-step-tab-title">' + stage.short + '</span>' +
+                '</span>' +
+                '<span class="order-step-tab-status" data-step-tab-status>Pendente</span>';
+            tabs.appendChild(button);
+        });
+
+        modalContent.insertBefore(tabs, layout);
+
+        const stageHeader = document.createElement('div');
+        stageHeader.className = 'order-step-header';
+        stageHeader.innerHTML =
+            '<span class="order-step-header-icon" data-stage-icon aria-hidden="true"></span>' +
+            '<div class="order-step-header-copy">' +
+                '<span class="order-step-kicker" data-stage-kicker></span>' +
+                '<h3 class="order-step-title" data-stage-title></h3>' +
+                '<p class="order-step-helper" data-stage-helper></p>' +
+            '</div>' +
+            '<span class="order-step-status" data-stage-status></span>';
+        layout.insertBefore(stageHeader, layout.firstChild);
+
+        const navigation = document.createElement('div');
+        navigation.className = 'order-step-navigation';
+
+        const previousButton = document.createElement('button');
+        previousButton.type = 'button';
+        previousButton.className = 'order-step-nav-button is-previous';
+        previousButton.innerHTML = icons.previous + '<span>Etapa anterior</span>';
+
+        const nextButton = document.createElement('button');
+        nextButton.type = 'button';
+        nextButton.className = 'order-step-nav-button is-next';
+
+        const finishNote = document.createElement('span');
+        finishNote.className = 'order-step-finish-note';
+        finishNote.innerHTML = '<span class="order-step-finish-dot"></span>Revise e salve o pedido';
+
+        navigation.append(previousButton, finishNote, nextButton);
+        layout.appendChild(navigation);
+
+        const headerIcon = stageHeader.querySelector('[data-stage-icon]');
+        const headerKicker = stageHeader.querySelector('[data-stage-kicker]');
+        const headerTitle = stageHeader.querySelector('[data-stage-title]');
+        const headerHelper = stageHeader.querySelector('[data-stage-helper]');
+        const headerStatus = stageHeader.querySelector('[data-stage-status]');
+        const tabButtons = Array.from(tabs.querySelectorAll('[data-order-step]'));
+        const checklistItems = Array.from(summary.querySelectorAll('.summary-checklist li'));
+
+        let activeStage = 'details';
+
+        const getStatus = (stageId) => {
+            const hasNumber = Boolean(document.getElementById('numPedido').value.trim());
+            const itemCount = itensAtuais.length;
+
+            if (stageId === 'details') {
+                return hasNumber
+                    ? { text: 'Dados informados', complete: true }
+                    : { text: 'Pendente', complete: false };
+            }
+
+            if (stageId === 'items') {
+                return itemCount
+                    ? { text: itemCount + (itemCount === 1 ? ' item inserido' : ' itens inseridos'), complete: true }
+                    : { text: 'Nenhum item', complete: false };
+            }
+
+            return hasNumber && itemCount
+                ? { text: 'Pronto para salvar', complete: true }
+                : { text: 'Revise pendências', complete: false };
+        };
+
+        const refreshChecklist = () => {
+            const hasNumber = Boolean(document.getElementById('numPedido').value.trim());
+            const itemCount = itensAtuais.length;
+
+            if (checklistItems[0]) {
+                checklistItems[0].textContent = hasNumber ? 'Dados do pedido conferidos' : 'Informe o número do pedido';
+                checklistItems[0].classList.toggle('is-complete', hasNumber);
+            }
+
+            if (checklistItems[1]) {
+                checklistItems[1].textContent = itemCount
+                    ? itemCount + (itemCount === 1 ? ' item detalhado' : ' itens detalhados')
+                    : 'Inclua ao menos um item';
+                checklistItems[1].classList.toggle('is-complete', itemCount > 0);
+            }
+
+            if (checklistItems[2]) {
+                checklistItems[2].textContent = document.getElementById('editId').value
+                    ? 'Histórico de alterações preservado'
+                    : 'Registro de criação será preservado';
+                checklistItems[2].classList.add('is-complete');
+            }
+        };
+
+        const refreshStatuses = () => {
+            tabButtons.forEach(button => {
+                const status = getStatus(button.dataset.orderStep);
+                button.classList.toggle('is-complete', status.complete);
+                button.querySelector('[data-step-tab-status]').textContent = status.text;
+            });
+
+            headerStatus.textContent = getStatus(activeStage).text;
+            refreshChecklist();
+        };
+
+        const focusStageField = (stageId) => {
+            const target = stageId === 'details'
+                ? document.getElementById('numPedido')
+                : stageId === 'items'
+                    ? document.getElementById('nomeProd')
+                    : summary.querySelector('.save-order-button');
+
+            if (target && typeof target.focus === 'function') {
+                window.setTimeout(() => target.focus({ preventScroll: true }), 40);
+            }
+        };
+
+        const activateStage = (stageId, options = {}) => {
+            const index = stages.findIndex(stage => stage.id === stageId);
+            if (index < 0) return;
+
+            const stage = stages[index];
+            activeStage = stageId;
+            modal.dataset.activeOrderStep = stageId;
+
+            mainColumn.hidden = stageId === 'review';
+            sections[0].hidden = stageId !== 'details';
+            sections[1].hidden = stageId !== 'items';
+            summary.hidden = stageId !== 'review';
+
+            tabButtons.forEach(button => {
+                const isActive = button.dataset.orderStep === stageId;
+                button.classList.toggle('is-active', isActive);
+                button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                button.tabIndex = isActive ? 0 : -1;
+            });
+
+            stageHeader.dataset.stage = stageId;
+            headerIcon.innerHTML = stage.icon;
+            headerKicker.textContent = 'Etapa ' + (index + 1) + ' de ' + stages.length;
+            headerTitle.textContent = stage.title;
+            headerHelper.textContent = stage.helper;
+
+            previousButton.disabled = index === 0;
+            nextButton.hidden = index === stages.length - 1;
+            finishNote.classList.toggle('is-visible', index === stages.length - 1);
+
+            if (index < stages.length - 1) {
+                nextButton.innerHTML = '<span>Próxima: ' + stages[index + 1].short + '</span>' + icons.next;
+            }
+
+            refreshStatuses();
+            modalContent.scrollTop = 0;
+            if (options.focus) focusStageField(stageId);
+        };
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => activateStage(button.dataset.orderStep, { focus: true }));
+            button.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                event.preventDefault();
+                const currentIndex = stages.findIndex(stage => stage.id === activeStage);
+                const direction = event.key === 'ArrowRight' ? 1 : -1;
+                const nextIndex = (currentIndex + direction + stages.length) % stages.length;
+                activateStage(stages[nextIndex].id, { focus: false });
+                tabButtons[nextIndex].focus();
+            });
+        });
+
+        previousButton.addEventListener('click', () => {
+            const index = stages.findIndex(stage => stage.id === activeStage);
+            if (index > 0) activateStage(stages[index - 1].id, { focus: true });
+        });
+
+        nextButton.addEventListener('click', () => {
+            const index = stages.findIndex(stage => stage.id === activeStage);
+            if (index < stages.length - 1) activateStage(stages[index + 1].id, { focus: true });
+        });
+
+        modal.addEventListener('input', refreshStatuses);
+        modal.addEventListener('change', refreshStatuses);
+
+        const itemsObserver = new MutationObserver(refreshStatuses);
+        itemsObserver.observe(document.getElementById('displayItens'), { childList: true, subtree: true });
+
+        const originalToggleModal = window.toggleModal;
+        window.toggleModal = function(show) {
+            const result = originalToggleModal.apply(this, arguments);
+            if (show) {
+                window.requestAnimationFrame(() => {
+                    refreshStatuses();
+                    activateStage('details', { focus: false });
+                });
+            }
+            return result;
+        };
+
+        window.abrirEtapaPedido = stageId => activateStage(stageId, { focus: true });
+        activateStage('details', { focus: false });
+    })();
 
 </script>
 </body>
