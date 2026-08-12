@@ -2060,6 +2060,291 @@
             border-color: #c8e7d8;
         }
 
+        #modalCadastro .items-total-showcase {
+            min-height: 132px;
+            margin-bottom: 16px;
+            padding: 19px 20px;
+            position: relative;
+            display: grid;
+            grid-template-columns: 58px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 17px;
+            overflow: hidden;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 88% 15%, rgba(77, 216, 165, 0.22), transparent 28%),
+                radial-gradient(circle at 4% 110%, rgba(75, 132, 206, 0.30), transparent 34%),
+                linear-gradient(135deg, #132b48 0%, #173f5f 52%, #176850 130%);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 17px;
+            box-shadow: 0 16px 34px rgba(19, 43, 72, 0.20);
+        }
+
+        #modalCadastro .items-total-showcase::before {
+            content: "";
+            height: 4px;
+            position: absolute;
+            inset: 0 0 auto;
+            background: linear-gradient(90deg, #34a853, #47c795 48%, #66a7e8);
+        }
+
+        #modalCadastro .items-total-icon {
+            width: 58px;
+            height: 58px;
+            display: grid;
+            place-items: center;
+            color: #9cf0cf;
+            background: rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+        }
+
+        #modalCadastro .items-total-main {
+            min-width: 0;
+        }
+
+        #modalCadastro .items-total-label {
+            display: block;
+            color: #a9c0d7;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.25px;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .items-total-value {
+            margin-top: 7px;
+            display: flex;
+            align-items: baseline;
+            gap: 7px;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(32px, 4vw, 46px);
+            line-height: 1;
+            letter-spacing: -1.8px;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 5px 18px rgba(0, 0, 0, 0.20);
+        }
+
+        #modalCadastro .items-total-value > span:first-child {
+            color: #9cf0cf;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 16px;
+            letter-spacing: -0.2px;
+        }
+
+        #modalCadastro .items-total-metrics {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        #modalCadastro .items-total-metrics span {
+            min-height: 24px;
+            padding: 0 9px;
+            display: inline-flex;
+            align-items: center;
+            color: #d5e4f2;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 0.035em;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .items-total-preview {
+            min-width: 232px;
+            padding: 14px 15px;
+            display: grid;
+            gap: 5px;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(156, 240, 207, 0.25);
+            border-radius: 13px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        #modalCadastro .items-total-preview-label {
+            color: #b9d2e6;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .items-total-preview strong {
+            color: #9cf0cf;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            line-height: 1.05;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #modalCadastro .items-total-preview-hint {
+            color: #93aabe;
+            font-size: 8px;
+            font-weight: 600;
+        }
+
+        #modalCadastro .review-content-grid {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.85fr);
+            align-items: start;
+            gap: 18px;
+        }
+
+        #modalCadastro .review-items-panel {
+            min-width: 0;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid #dfe5ec;
+            border-radius: 15px;
+            box-shadow: 0 9px 24px rgba(23, 42, 68, 0.05);
+        }
+
+        #modalCadastro .review-items-heading {
+            padding: 16px 17px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            background: linear-gradient(135deg, #f7fafc, #eef4fa);
+            border-bottom: 1px solid #dfe5ec;
+        }
+
+        #modalCadastro .review-items-heading span:first-child {
+            display: block;
+            margin-bottom: 3px;
+            color: var(--primary);
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .review-items-heading h4 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 14px;
+        }
+
+        #modalCadastro .review-items-count {
+            margin: 0 !important;
+            padding: 6px 10px;
+            color: #176850 !important;
+            background: #e9f7f1;
+            border: 1px solid #bee2d3;
+            border-radius: 999px;
+            font-size: 8px !important;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .review-items-table-wrap {
+            overflow-x: auto;
+        }
+
+        #modalCadastro .review-items-table {
+            width: 100%;
+            min-width: 520px;
+            border-collapse: collapse;
+            background: #ffffff !important;
+        }
+
+        #modalCadastro .review-items-table th {
+            padding: 11px 13px;
+            color: #8290a2;
+            background: #f8fafc;
+            border-bottom: 1px solid #e7ebf0;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .review-items-table th:nth-child(3),
+        #modalCadastro .review-items-table th:nth-child(4),
+        #modalCadastro .review-items-table td:nth-child(3),
+        #modalCadastro .review-items-table td:nth-child(4) {
+            text-align: right;
+        }
+
+        #modalCadastro .review-items-table td {
+            padding: 13px;
+            color: #43556b;
+            border-bottom: 1px solid #edf0f4;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        #modalCadastro .review-items-table td:nth-child(2) {
+            color: var(--navy);
+            font-weight: 800;
+        }
+
+        #modalCadastro .review-items-table td:nth-child(4) {
+            color: #176850;
+            font-weight: 900;
+        }
+
+        #modalCadastro .review-items-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        #modalCadastro .review-items-empty {
+            min-height: 125px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            color: #8a97a8;
+            font-size: 10px;
+        }
+
+        #modalCadastro .review-items-empty span {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            background: var(--soft-blue);
+            border-radius: 11px;
+            font-size: 18px;
+        }
+
+        #modalCadastro .review-financial-panel {
+            min-width: 0;
+        }
+
+        #modalCadastro .review-financial-panel .summary-total-card {
+            margin-top: 0;
+        }
+
+        @media (max-width: 920px) {
+            #modalCadastro .items-total-showcase {
+                grid-template-columns: 58px minmax(0, 1fr);
+            }
+
+            #modalCadastro .items-total-preview {
+                grid-column: 1 / -1;
+                min-width: 0;
+            }
+
+            #modalCadastro .review-content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 700px) {
             #modalCadastro {
                 padding: 7px;
@@ -2121,6 +2406,27 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            #modalCadastro .items-total-showcase {
+                padding: 17px 15px;
+                grid-template-columns: 46px minmax(0, 1fr);
+                gap: 12px;
+            }
+
+            #modalCadastro .items-total-icon {
+                width: 46px;
+                height: 46px;
+                border-radius: 13px;
+                font-size: 21px;
+            }
+
+            #modalCadastro .items-total-value {
+                font-size: clamp(28px, 10vw, 39px);
+            }
+
+            #modalCadastro .review-items-heading {
+                padding: 14px;
+            }
         }
     </style>
 </head>
@@ -2175,7 +2481,7 @@
                 <div class="modal-title-group">
                     <span class="modal-eyebrow">GESTÃO DE COMPRAS</span>
                     <h2 id="modalTitle">Registrar novo pedido</h2>
-                    <p id="modalSubtitle">Preencha os dados abaixo para incluir um pedido no controle.</p>
+                    <p id="modalSubtitle">Comece pelos itens, depois informe os dados e confira os valores antes de salvar.</p>
                 </div>
                 <span class="close-modal" onclick="window.toggleModal(false)" title="Fechar">&times;</span>
             </header>
@@ -2187,7 +2493,7 @@
                     <section class="form-section">
                         <div class="section-heading">
                             <div class="section-heading-main">
-                                <span class="section-number">01</span>
+                                <span class="section-number">02</span>
                                 <div>
                                     <h3>Dados do pedido</h3>
                                     <p>Identificação, data, situação e responsável.</p>
@@ -2234,13 +2540,33 @@
                     <section class="form-section">
                         <div class="section-heading">
                             <div class="section-heading-main">
-                                <span class="section-number">02</span>
+                                <span class="section-number">01</span>
                                 <div>
                                     <h3>Itens do pedido</h3>
                                     <p>Inclua produto, quantidade e valor unitário.</p>
                                 </div>
                             </div>
                             <span class="item-counter" id="itemCount">0 itens</span>
+                        </div>
+
+                        <div class="items-total-showcase">
+                            <span class="items-total-icon" aria-hidden="true">∑</span>
+                            <div class="items-total-main">
+                                <span class="items-total-label">Valor total acumulado</span>
+                                <strong class="items-total-value" aria-live="polite">
+                                    <span>R$</span>
+                                    <span id="itemsRunningTotal">0,00</span>
+                                </strong>
+                                <div class="items-total-metrics">
+                                    <span id="itemsRunningCount">0 itens</span>
+                                    <span id="itemsRunningUnits">0 unidades</span>
+                                </div>
+                            </div>
+                            <div class="items-total-preview" id="itemsProjectedTotal" hidden>
+                                <span class="items-total-preview-label">Após inserir este item</span>
+                                <strong>R$ <span id="itemsProjectedValue">0,00</span></strong>
+                                <span class="items-total-preview-hint">Prévia calculada em tempo real</span>
+                            </div>
                         </div>
 
                         <div class="product-entry-grid">
@@ -2282,28 +2608,60 @@
 
                 <aside class="modal-summary">
                     <p class="summary-label">Resumo</p>
-                    <h3>Fechamento do pedido</h3>
+                    <h3>Conferência de itens e valores</h3>
 
-                    <div class="summary-total-card">
-                        <div class="summary-total-topline">
-                            <span>Valor total do pedido</span>
-                            <span class="summary-total-icon" aria-hidden="true">R$</span>
+                    <div class="review-content-grid">
+                        <section class="review-items-panel" aria-labelledby="reviewItemsTitle">
+                            <div class="review-items-heading">
+                                <div>
+                                    <span>Detalhamento</span>
+                                    <h4 id="reviewItemsTitle">Itens do pedido</h4>
+                                </div>
+                                <span class="review-items-count" id="reviewItemsCount">0 itens</span>
+                            </div>
+                            <div class="review-items-table-wrap">
+                                <table class="review-items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Qtd.</th>
+                                            <th>Produto</th>
+                                            <th>Unitário</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reviewItemsDisplay"></tbody>
+                                </table>
+                                <div class="review-items-empty" id="reviewItemsEmpty">
+                                    <span>📦</span>
+                                    <strong>Nenhum item para conferir</strong>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div class="review-financial-panel">
+
+                            <div class="summary-total-card">
+                                <div class="summary-total-topline">
+                                    <span>Valor total do pedido</span>
+                                    <span class="summary-total-icon" aria-hidden="true">R$</span>
+                                </div>
+                                <strong class="summary-total-value" aria-live="polite">
+                                    <span class="summary-currency">R$</span>
+                                    <span id="totalFinal">0,00</span>
+                                </strong>
+                                <span class="summary-total-caption">Soma automática dos itens inseridos</span>
+                            </div>
+
+                            <ul class="summary-checklist">
+                                <li>Dados identificados</li>
+                                <li>Itens detalhados</li>
+                                <li>Histórico preservado</li>
+                            </ul>
+
+                            <button type="button" class="btn-open-modal save-order-button" onclick="window.salvarNaNuvem()">💾 SALVAR PEDIDO</button>
+                            <p class="save-hint">Ao salvar, será solicitado o nome do operador responsável pelo registro.</p>
                         </div>
-                        <strong class="summary-total-value" aria-live="polite">
-                            <span class="summary-currency">R$</span>
-                            <span id="totalFinal">0,00</span>
-                        </strong>
-                        <span class="summary-total-caption">Soma automática dos itens inseridos</span>
                     </div>
-
-                    <ul class="summary-checklist">
-                        <li>Dados identificados</li>
-                        <li>Itens detalhados</li>
-                        <li>Histórico preservado</li>
-                    </ul>
-
-                    <button type="button" class="btn-open-modal save-order-button" onclick="window.salvarNaNuvem()">💾 SALVAR PEDIDO</button>
-                    <p class="save-hint">Ao salvar, será solicitado o nome do operador responsável pelo registro.</p>
                 </aside>
             </div>
         </div>
@@ -2663,7 +3021,7 @@
     };
     window.abrirNovoPedido = () => {
         document.getElementById('modalTitle').innerText = 'Registrar novo pedido';
-        document.getElementById('modalSubtitle').innerText = 'Preencha os dados abaixo para incluir um pedido no controle.';
+        document.getElementById('modalSubtitle').innerText = 'Comece pelos itens, depois informe os dados e confira os valores antes de salvar.';
         window.toggleModal(true);
         document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0];
     };
@@ -2699,7 +3057,14 @@
     window.salvarNaNuvem = async () => {
         const id = document.getElementById('editId').value;
         const numPed = document.getElementById('numPedido').value;
-        if(!numPed || itensAtuais.length === 0) return Toast.fire({ icon: 'error', title: 'Adicione produtos!' });
+        if(itensAtuais.length === 0) {
+            window.abrirEtapaPedido?.('items');
+            return Toast.fire({ icon: 'error', title: 'Adicione ao menos um item!' });
+        }
+        if(!numPed) {
+            window.abrirEtapaPedido?.('details');
+            return Toast.fire({ icon: 'error', title: 'Informe o número do pedido!' });
+        }
 
         const { value: nomeOperador } = await Swal.fire({
             title: 'IDENTIFIQUE-SE',
@@ -3021,7 +3386,7 @@
             const d = snap.data(); document.getElementById('editId').value = id; document.getElementById('numPedido').value = d.num; document.getElementById('dataPedido').value = d.data; document.getElementById('situacao').value = d.situacao; document.getElementById('obsPedido').value = d.obs; document.getElementById('solicitante').value = d.solicitante || '';
             document.getElementById('checkUrgente').checked = d.urgente || false;
             document.getElementById('modalTitle').innerText = `Editar pedido #${d.num}`;
-            document.getElementById('modalSubtitle').innerText = 'Revise os dados, ajuste os itens e salve para manter o histórico atualizado.';
+            document.getElementById('modalSubtitle').innerText = 'Revise primeiro os itens, depois confira os dados e os valores antes de salvar.';
             itensAtuais = d.itens_detalhados; historicoEdicaoOriginal = d.historico_logs || []; renderizarItens(); window.toggleModal(true);
         }
     };
@@ -3068,24 +3433,24 @@
 
         const stages = [
             {
-                id: 'details',
-                short: 'Dados',
-                title: 'Dados do pedido',
-                helper: 'Informe a identificação, a data, a situação, o responsável e as orientações do pedido.',
-                icon: icons.details
-            },
-            {
                 id: 'items',
                 short: 'Itens',
-                title: 'Itens do pedido',
-                helper: 'Inclua cada produto com sua quantidade e valor. O total será calculado automaticamente.',
+                title: 'Monte os itens do pedido',
+                helper: 'Comece pelos produtos. O total acumulado e a prévia do próximo item são calculados em tempo real.',
                 icon: icons.items
             },
             {
+                id: 'details',
+                short: 'Dados',
+                title: 'Dados do pedido',
+                helper: 'Agora informe a identificação, a data, a situação, o responsável e as orientações do pedido.',
+                icon: icons.details
+            },
+            {
                 id: 'review',
-                short: 'Revisão',
-                title: 'Revisão e fechamento',
-                helper: 'Confira o total e as pendências antes de salvar o pedido e registrar o responsável.',
+                short: 'Conferir',
+                title: 'Confira itens e valores',
+                helper: 'Revise quantidades, valores unitários, subtotais e o valor final antes de salvar.',
                 icon: icons.review
             }
         ];
@@ -3166,8 +3531,17 @@
         const headerStatus = stageHeader.querySelector('[data-stage-status]');
         const tabButtons = Array.from(tabs.querySelectorAll('[data-order-step]'));
         const checklistItems = Array.from(summary.querySelectorAll('.summary-checklist li'));
+        const itemsRunningTotal = document.getElementById('itemsRunningTotal');
+        const itemsRunningCount = document.getElementById('itemsRunningCount');
+        const itemsRunningUnits = document.getElementById('itemsRunningUnits');
+        const itemsProjectedTotal = document.getElementById('itemsProjectedTotal');
+        const itemsProjectedValue = document.getElementById('itemsProjectedValue');
+        const reviewItemsDisplay = document.getElementById('reviewItemsDisplay');
+        const reviewItemsCount = document.getElementById('reviewItemsCount');
+        const reviewItemsEmpty = document.getElementById('reviewItemsEmpty');
+        const reviewItemsTable = reviewItemsDisplay?.closest('table');
 
-        let activeStage = 'details';
+        let activeStage = 'items';
 
         const getStatus = (stageId) => {
             const hasNumber = Boolean(document.getElementById('numPedido').value.trim());
@@ -3214,6 +3588,52 @@
             }
         };
 
+        const refreshSmartTotal = () => {
+            const total = itensAtuais.reduce((sum, item) => sum + (Number(item.subtotal) || 0), 0);
+            const units = itensAtuais.reduce((sum, item) => sum + (Number(item.qtd) || 0), 0);
+            const itemCount = itensAtuais.length;
+            const unitsLabel = units.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+            const quantity = Math.max(Number(document.getElementById('qtdProd').value) || 0, 0);
+            const unitPrice = Math.max(Number(document.getElementById('precoProd').value) || 0, 0);
+            const hasProjection = quantity > 0 && unitPrice > 0;
+
+            itemsRunningTotal.textContent = formatBRL(total);
+            itemsRunningCount.textContent = itemCount + (itemCount === 1 ? ' item' : ' itens');
+            itemsRunningUnits.textContent = unitsLabel + (units === 1 ? ' unidade' : ' unidades');
+            itemsProjectedTotal.hidden = !hasProjection;
+
+            if (hasProjection) {
+                itemsProjectedValue.textContent = formatBRL(total + (quantity * unitPrice));
+            }
+        };
+
+        const refreshReviewItems = () => {
+            const fragment = document.createDocumentFragment();
+
+            itensAtuais.forEach(item => {
+                const row = document.createElement('tr');
+                const values = [
+                    (Number(item.qtd) || 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + 'x',
+                    item.nome,
+                    'R$ ' + formatBRL(Number(item.preco) || 0),
+                    'R$ ' + formatBRL(Number(item.subtotal) || 0)
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement('td');
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                fragment.appendChild(row);
+            });
+
+            reviewItemsDisplay.replaceChildren(fragment);
+            reviewItemsCount.textContent = itensAtuais.length + (itensAtuais.length === 1 ? ' item' : ' itens');
+            reviewItemsTable.hidden = itensAtuais.length === 0;
+            reviewItemsEmpty.hidden = itensAtuais.length > 0;
+        };
+
         const refreshStatuses = () => {
             tabButtons.forEach(button => {
                 const status = getStatus(button.dataset.orderStep);
@@ -3223,6 +3643,8 @@
 
             headerStatus.textContent = getStatus(activeStage).text;
             refreshChecklist();
+            refreshSmartTotal();
+            refreshReviewItems();
         };
 
         const focusStageField = (stageId) => {
@@ -3311,14 +3733,14 @@
             if (show) {
                 window.requestAnimationFrame(() => {
                     refreshStatuses();
-                    activateStage('details', { focus: false });
+                    activateStage('items', { focus: false });
                 });
             }
             return result;
         };
 
         window.abrirEtapaPedido = stageId => activateStage(stageId, { focus: true });
-        activateStage('details', { focus: false });
+        activateStage('items', { focus: false });
     })();
 
 </script>
