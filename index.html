@@ -2428,6 +2428,577 @@
                 padding: 14px;
             }
         }
+
+        /* =========================================================
+           CARTÕES DE PEDIDO RECOLHÍVEIS
+           Resumo fechado por padrão; itens aparecem no próprio card.
+           ========================================================= */
+        .pedido-row.pedido-card-accordion {
+            min-width: 0 !important;
+            margin: 16px 0 !important;
+            padding: 0 !important;
+            display: block;
+            overflow: hidden;
+            color: var(--text);
+            background: #ffffff !important;
+            border: 1px solid #dfe5ec !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 25px rgba(23, 42, 68, 0.06) !important;
+            transform: none !important;
+        }
+
+        .pedido-row.pedido-filtrado-fora {
+            display: none !important;
+        }
+
+        .kpi-card.is-filter-active {
+            border-color: var(--primary) !important;
+            box-shadow: inset 0 -4px 0 var(--primary), 0 13px 30px rgba(36, 95, 166, 0.14) !important;
+            transform: translateY(-2px);
+        }
+
+        .pedido-row.pedido-card-accordion:hover {
+            border-color: #c8d3df !important;
+            box-shadow: 0 13px 32px rgba(23, 42, 68, 0.10) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .pedido-row.pedido-card-accordion.pedido-expandido {
+            border-color: #adc3dc !important;
+            box-shadow: 0 18px 42px rgba(23, 42, 68, 0.13) !important;
+        }
+
+        .pedido-row.pedido-card-accordion.pedido-finalizado {
+            background:
+                radial-gradient(circle at 96% 0%, rgba(52, 168, 83, 0.11), transparent 25%),
+                #ffffff !important;
+            border-left: 6px solid var(--success) !important;
+        }
+
+        .pedido-row.pedido-card-accordion.pedido-urgente {
+            border-color: rgba(215, 84, 93, 0.52) !important;
+            box-shadow: inset 4px 0 0 var(--danger), 0 10px 30px rgba(215, 84, 93, 0.08) !important;
+        }
+
+        .pedido-card-summary {
+            min-height: 112px;
+            padding: 20px 18px;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 48px minmax(185px, 1.15fr) minmax(170px, 0.9fr) minmax(145px, 0.65fr) minmax(150px, 0.7fr) 132px;
+            grid-template-areas: "select identity quick total status toggle";
+            align-items: center;
+            gap: 17px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .pedido-card-summary:hover {
+            background: rgba(237, 243, 250, 0.46);
+        }
+
+        .pedido-card-summary:focus-visible {
+            outline: 3px solid rgba(36, 95, 166, 0.18);
+            outline-offset: -4px;
+        }
+
+        .pedido-card-select {
+            grid-area: select;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pedido-card-identity {
+            grid-area: identity;
+            min-width: 0;
+            display: grid;
+            justify-items: start;
+            gap: 8px;
+        }
+
+        .pedido-card-identity-top {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .pedido-card-number {
+            min-height: 34px;
+            padding: 0 13px;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary), #376fb1);
+            border: 1px solid rgba(36, 95, 166, 0.72);
+            border-radius: 9px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.25px;
+            box-shadow: 0 6px 14px rgba(36, 95, 166, 0.20);
+        }
+
+        .pedido-finalizado .pedido-card-number {
+            background: linear-gradient(135deg, #167853, #34a853);
+            border-color: #218863;
+            box-shadow: 0 6px 14px rgba(33, 136, 99, 0.20);
+        }
+
+        .pedido-urgent-chip {
+            min-height: 25px;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            color: #b4233b;
+            background: #fff0f2;
+            border: 1px solid #efbbc4;
+            border-radius: 7px;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .pedido-requester-chip {
+            max-width: 100%;
+            padding: 6px 9px;
+            overflow: hidden;
+            color: #4e6076;
+            background: #f4f7fa;
+            border: 1px solid #e2e7ee;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 800;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .pedido-card-quick-info {
+            grid-area: quick;
+            min-width: 0;
+            display: grid;
+            gap: 6px;
+            color: #66778c;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .pedido-card-quick-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pedido-card-quick-info .pedido-item-count {
+            width: fit-content;
+            padding: 5px 8px;
+            color: var(--primary);
+            background: var(--soft-blue);
+            border: 1px solid #cfdeee;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .pedido-card-total {
+            grid-area: total;
+            min-width: 0;
+            display: grid;
+            gap: 5px;
+            text-align: right;
+        }
+
+        .pedido-card-total > span {
+            color: #8794a4;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+
+        .pedido-card-total strong {
+            color: var(--navy);
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(18px, 2vw, 23px);
+            letter-spacing: -0.7px;
+            white-space: nowrap;
+        }
+
+        .pedido-finalizado .pedido-card-total strong {
+            color: #176f51;
+        }
+
+        .pedido-card-status {
+            grid-area: status;
+            display: grid;
+            justify-items: center;
+            gap: 5px;
+        }
+
+        .pedido-card-toggle-area {
+            grid-area: toggle;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .pedido-expand-toggle {
+            min-width: 122px;
+            min-height: 42px;
+            padding: 0 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--primary);
+            background: var(--soft-blue);
+            border: 1px solid #c9d9ea;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.045em;
+            text-transform: uppercase;
+            transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .pedido-expand-toggle:hover {
+            color: #ffffff;
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .pedido-toggle-chevron {
+            width: 23px;
+            height: 23px;
+            display: grid;
+            place-items: center;
+            border-radius: 7px;
+            background: rgba(36, 95, 166, 0.10);
+            font-size: 13px;
+            transition: transform 0.25s ease;
+        }
+
+        .pedido-expand-toggle:hover .pedido-toggle-chevron {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .pedido-expandido .pedido-toggle-chevron {
+            transform: rotate(180deg);
+        }
+
+        .pedido-card-details {
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+            background:
+                linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
+            border-top: 1px solid #dfe5ec;
+            animation: pedidoDetailsOpen 0.24s ease-out both;
+        }
+
+        .pedido-card-details[hidden] {
+            display: none !important;
+        }
+
+        @keyframes pedidoDetailsOpen {
+            from { opacity: 0; transform: translateY(-7px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pedido-card-details-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 290px;
+            align-items: start;
+            gap: 18px;
+        }
+
+        .pedido-items-panel,
+        .pedido-info-panel {
+            min-width: 0;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid #dfe5ec;
+            border-radius: 13px;
+        }
+
+        .pedido-details-heading {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #f4f7fa;
+            border-bottom: 1px solid #e2e7ee;
+        }
+
+        .pedido-details-heading h4 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 12px;
+        }
+
+        .pedido-details-heading span {
+            padding: 5px 8px;
+            color: #176850;
+            background: #e9f7f1;
+            border: 1px solid #c4e5d7;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 900;
+        }
+
+        .pedido-items-list {
+            padding: 14px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .pedido-detail-item {
+            min-width: 0;
+            padding: 13px;
+            display: grid;
+            gap: 11px;
+            background: #ffffff;
+            border: 1px solid #e1e7ee;
+            border-radius: 11px;
+            box-shadow: 0 6px 15px rgba(23, 42, 68, 0.035);
+        }
+
+        .pedido-detail-item-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pedido-detail-qty {
+            min-width: 43px;
+            min-height: 31px;
+            padding: 0 8px;
+            color: var(--primary);
+            background: var(--soft-blue);
+            border: 1px solid #c9d9ea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+        .pedido-detail-name {
+            min-width: 0;
+            padding: 0;
+            overflow: hidden;
+            color: var(--navy);
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 900;
+            text-align: left;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .pedido-detail-name:hover {
+            color: var(--primary);
+        }
+
+        .pedido-detail-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            align-items: end;
+            gap: 8px;
+        }
+
+        .pedido-detail-value {
+            min-width: 0;
+            display: grid;
+            gap: 3px;
+            color: #8a96a5;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .pedido-detail-value strong {
+            overflow: hidden;
+            color: #4e6076;
+            font-size: 10px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pedido-detail-value.is-subtotal strong {
+            color: #176850;
+        }
+
+        .pedido-detail-copy-value {
+            min-width: 112px;
+            min-height: 31px;
+            padding: 0 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--primary);
+            background: var(--soft-blue);
+            border: 1px solid #c9d9ea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .pedido-detail-copy-value:hover {
+            color: #ffffff;
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .pedido-empty-items {
+            grid-column: 1 / -1;
+            padding: 26px;
+            color: #8b97a7;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .pedido-info-panel {
+            padding: 15px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .pedido-info-block {
+            padding: 12px;
+            color: #5c6e84;
+            background: #f7f9fb;
+            border: 1px solid #e5eaf0;
+            border-radius: 10px;
+            font-size: 9px;
+            line-height: 1.55;
+        }
+
+        .pedido-info-block strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--navy);
+            font-size: 8px;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+        }
+
+        .pedido-card-history {
+            display: grid;
+            gap: 4px;
+        }
+
+        .pedido-card-history .historico-edicao {
+            margin: 0;
+            padding: 4px 0;
+        }
+
+        .pedido-card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .pedido-card-action {
+            min-height: 38px;
+            padding: 0 10px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .pedido-card-action.is-edit {
+            color: #9b6418;
+            background: #fff7e9;
+            border: 1px solid #efd5aa;
+        }
+
+        .pedido-card-action.is-delete {
+            color: #a43c47;
+            background: #fff2f3;
+            border: 1px solid #efc5ca;
+        }
+
+        @media (max-width: 1050px) {
+            .pedido-card-summary {
+                grid-template-columns: 46px minmax(180px, 1fr) minmax(150px, 0.85fr) 132px;
+                grid-template-areas:
+                    "select identity total toggle"
+                    "select quick status toggle";
+                row-gap: 10px;
+            }
+
+            .pedido-card-total {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .pedido-card-summary {
+                min-height: 0;
+                padding: 17px 14px;
+                grid-template-columns: 40px minmax(0, 1fr) auto;
+                grid-template-areas:
+                    "select identity toggle"
+                    "quick quick total"
+                    "status status total";
+                gap: 12px;
+            }
+
+            .pedido-card-toggle-area {
+                align-self: start;
+            }
+
+            .pedido-expand-toggle {
+                min-width: 42px;
+                width: 42px;
+                padding: 0;
+            }
+
+            .pedido-expand-toggle [data-toggle-label] {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0 0 0 0);
+            }
+
+            .pedido-card-total {
+                align-self: end;
+            }
+
+            .pedido-card-status {
+                justify-items: start;
+            }
+
+            .pedido-card-details {
+                padding: 13px;
+            }
+
+            .pedido-card-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pedido-items-list {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body onload="iniciarBoasVindas()">
@@ -2452,10 +3023,10 @@
     <div class="progress-container"><div id="mainProgressBar" class="progress-bar"></div></div>
 
     <div class="dashboard-grid">
-        <div class="kpi-card" onclick="window.filtrarHoje()"><span class="kpi-label">📅 Hoje</span><span class="kpi-value" id="countHoje">0</span></div>
-        <div class="kpi-card" onclick="window.limparFiltro()"><span class="kpi-label">📦 Total</span><span class="kpi-value" id="totalPedidosCount">0</span></div>
-        <div id="kpiPendentes" class="kpi-card" onclick="window.filtrarPorStatus('Não')"><span class="kpi-label">⏳ Pendentes</span><span class="kpi-value" id="countPendentes" style="color: var(--danger);">0</span></div>
-        <div class="kpi-card" style="border-color: var(--accent); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div id="kpiHoje" class="kpi-card is-filter-active" data-filter-card="hoje" onclick="window.filtrarHoje()"><span class="kpi-label">📅 Hoje</span><span class="kpi-value" id="countHoje">0</span></div>
+        <div id="kpiTotal" class="kpi-card" data-filter-card="todos" onclick="window.limparFiltro()"><span class="kpi-label">📦 Total</span><span class="kpi-value" id="totalPedidosCount">0</span></div>
+        <div id="kpiPendentes" class="kpi-card" data-filter-card="status-Não" onclick="window.filtrarPorStatus('Não')"><span class="kpi-label">⏳ Pendentes</span><span class="kpi-value" id="countPendentes" style="color: var(--danger);">0</span></div>
+        <div id="kpiLancados" class="kpi-card" data-filter-card="status-Sim" onclick="window.filtrarPorStatus('Sim')" title="Clique para ver os pedidos lançados" style="border-color: var(--accent); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <span class="kpi-label">🕒 Horário</span>
             <span class="kpi-value" id="relogioDinamico" style="font-size: 24px; font-family: 'Montserrat', sans-serif; letter-spacing: 1px;">00:00:00</span>
             <div id="contagemLiberdade" class="msg-liberdade">...</div>
@@ -2700,6 +3271,8 @@
     let zoomLevel = 1.0;
     let historicoEdicaoOriginal = [];
     let pedidosSelecionados = []; // Array que guarda os IDs selecionados para exclusão em massa
+    const pedidosExpandidos = new Set(); // Preserva os cards abertos durante atualizações em tempo real
+    let filtroPedidosAtivo = { tipo: 'hoje', valor: '' };
     let totalPendentesAtual = 0;
     let snapshotInicialCarregado = false;
     let lembreteAberturaAgendado = false;
@@ -2709,6 +3282,21 @@
         const n = typeof valor === 'string' ? parseFloat(valor.replace(',','.')) : valor;
         return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
+
+    const escaparHTML = (valor) => String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    const codificarTextoCopia = (valor) => encodeURIComponent(String(valor ?? '')).replace(/'/g, '%27');
+
+    const normalizarTextoFiltro = (valor) => String(valor ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
 
     const notificacoesPermitidas = () => {
         return 'Notification' in window &&
@@ -3151,6 +3739,30 @@
         atualizarBotaoExcluirVarios();
     };
 
+    window.toggleDetalhesPedido = (id, element) => {
+        const row = element || Array.from(document.querySelectorAll('.pedido-row'))
+            .find(card => card.dataset.pedidoId === String(id));
+        if(!row) return;
+
+        const details = row.querySelector('.pedido-card-details');
+        const button = row.querySelector('.pedido-expand-toggle');
+        const label = button?.querySelector('[data-toggle-label]');
+        const shouldExpand = !row.classList.contains('pedido-expandido');
+
+        row.classList.toggle('pedido-expandido', shouldExpand);
+        row.classList.toggle('pedido-fechado', !shouldExpand);
+        row.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+        if(details) details.hidden = !shouldExpand;
+        if(button) {
+            button.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+            button.title = shouldExpand ? 'Fechar itens do pedido' : 'Ver itens do pedido';
+        }
+        if(label) label.textContent = shouldExpand ? 'Ocultar itens' : 'Ver itens';
+
+        if(shouldExpand) pedidosExpandidos.add(String(id));
+        else pedidosExpandidos.delete(String(id));
+    };
+
     function atualizarBotaoExcluirVarios() {
         const btn = document.getElementById('btnExcluirVarios');
         const qtd = document.getElementById('qtdSelecionados');
@@ -3241,86 +3853,148 @@
         });
 
         lista.forEach(p => {
-            const row = document.createElement('div'); 
-            row.className = 'pedido-row animar-entrada';
+            const row = document.createElement('div');
+            const idCodificado = codificarTextoCopia(p.id);
+            const numeroCodificado = codificarTextoCopia(p.num);
+            const itensPedido = Array.isArray(p.itens_detalhados) ? p.itens_detalhados : [];
+            const isExpanded = pedidosExpandidos.has(String(p.id));
+            const dataFormatada = p.data ? String(p.data).split('-').reverse().join('/') : '--/--/----';
+            const totalCalculado = itensPedido.reduce((soma, item) => soma + (Number(item.subtotal) || ((Number(item.qtd) || 0) * (Number(item.preco) || 0))), 0);
+            const totalPedido = p.total || formatBRL(totalCalculado);
+
+            row.className = `pedido-row pedido-card-accordion animar-entrada ${isExpanded ? 'pedido-expandido' : 'pedido-fechado'}`;
             row.dataset.pedidoNumero = String(p.num || '').trim().toLowerCase();
-            
+            row.dataset.pedidoId = String(p.id);
+            row.dataset.pedidoData = String(p.data || '');
+            row.dataset.pedidoStatus = String(p.situacao || '');
+            row.dataset.pedidoBusca = normalizarTextoFiltro([
+                p.num,
+                p.solicitante,
+                p.obs,
+                p.total,
+                dataFormatada,
+                ...itensPedido.map(item => item.nome)
+            ].join(' '));
+            row.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+
             if(p.situacao === 'Sim') row.classList.add('pedido-finalizado');
-            if(p.data !== hojeISO) { row.classList.add('pedido-antigo'); row.style.display = 'none'; }
+            if(p.data !== hojeISO) row.classList.add('pedido-antigo');
             if(p.urgente) row.classList.add('pedido-urgente');
-            
-            // Mantém a linha com estilo de selecionada se o ID estiver ativo no array global
             if(pedidosSelecionados.includes(p.id)) row.classList.add('pedido-selecionado');
 
-            const prodHTML = p.itens_detalhados.map(i => {
-                const precoFormatado = formatBRL(i.preco);
-                return `<div style=\"display:flex; flex-direction:column; margin-bottom:12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;\">
-                    <div style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap;\">
-                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.qtd}', this)\" style=\"min-width: 45px;\">${i.qtd}x</button>
-                        <button class=\"btn-copiar\" onclick=\"window.copiarTexto('${i.nome}', this)\" style=\"background:var(--purple); color:white; border-color:var(--purple); font-size:13px; padding:6px 12px;\">${i.nome}</button>
-                    </div>
-                    <div style=\"display:flex; align-items:center; gap:8px; margin-top:6px; font-size:11px; color:#94a3b8;\">
-                        <span style=\"font-weight:600;\">Un: R$ ${precoFormatado}</span>
-                        <button class=\"btn-copiar\" onclick=\"window.copiarValorSistema('${precoFormatado}', this)\" style=\"padding: 2px 6px; font-size: 9px;\">COPIAR VALOR</button>
-                    </div>
-                </div>`;
-            }).join('');
+            const prodHTML = itensPedido.map(i => {
+                const precoFormatado = formatBRL(Number(i.preco) || 0);
+                const subtotal = Number(i.subtotal) || ((Number(i.qtd) || 0) * (Number(i.preco) || 0));
+                const subtotalFormatado = formatBRL(subtotal);
+                const qtdCodificada = codificarTextoCopia(i.qtd);
+                const nomeCodificado = codificarTextoCopia(i.nome);
+                const precoCodificado = codificarTextoCopia(precoFormatado);
 
-            let htmlLog = "";
+                return `<article class="pedido-detail-item">
+                    <div class="pedido-detail-item-top">
+                        <button class="pedido-detail-qty" onclick="window.copiarTexto(decodeURIComponent('${qtdCodificada}'), this)" title="Copiar quantidade">${escaparHTML(i.qtd)}x</button>
+                        <button class="pedido-detail-name" onclick="window.copiarTexto(decodeURIComponent('${nomeCodificado}'), this)" title="Copiar nome do produto">${escaparHTML(i.nome)}</button>
+                    </div>
+                    <div class="pedido-detail-values">
+                        <span class="pedido-detail-value">Unitário<strong>R$ ${precoFormatado}</strong></span>
+                        <span class="pedido-detail-value is-subtotal">Subtotal<strong>R$ ${subtotalFormatado}</strong></span>
+                        <button class="pedido-detail-copy-value" onclick="window.copiarValorSistema(decodeURIComponent('${precoCodificado}'), this)" title="Copiar valor unitário"><span aria-hidden="true">⧉</span> Copiar unitário</button>
+                    </div>
+                </article>`;
+            }).join('') || '<div class="pedido-empty-items">📦 Nenhum item cadastrado neste pedido.</div>';
+
+            let htmlLog = '';
             if(p.historico_logs && p.historico_logs.length > 0) {
-                const primeiro = p.historico_logs[0]; const ultimo = p.historico_logs[p.historico_logs.length - 1];
-                htmlLog += `<div class=\"historico-edicao\">🚀 Criado por: ${primeiro.quem} em ${primeiro.quando}</div>`;
+                const primeiro = p.historico_logs[0];
+                const ultimo = p.historico_logs[p.historico_logs.length - 1];
+                htmlLog += `<div class="historico-edicao">🚀 Criado por: ${escaparHTML(primeiro.quem)} em ${escaparHTML(primeiro.quando)}</div>`;
                 if(p.historico_logs.length > 1) {
-                    const isStatus = ultimo.tipo === 'status'; const icone = isStatus ? '✅' : '📝';
-                    htmlLog += `<div class=\"historico-edicao\" style=\"color:${isStatus ? 'var(--success)' : 'var(--warning)'}; border:none; padding-top:0;\">${icone} por: ${ultimo.quem} em ${ultimo.quando}</div>`;
+                    const isStatus = ultimo.tipo === 'status';
+                    const icone = isStatus ? '✅' : '📝';
+                    htmlLog += `<div class="historico-edicao" style="color:${isStatus ? 'var(--success)' : 'var(--warning)'}; border:none; padding-top:0;">${icone} por: ${escaparHTML(ultimo.quem)} em ${escaparHTML(ultimo.quando)}</div>`;
                 }
             }
 
             row.innerHTML = `
-                <div style="display: flex; justify-content: center;">
-                    <button class="btn-selecionar-pedido" onclick="window.toggleSelecaoPedido('${p.id}', this.closest('.pedido-row'))" title="Selecionar Pedido">
-                        ✓
-                    </button>
-                </div>
+                <div class="pedido-card-summary" tabindex="0" role="group" aria-label="Pedido ${escaparHTML(p.num)}. Clique para ${isExpanded ? 'fechar' : 'ver'} os itens.">
+                    <div class="pedido-card-select">
+                        <button class="btn-selecionar-pedido" onclick="window.toggleSelecaoPedido(decodeURIComponent('${idCodificado}'), this.closest('.pedido-row'))" title="Selecionar pedido">✓</button>
+                    </div>
 
-                <div>
-                    <div class="num-destaque" onclick="window.copiarTexto('${p.num}', this)">#${p.num}</div>
-                    <div style="font-size: 10px; color: var(--accent); margin-top: 15px; text-align: center; font-weight: 800; background: rgba(0, 242, 255, 0.1); padding: 5px; border-radius: 8px; border: 1px solid rgba(0, 242, 255, 0.2); text-transform: uppercase;">
-                        👤 ${p.solicitante || 'S/N'}
+                    <div class="pedido-card-identity">
+                        <div class="pedido-card-identity-top">
+                            <button class="pedido-card-number" onclick="window.copiarTexto(decodeURIComponent('${numeroCodificado}'), this)" title="Copiar número">#${escaparHTML(p.num)}</button>
+                            ${p.urgente ? '<span class="pedido-urgent-chip">🚨 Urgente</span>' : ''}
+                        </div>
+                        <span class="pedido-requester-chip">👤 ${escaparHTML(p.solicitante || 'S/N')}</span>
+                    </div>
+
+                    <div class="pedido-card-quick-info">
+                        <span>📅 ${escaparHTML(dataFormatada)} · 🕒 ${escaparHTML(p.hora || '--:--')}</span>
+                        <span class="pedido-item-count">📦 ${itensPedido.length} ${itensPedido.length === 1 ? 'item' : 'itens'}</span>
+                    </div>
+
+                    <div class="pedido-card-total">
+                        <span>Valor total</span>
+                        <strong>R$ ${escaparHTML(totalPedido)}</strong>
+                    </div>
+
+                    <div class="pedido-card-status">
+                        <span class="status-badge status-${p.situacao}" onclick="window.mudarStatus(decodeURIComponent('${idCodificado}'), '${p.situacao}')">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span>
+                        ${p.situacao !== 'Sim' ? '<span class="entrada-reminder">🔔 Precisa dar entrada</span>' : ''}
+                    </div>
+
+                    <div class="pedido-card-toggle-area">
+                        <button class="pedido-expand-toggle" type="button" aria-expanded="${isExpanded ? 'true' : 'false'}" onclick="window.toggleDetalhesPedido(decodeURIComponent('${idCodificado}'), this.closest('.pedido-row'))" title="${isExpanded ? 'Fechar itens do pedido' : 'Ver itens do pedido'}">
+                            <span data-toggle-label>${isExpanded ? 'Ocultar itens' : 'Ver itens'}</span>
+                            <span class="pedido-toggle-chevron" aria-hidden="true">⌄</span>
+                        </button>
                     </div>
                 </div>
 
-                <div style="color:#94a3b8; font-size:13px; font-weight:700; padding-left:15px; display: flex; flex-direction: column;">
-                    <span>📅 ${p.data.split('-').reverse().join('/')}</span>
-                    <span style="font-size: 11px; color: var(--accent); opacity: 0.8;">🕒 ${p.hora || '--:--'}</span>
-                    ${htmlLog}
-                </div>
+                <div class="pedido-card-details" ${isExpanded ? '' : 'hidden'}>
+                    <div class="pedido-card-details-grid">
+                        <section class="pedido-items-panel">
+                            <div class="pedido-details-heading">
+                                <h4>Itens deste pedido</h4>
+                                <span>${itensPedido.length} ${itensPedido.length === 1 ? 'item' : 'itens'}</span>
+                            </div>
+                            <div class="pedido-items-list">${prodHTML}</div>
+                        </section>
 
-                <div style="padding:0 25px;">${prodHTML}${p.obs !== "S/O" ? `<div class=\"obs-box\"><b>OBS:</b> ${p.obs}</div>` : ''}</div>
-                
-                <div style="text-align:right; font-weight:900; font-size:20px;">R$ ${p.total}</div>
-                
-                <div style="text-align:center;">
-                    <span class=\"status-badge status-${p.situacao}\" onclick=\"window.mudarStatus('${p.id}', '${p.situacao}')\">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span>
-                    ${p.situacao !== 'Sim' ? '<span class="entrada-reminder">🔔 Precisa dar entrada</span>' : ''}
-                </div>
-                
-                <div style="text-align:right; display:flex; flex-direction:column; gap:10px;">
-                    <button onclick=\"window.editarPedido('${p.id}')\" style=\"background:none; color:var(--warning); border:none; cursor:pointer; font-weight:900; font-size:11px;\">EDITAR</button>
-                    <button onclick=\"window.excluirPedido('${p.id}')\" style=\"background:none; color:#64748b; border:none; cursor:pointer; font-size:11px;\">EXCLUIR</button>
+                        <aside class="pedido-info-panel">
+                            <div class="pedido-info-block">
+                                <strong>Pedido</strong>
+                                📅 ${escaparHTML(dataFormatada)} às ${escaparHTML(p.hora || '--:--')}<br>
+                                👤 Responsável: ${escaparHTML(p.solicitante || 'S/N')}
+                            </div>
+                            ${p.obs !== 'S/O' ? `<div class="pedido-info-block"><strong>Observações</strong>${escaparHTML(p.obs)}</div>` : ''}
+                            ${htmlLog ? `<div class="pedido-info-block pedido-card-history"><strong>Histórico</strong>${htmlLog}</div>` : ''}
+                            <div class="pedido-card-actions">
+                                <button class="pedido-card-action is-edit" onclick="window.editarPedido(decodeURIComponent('${idCodificado}'))">✏️ Editar</button>
+                                <button class="pedido-card-action is-delete" onclick="window.excluirPedido(decodeURIComponent('${idCodificado}'))">🗑️ Excluir</button>
+                            </div>
+                        </aside>
+                    </div>
                 </div>`;
-                
-            if(p.urgente) {
-                const badge = document.createElement('div');
-                badge.style = "position:absolute; top:-12px; left:165px; background:var(--danger); color:white; padding:4px 10px; border-radius:8px; font-size:10px; font-weight:900; border:2px solid #fff; z-index:11;";
-                badge.innerText = "🚨 URGENTE";
-                row.appendChild(badge);
-            }
+
+            const summary = row.querySelector('.pedido-card-summary');
+            summary.addEventListener('click', event => {
+                if(event.target.closest('button, a, input, select, textarea, .status-badge')) return;
+                window.toggleDetalhesPedido(p.id, row);
+            });
+            summary.addEventListener('keydown', event => {
+                if(event.target !== summary || !['Enter', ' '].includes(event.key)) return;
+                event.preventDefault();
+                window.toggleDetalhesPedido(p.id, row);
+            });
+
             corpo.appendChild(row);
         });
         
         // Sempre atualiza o contador em lote para evitar incoerência visual após novos snapshots
         atualizarBotaoExcluirVarios();
+        aplicarFiltroPedidosAtual();
     });
 
     window.mudarStatus = async (id, s) => { 
@@ -3347,37 +4021,67 @@
         }
     };
 
-    window.limparFiltro = () => { 
-        document.getElementById('inputBusca').value = ''; 
-        document.querySelectorAll('.pedido-row').forEach(r => r.style.display = ''); 
-        document.getElementById('inputBusca').blur();
-    };
+    function atualizarCartaoFiltroAtivo() {
+        const chaveAtiva = filtroPedidosAtivo.tipo === 'status'
+            ? `status-${filtroPedidosAtivo.valor}`
+            : filtroPedidosAtivo.tipo;
 
-    window.filtrarHoje = () => { const hjBR = new Date().toLocaleDateString('pt-BR'); document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(hjBR) ? '' : 'none'); };
-    window.filtrarPorStatus = (s) => { const texto = s === 'Sim' ? 'LANÇADO' : 'PENDENTE'; document.querySelectorAll('.pedido-row').forEach(r => r.style.display = r.innerText.includes(texto) ? '' : 'none'); };
-    
-    window.filtrarPedidos = () => {
-        const termoDigitado = document.getElementById('inputBusca').value.trim().toLowerCase();
-        const termoNumero = termoDigitado.replace(/^#/, '').replace(/\s+/g, '');
-        const buscaPorNumero = /^#?[0-9.\-\/\s]+$/.test(termoDigitado);
-        const linhas = document.querySelectorAll('.pedido-row');
-        const hojeBR = new Date().toLocaleDateString('pt-BR');
+        document.querySelectorAll('[data-filter-card]').forEach(card => {
+            card.classList.toggle('is-filter-active', card.dataset.filterCard === chaveAtiva);
+        });
+    }
 
-        linhas.forEach(r => {
-            const textoLinha = r.innerText.toLowerCase();
+    function aplicarFiltroPedidosAtual() {
+        const hojeISO = new Date().toISOString().split('T')[0];
+        const termo = normalizarTextoFiltro(filtroPedidosAtivo.valor);
+        const termoNumero = termo.replace(/^#/, '').replace(/\s+/g, '');
 
-            if(termoDigitado === '') {
-                r.style.display = textoLinha.includes(hojeBR) ? '' : 'none';
-                return;
+        document.querySelectorAll('.pedido-row').forEach(row => {
+            row.style.removeProperty('display');
+            let mostrar = true;
+
+            if(filtroPedidosAtivo.tipo === 'hoje') {
+                mostrar = row.dataset.pedidoData === hojeISO;
+            } else if(filtroPedidosAtivo.tipo === 'status') {
+                mostrar = row.dataset.pedidoStatus === filtroPedidosAtivo.valor;
+            } else if(filtroPedidosAtivo.tipo === 'busca') {
+                const numero = normalizarTextoFiltro(row.dataset.pedidoNumero).replace(/\s+/g, '');
+                const conteudo = row.dataset.pedidoBusca || '';
+                mostrar = termo === '' || numero.includes(termoNumero) || conteudo.includes(termo);
             }
 
-            const numeroPedido = (r.dataset.pedidoNumero || '').replace(/\s+/g, '');
-            const corresponde = buscaPorNumero
-                ? numeroPedido.includes(termoNumero)
-                : textoLinha.includes(termoDigitado);
-
-            r.style.display = corresponde ? '' : 'none';
+            row.classList.toggle('pedido-filtrado-fora', !mostrar);
         });
+
+        atualizarCartaoFiltroAtivo();
+    }
+
+    window.limparFiltro = () => {
+        const input = document.getElementById('inputBusca');
+        input.value = '';
+        filtroPedidosAtivo = { tipo: 'todos', valor: '' };
+        aplicarFiltroPedidosAtual();
+        input.blur();
+    };
+
+    window.filtrarHoje = () => {
+        document.getElementById('inputBusca').value = '';
+        filtroPedidosAtivo = { tipo: 'hoje', valor: '' };
+        aplicarFiltroPedidosAtual();
+    };
+
+    window.filtrarPorStatus = (status) => {
+        document.getElementById('inputBusca').value = '';
+        filtroPedidosAtivo = { tipo: 'status', valor: status };
+        aplicarFiltroPedidosAtual();
+    };
+
+    window.filtrarPedidos = () => {
+        const termo = document.getElementById('inputBusca').value;
+        filtroPedidosAtivo = termo.trim()
+            ? { tipo: 'busca', valor: termo }
+            : { tipo: 'todos', valor: '' };
+        aplicarFiltroPedidosAtual();
     };
 
     window.editarPedido = async (id) => {
