@@ -2437,14 +2437,28 @@
             min-width: 0 !important;
             margin: 16px 0 !important;
             padding: 0 !important;
+            position: relative;
             display: block;
             overflow: hidden;
+            isolation: isolate;
             color: var(--text);
             background: #ffffff !important;
-            border: 1px solid #dfe5ec !important;
-            border-radius: 16px !important;
-            box-shadow: 0 8px 25px rgba(23, 42, 68, 0.06) !important;
+            border: 1px solid #d9e1ea !important;
+            border-radius: 18px !important;
+            box-shadow: 0 10px 30px rgba(23, 42, 68, 0.07) !important;
             transform: none !important;
+            transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease !important;
+        }
+
+        .pedido-row.pedido-card-accordion::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto;
+            z-index: 3;
+            height: 3px;
+            pointer-events: none;
+            background: linear-gradient(90deg, var(--primary), #6ea5e2 54%, transparent 88%);
+            opacity: 0.78;
         }
 
         .pedido-row.pedido-filtrado-fora {
@@ -2481,8 +2495,8 @@
         }
 
         .pedido-card-summary {
-            min-height: 112px;
-            padding: 20px 18px;
+            min-height: 118px;
+            padding: 21px 18px;
             position: relative;
             z-index: 2;
             display: grid;
@@ -2491,6 +2505,7 @@
             align-items: center;
             gap: 17px;
             cursor: pointer;
+            background: linear-gradient(115deg, #ffffff 0%, #ffffff 62%, #f9fbfd 100%);
             transition: background 0.2s ease;
         }
 
@@ -2524,25 +2539,71 @@
             gap: 7px;
         }
 
+        .pedido-number-group {
+            display: inline-flex;
+            align-items: stretch;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 7px 16px rgba(36, 95, 166, 0.20);
+        }
+
         .pedido-card-number {
             min-height: 34px;
             padding: 0 13px;
+            display: inline-flex;
+            align-items: center;
             color: #ffffff;
             background: linear-gradient(135deg, var(--primary), #376fb1);
             border: 1px solid rgba(36, 95, 166, 0.72);
-            border-radius: 9px;
-            cursor: pointer;
+            border-radius: 10px 0 0 10px;
             font-family: 'Montserrat', sans-serif;
             font-size: 12px;
             font-weight: 900;
             letter-spacing: 0.25px;
-            box-shadow: 0 6px 14px rgba(36, 95, 166, 0.20);
+        }
+
+        .pedido-copy-icon {
+            width: 35px;
+            min-height: 34px;
+            display: grid;
+            place-items: center;
+            color: #ffffff;
+            background: #1d4f8d;
+            border: 1px solid rgba(24, 70, 124, 0.9);
+            border-left: 0;
+            border-radius: 0 10px 10px 0;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.18s ease, transform 0.18s ease;
+        }
+
+        .pedido-copy-icon:hover {
+            background: #163f72;
+        }
+
+        .pedido-copy-icon:active {
+            transform: scale(0.94);
+        }
+
+        .pedido-copy-icon:focus-visible,
+        .pedido-code-copy:focus-visible,
+        .pedido-card-observation:focus-visible {
+            outline: 3px solid rgba(36, 95, 166, 0.20);
+            outline-offset: 2px;
         }
 
         .pedido-finalizado .pedido-card-number {
             background: linear-gradient(135deg, #167853, #34a853);
             border-color: #218863;
-            box-shadow: 0 6px 14px rgba(33, 136, 99, 0.20);
+        }
+
+        .pedido-finalizado .pedido-number-group {
+            box-shadow: 0 7px 16px rgba(33, 136, 99, 0.20);
+        }
+
+        .pedido-finalizado .pedido-copy-icon {
+            background: #136347;
+            border-color: #10543d;
         }
 
         .pedido-urgent-chip {
@@ -2633,9 +2694,62 @@
 
         .pedido-card-status {
             grid-area: status;
+            min-width: 0;
             display: grid;
             justify-items: center;
-            gap: 5px;
+            gap: 6px;
+        }
+
+        .pedido-card-observation {
+            width: 100%;
+            max-width: 178px;
+            min-height: 37px;
+            padding: 6px 8px;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 6px;
+            color: #53677e;
+            background: #f6f9fc;
+            border: 1px solid #dce5ee;
+            border-radius: 9px;
+            cursor: copy;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(23, 42, 68, 0.04);
+            transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+        }
+
+        .pedido-card-observation:hover {
+            color: #234f82;
+            background: #edf5fd;
+            border-color: #bcd0e5;
+            transform: translateY(-1px);
+        }
+
+        .pedido-observation-label {
+            color: var(--primary);
+            font-size: 7px;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .pedido-observation-text {
+            min-width: 0;
+            overflow: hidden;
+            display: -webkit-box;
+            color: inherit;
+            font-size: 8px;
+            font-weight: 800;
+            line-height: 1.25;
+            text-overflow: ellipsis;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .pedido-observation-copy {
+            color: #7f91a5;
+            font-size: 11px;
         }
 
         .pedido-card-toggle-area {
@@ -2766,12 +2880,27 @@
             border: 1px solid #e1e7ee;
             border-radius: 11px;
             box-shadow: 0 6px 15px rgba(23, 42, 68, 0.035);
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        }
+
+        .pedido-detail-item:hover {
+            border-color: #c5d4e3;
+            box-shadow: 0 10px 22px rgba(23, 42, 68, 0.075);
+            transform: translateY(-1px);
         }
 
         .pedido-detail-item-top {
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .pedido-detail-code {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 7px;
         }
 
         .pedido-detail-qty {
@@ -2789,12 +2918,12 @@
 
         .pedido-detail-name {
             min-width: 0;
+            flex: 1;
             padding: 0;
             overflow: hidden;
             color: var(--navy);
             background: transparent;
             border: 0;
-            cursor: pointer;
             font-size: 11px;
             font-weight: 900;
             text-align: left;
@@ -2803,8 +2932,34 @@
             white-space: nowrap;
         }
 
-        .pedido-detail-name:hover {
-            color: var(--primary);
+        .pedido-code-copy {
+            min-height: 30px;
+            padding: 0 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary), #376fb1);
+            border: 1px solid #245fa6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 7px;
+            font-weight: 900;
+            letter-spacing: 0.035em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            box-shadow: 0 5px 12px rgba(36, 95, 166, 0.17);
+            transition: filter 0.18s ease, transform 0.18s ease;
+        }
+
+        .pedido-code-copy:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        .pedido-code-copy:active {
+            transform: scale(0.97);
         }
 
         .pedido-detail-values {
@@ -2860,6 +3015,17 @@
             color: #ffffff;
             background: var(--primary);
             border-color: var(--primary);
+        }
+
+        .pedido-copy-icon.btn-checked,
+        .pedido-code-copy.btn-checked,
+        .pedido-card-observation.btn-checked,
+        .pedido-detail-copy-value.btn-checked,
+        .pedido-detail-qty.btn-checked {
+            color: #ffffff !important;
+            background: #16835e !important;
+            border-color: #16835e !important;
+            box-shadow: 0 6px 15px rgba(22, 131, 94, 0.22) !important;
         }
 
         .pedido-empty-items {
@@ -2985,6 +3151,14 @@
 
             .pedido-card-status {
                 justify-items: start;
+            }
+
+            .pedido-card-observation {
+                max-width: 270px;
+            }
+
+            .pedido-detail-code {
+                align-items: stretch;
             }
 
             .pedido-card-details {
@@ -3465,7 +3639,7 @@
 
     window.copiarValorSistema = (valorFormatado, btn) => {
         const valorParaSistema = valorFormatado.replace(/\./g, '').replace(',', '.');
-        window.copiarTexto(valorParaSistema, btn);
+        window.copiarTexto(valorParaSistema, btn, 'Valor copiado!');
     };
 
     window.iniciarBoasVindas = () => {
@@ -3493,11 +3667,65 @@
         }
     }
 
-    window.copiarTexto = (texto, btn) => {
-        navigator.clipboard.writeText(texto).then(() => {
-            btn.classList.add('btn-checked');
-            Toast.fire({ icon: 'success', title: 'Copiado!' });
-        });
+    const copiarComFallback = async (texto) => {
+        const conteudo = String(texto ?? '');
+
+        if(navigator.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(conteudo);
+                return;
+            } catch(error) {
+                // Arquivos abertos diretamente (file://) podem bloquear a API moderna.
+            }
+        }
+
+        const campoTemporario = document.createElement('textarea');
+        campoTemporario.value = conteudo;
+        campoTemporario.setAttribute('readonly', '');
+        campoTemporario.style.position = 'fixed';
+        campoTemporario.style.left = '-9999px';
+        campoTemporario.style.opacity = '0';
+        document.body.appendChild(campoTemporario);
+        campoTemporario.select();
+        campoTemporario.setSelectionRange(0, campoTemporario.value.length);
+
+        const copiou = document.execCommand('copy');
+        campoTemporario.remove();
+        if(!copiou) throw new Error('Não foi possível acessar a área de transferência.');
+    };
+
+    const mostrarFeedbackCopia = (btn) => {
+        if(!btn) return;
+
+        clearTimeout(btn._copyFeedbackTimer);
+        const icone = btn.querySelector('[data-copy-icon]');
+        const label = btn.querySelector('[data-copy-label]');
+
+        if(icone) {
+            icone.dataset.originalText ||= icone.textContent;
+            icone.textContent = '✓';
+        }
+        if(label) {
+            label.dataset.originalText ||= label.textContent;
+            label.textContent = 'Copiado';
+        }
+
+        btn.classList.add('btn-checked');
+        btn._copyFeedbackTimer = setTimeout(() => {
+            btn.classList.remove('btn-checked');
+            if(icone?.dataset.originalText) icone.textContent = icone.dataset.originalText;
+            if(label?.dataset.originalText) label.textContent = label.dataset.originalText;
+        }, 1500);
+    };
+
+    window.copiarTexto = async (texto, btn, mensagem = 'Copiado!') => {
+        try {
+            await copiarComFallback(texto);
+            mostrarFeedbackCopia(btn);
+            Toast.fire({ icon: 'success', title: mensagem });
+        } catch(error) {
+            Toast.fire({ icon: 'error', title: 'Não foi possível copiar' });
+        }
     };
 
     function atualizarRelogio() {
@@ -3861,6 +4089,9 @@
             const dataFormatada = p.data ? String(p.data).split('-').reverse().join('/') : '--/--/----';
             const totalCalculado = itensPedido.reduce((soma, item) => soma + (Number(item.subtotal) || ((Number(item.qtd) || 0) * (Number(item.preco) || 0))), 0);
             const totalPedido = p.total || formatBRL(totalCalculado);
+            const observacaoPedido = String(p.obs || '').trim();
+            const temObservacao = observacaoPedido !== '' && observacaoPedido.toUpperCase() !== 'S/O';
+            const observacaoCodificada = codificarTextoCopia(observacaoPedido);
 
             row.className = `pedido-row pedido-card-accordion animar-entrada ${isExpanded ? 'pedido-expandido' : 'pedido-fechado'}`;
             row.dataset.pedidoNumero = String(p.num || '').trim().toLowerCase();
@@ -3892,8 +4123,14 @@
 
                 return `<article class="pedido-detail-item">
                     <div class="pedido-detail-item-top">
-                        <button class="pedido-detail-qty" onclick="window.copiarTexto(decodeURIComponent('${qtdCodificada}'), this)" title="Copiar quantidade">${escaparHTML(i.qtd)}x</button>
-                        <button class="pedido-detail-name" onclick="window.copiarTexto(decodeURIComponent('${nomeCodificado}'), this)" title="Copiar nome do produto">${escaparHTML(i.nome)}</button>
+                        <button class="pedido-detail-qty" onclick="window.copiarTexto(decodeURIComponent('${qtdCodificada}'), this, 'Quantidade copiada!')" title="Copiar quantidade">${escaparHTML(i.qtd)}x</button>
+                        <div class="pedido-detail-code">
+                            <span class="pedido-detail-name" title="${escaparHTML(i.nome)}">${escaparHTML(i.nome)}</span>
+                            <button class="pedido-code-copy" type="button" onclick="window.copiarTexto(decodeURIComponent('${nomeCodificado}'), this, 'Código copiado!')" title="Copiar código ${escaparHTML(i.nome)}" aria-label="Copiar código ${escaparHTML(i.nome)}">
+                                <span data-copy-icon aria-hidden="true">⧉</span>
+                                <span data-copy-label>Copiar cód.</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="pedido-detail-values">
                         <span class="pedido-detail-value">Unitário<strong>R$ ${precoFormatado}</strong></span>
@@ -3923,7 +4160,12 @@
 
                     <div class="pedido-card-identity">
                         <div class="pedido-card-identity-top">
-                            <button class="pedido-card-number" onclick="window.copiarTexto(decodeURIComponent('${numeroCodificado}'), this)" title="Copiar número">#${escaparHTML(p.num)}</button>
+                            <span class="pedido-number-group">
+                                <span class="pedido-card-number">#${escaparHTML(p.num)}</span>
+                                <button class="pedido-copy-icon" type="button" onclick="window.copiarTexto(decodeURIComponent('${numeroCodificado}'), this, 'Número do pedido copiado!')" title="Copiar número do pedido" aria-label="Copiar número do pedido ${escaparHTML(p.num)}">
+                                    <span data-copy-icon aria-hidden="true">⧉</span>
+                                </button>
+                            </span>
                             ${p.urgente ? '<span class="pedido-urgent-chip">🚨 Urgente</span>' : ''}
                         </div>
                         <span class="pedido-requester-chip">👤 ${escaparHTML(p.solicitante || 'S/N')}</span>
@@ -3942,6 +4184,11 @@
                     <div class="pedido-card-status">
                         <span class="status-badge status-${p.situacao}" onclick="window.mudarStatus(decodeURIComponent('${idCodificado}'), '${p.situacao}')">${p.situacao === 'Sim' ? '✅ LANÇADO' : '⏳ PENDENTE'}</span>
                         ${p.situacao !== 'Sim' ? '<span class="entrada-reminder">🔔 Precisa dar entrada</span>' : ''}
+                        ${temObservacao ? `<button class="pedido-card-observation" type="button" onclick="window.copiarTexto(decodeURIComponent('${observacaoCodificada}'), this, 'Observação copiada!')" title="${escaparHTML(observacaoPedido)}" aria-label="Copiar observação do pedido ${escaparHTML(p.num)}">
+                            <span class="pedido-observation-label">📝 Obs.</span>
+                            <span class="pedido-observation-text">${escaparHTML(observacaoPedido)}</span>
+                            <span class="pedido-observation-copy" data-copy-icon aria-hidden="true">⧉</span>
+                        </button>` : ''}
                     </div>
 
                     <div class="pedido-card-toggle-area">
@@ -3968,7 +4215,7 @@
                                 📅 ${escaparHTML(dataFormatada)} às ${escaparHTML(p.hora || '--:--')}<br>
                                 👤 Responsável: ${escaparHTML(p.solicitante || 'S/N')}
                             </div>
-                            ${p.obs !== 'S/O' ? `<div class="pedido-info-block"><strong>Observações</strong>${escaparHTML(p.obs)}</div>` : ''}
+                            ${temObservacao ? `<div class="pedido-info-block"><strong>Observações</strong>${escaparHTML(observacaoPedido)}</div>` : ''}
                             ${htmlLog ? `<div class="pedido-info-block pedido-card-history"><strong>Histórico</strong>${htmlLog}</div>` : ''}
                             <div class="pedido-card-actions">
                                 <button class="pedido-card-action is-edit" onclick="window.editarPedido(decodeURIComponent('${idCodificado}'))">✏️ Editar</button>
