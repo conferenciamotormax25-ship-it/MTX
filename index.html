@@ -2448,6 +2448,8 @@
             box-shadow: 0 10px 30px rgba(23, 42, 68, 0.07) !important;
             transform: none !important;
             transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease !important;
+            content-visibility: auto;
+            contain-intrinsic-size: 0 160px;
         }
 
         .pedido-row.pedido-card-accordion::before {
@@ -3173,6 +3175,1094 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* =========================================================
+           CENTRAL DE CADASTRO — LAYOUT CORPORATIVO
+           Cabeçalho, etapas e ações permanecem visíveis; somente
+           a área de trabalho central possui rolagem.
+           ========================================================= */
+        body.modal-open {
+            overflow: hidden !important;
+        }
+
+        #modalCadastro {
+            padding: clamp(8px, 1.3vw, 18px) !important;
+            align-items: center !important;
+            background: rgba(9, 23, 41, 0.72) !important;
+            backdrop-filter: blur(12px) saturate(115%) !important;
+        }
+
+        #modalCadastro .modal-content {
+            width: min(1500px, 100%) !important;
+            height: min(940px, calc(100dvh - clamp(16px, 2.6vw, 36px))) !important;
+            max-width: none !important;
+            max-height: none !important;
+            display: grid !important;
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            overflow: hidden !important;
+            border: 1px solid rgba(207, 218, 231, 0.95) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 34px 100px rgba(5, 18, 34, 0.36),
+                        0 0 0 1px rgba(255, 255, 255, 0.32) inset !important;
+        }
+
+        #modalCadastro .order-modal-header {
+            min-height: 76px;
+            padding: 15px 22px 14px;
+            position: relative;
+            top: auto;
+            display: flex;
+            background:
+                radial-gradient(circle at 82% -20%, rgba(83, 145, 220, 0.30), transparent 34%),
+                linear-gradient(118deg, #112741 0%, #17385f 68%, #214b7d 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 30;
+        }
+
+        #modalCadastro .modal-title-group {
+            display: grid;
+            gap: 2px;
+        }
+
+        #modalCadastro .modal-eyebrow {
+            margin: 0;
+            color: #ffad55;
+            font-size: 8px;
+            letter-spacing: 1.45px;
+        }
+
+        #modalCadastro #modalTitle {
+            font-size: clamp(19px, 2vw, 24px);
+            line-height: 1.08;
+        }
+
+        #modalCadastro #modalSubtitle {
+            margin-top: 4px;
+            max-width: 720px;
+            color: #c3d0df;
+            font-size: 10px;
+            line-height: 1.35;
+        }
+
+        #modalCadastro .order-modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex: 0 0 auto;
+        }
+
+        #modalCadastro .order-live-status,
+        #modalCadastro .modal-shortcut {
+            min-height: 32px;
+            padding: 0 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #d8e5f3;
+            background: rgba(255, 255, 255, 0.075);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 9px;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 0.055em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .order-live-status i {
+            width: 7px;
+            height: 7px;
+            display: block;
+            background: #48d59f;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(72, 213, 159, 0.12), 0 0 12px rgba(72, 213, 159, 0.48);
+        }
+
+        #modalCadastro .modal-shortcut {
+            color: #9fb2c7;
+        }
+
+        #modalCadastro .close-modal {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 22px;
+        }
+
+        #modalCadastro .order-step-tabs {
+            padding: 10px 20px;
+            gap: 9px;
+            background: #eef2f7;
+            border-bottom: 1px solid #dbe3ec;
+            box-shadow: 0 5px 16px rgba(23, 42, 68, 0.045);
+            z-index: 24;
+        }
+
+        #modalCadastro .order-step-tab {
+            min-height: 59px;
+            padding: 8px 11px;
+            grid-template-columns: 34px minmax(0, 1fr) auto;
+            gap: 9px;
+            border-radius: 11px;
+            box-shadow: none;
+        }
+
+        #modalCadastro .order-step-tab-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+        }
+
+        #modalCadastro .order-step-tab-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        #modalCadastro .order-step-tab-number {
+            margin-bottom: 3px;
+            font-size: 7px;
+        }
+
+        #modalCadastro .order-step-tab-title {
+            font-size: 10px;
+        }
+
+        #modalCadastro .order-step-tab-status {
+            grid-column: 3;
+            grid-row: 1;
+            margin: 0;
+            max-width: 150px;
+            padding: 5px 8px;
+            color: #718096;
+            background: #f3f6fa;
+            border-radius: 999px;
+        }
+
+        #modalCadastro .order-step-tab.is-active {
+            transform: none;
+            box-shadow: 0 6px 18px rgba(var(--step-rgb), 0.10),
+                        inset 0 0 0 1px rgba(var(--step-rgb), 0.05);
+        }
+
+        #modalCadastro .modal-layout.guided-order-layout {
+            min-height: 0;
+            padding: 16px 20px 22px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+            background:
+                radial-gradient(circle at 100% 0%, rgba(36, 95, 166, 0.055), transparent 31%),
+                #f4f7fa;
+        }
+
+        #modalCadastro .modal-layout.guided-order-layout::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #modalCadastro .modal-layout.guided-order-layout::-webkit-scrollbar-track {
+            background: #edf1f5;
+        }
+
+        #modalCadastro .modal-layout.guided-order-layout::-webkit-scrollbar-thumb {
+            background: #b9c6d4;
+            border: 2px solid #edf1f5;
+            border-radius: 99px;
+        }
+
+        #modalCadastro .order-step-header {
+            min-height: 70px;
+            margin: -16px -2px 14px;
+            padding: 13px 8px 12px;
+            position: sticky;
+            top: -16px;
+            grid-template-columns: 44px minmax(0, 1fr) auto;
+            gap: 12px;
+            background: rgba(244, 247, 250, 0.95);
+            backdrop-filter: blur(12px) saturate(120%);
+            border-bottom: 1px solid rgba(var(--stage-rgb), 0.18);
+            box-shadow: 0 9px 15px -15px rgba(22, 40, 63, 0.52);
+            z-index: 18;
+        }
+
+        #modalCadastro .order-step-header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+        }
+
+        #modalCadastro .order-step-header-icon svg {
+            width: 19px;
+            height: 19px;
+        }
+
+        #modalCadastro .order-step-title {
+            font-size: clamp(17px, 1.7vw, 21px);
+        }
+
+        #modalCadastro .order-step-helper {
+            margin-top: 4px;
+            max-width: 820px;
+            font-size: 9px;
+        }
+
+        #modalCadastro .guided-order-layout .form-section,
+        #modalCadastro .guided-order-layout .modal-summary {
+            border-color: #d7e0ea;
+            border-radius: 14px;
+            box-shadow: 0 9px 25px rgba(23, 42, 68, 0.055);
+        }
+
+        #modalCadastro .guided-order-layout .form-section {
+            padding: 19px;
+        }
+
+        #modalCadastro .section-heading {
+            margin-bottom: 14px;
+        }
+
+        #modalCadastro .items-total-showcase {
+            min-height: 92px;
+            margin-bottom: 13px;
+            padding: 14px 16px;
+            grid-template-columns: 46px minmax(0, 1fr) auto;
+            gap: 13px;
+            border-radius: 13px;
+            box-shadow: 0 10px 24px rgba(19, 43, 72, 0.16);
+        }
+
+        #modalCadastro .items-total-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            font-size: 21px;
+        }
+
+        #modalCadastro .items-total-value {
+            margin-top: 4px;
+            font-size: clamp(28px, 3vw, 38px);
+        }
+
+        #modalCadastro .items-total-metrics {
+            margin-top: 7px;
+        }
+
+        #modalCadastro .items-total-preview {
+            min-width: 210px;
+            padding: 11px 13px;
+        }
+
+        #modalCadastro .product-entry-grid {
+            padding: 12px;
+            grid-template-columns: minmax(260px, 2fr) minmax(105px, .58fr) minmax(155px, .85fr) 118px;
+            border-style: solid;
+            background: #f7f9fc;
+        }
+
+        #modalCadastro .items-table-wrap {
+            max-height: 260px;
+            overflow: auto;
+            scrollbar-gutter: stable;
+        }
+
+        #modalCadastro .items-table {
+            min-width: 650px;
+        }
+
+        #modalCadastro .items-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            box-shadow: 0 1px 0 #dfe5ec;
+        }
+
+        #modalCadastro .item-row:hover {
+            background: #f7fafc;
+        }
+
+        #modalCadastro .item-row td {
+            padding: 10px 12px !important;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        #modalCadastro .item-product-name {
+            color: var(--navy) !important;
+            font-weight: 800 !important;
+        }
+
+        #modalCadastro .item-subtotal {
+            color: #16875c !important;
+            font-weight: 900 !important;
+        }
+
+        #modalCadastro .item-actions {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        #modalCadastro .item-action-button {
+            width: 30px;
+            height: 30px;
+            display: inline-grid;
+            place-items: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.18s ease;
+        }
+
+        #modalCadastro .item-action-button:hover {
+            transform: translateY(-1px);
+        }
+
+        #modalCadastro .item-action-button.is-edit {
+            color: #9b6418;
+            background: #fff7e9;
+            border: 1px solid #efd5aa;
+        }
+
+        #modalCadastro .item-action-button.is-remove {
+            color: #ac3e49;
+            background: #fff1f2;
+            border: 1px solid #efc5ca;
+            font-size: 19px;
+        }
+
+        #modalCadastro .guided-order-layout .modal-summary {
+            padding: 18px;
+        }
+
+        #modalCadastro .review-content-grid {
+            grid-template-columns: minmax(0, 1.55fr) minmax(310px, .72fr);
+            gap: 16px;
+        }
+
+        #modalCadastro .review-items-table-wrap {
+            max-height: 330px;
+            overflow: auto;
+        }
+
+        #modalCadastro .review-items-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        #modalCadastro .review-financial-panel > .save-order-button,
+        #modalCadastro .review-financial-panel > .save-hint {
+            display: none !important;
+        }
+
+        #modalCadastro .modal-content > .order-step-navigation {
+            min-height: 62px;
+            margin: 0;
+            padding: 10px 20px;
+            position: relative;
+            display: flex;
+            background: #ffffff;
+            border-top: 1px solid #d9e1ea;
+            box-shadow: 0 -10px 28px rgba(23, 42, 68, 0.075);
+            z-index: 28;
+        }
+
+        #modalCadastro .order-step-nav-button {
+            min-height: 40px;
+        }
+
+        #modalCadastro .order-step-nav-button.is-save {
+            margin-left: auto;
+            min-width: 180px;
+            width: auto;
+            height: 40px !important;
+            padding: 0 18px !important;
+            color: #ffffff;
+            background: linear-gradient(135deg, #16875c, #1ea873);
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(22, 135, 92, 0.22);
+        }
+
+        #modalCadastro .order-step-nav-button.is-save:hover {
+            color: #ffffff;
+            background: linear-gradient(135deg, #12744f, #198f62);
+            border-color: transparent;
+        }
+
+        #modalCadastro .order-step-finish-note.is-visible {
+            margin-left: auto;
+        }
+
+        @media (max-width: 980px) {
+            #modalCadastro .order-live-status {
+                display: none;
+            }
+
+            #modalCadastro .order-step-tab {
+                grid-template-columns: 34px minmax(0, 1fr);
+            }
+
+            #modalCadastro .order-step-tab-status {
+                grid-column: 2;
+                grid-row: auto;
+                padding: 0;
+                background: transparent;
+            }
+
+            #modalCadastro .items-total-showcase {
+                grid-template-columns: 46px minmax(0, 1fr);
+            }
+
+            #modalCadastro .items-total-preview {
+                grid-column: 1 / -1;
+            }
+
+            #modalCadastro .product-entry-grid {
+                grid-template-columns: minmax(220px, 1.6fr) 100px minmax(150px, .8fr) 110px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            #modalCadastro {
+                padding: 4px !important;
+            }
+
+            #modalCadastro .modal-content {
+                height: calc(100dvh - 8px) !important;
+                border-radius: 13px !important;
+            }
+
+            #modalCadastro .order-modal-header {
+                min-height: 68px;
+                padding: 12px 14px;
+            }
+
+            #modalCadastro #modalSubtitle,
+            #modalCadastro .modal-shortcut {
+                display: none;
+            }
+
+            #modalCadastro .order-step-tabs {
+                padding: 8px 10px;
+            }
+
+            #modalCadastro .order-step-tab {
+                min-width: 150px;
+                min-height: 56px;
+            }
+
+            #modalCadastro .modal-layout.guided-order-layout {
+                padding: 12px 10px 18px;
+            }
+
+            #modalCadastro .order-step-header {
+                margin-top: -12px;
+                top: -12px;
+            }
+
+            #modalCadastro .guided-order-layout .form-section,
+            #modalCadastro .guided-order-layout .modal-summary {
+                padding: 14px;
+            }
+
+            #modalCadastro .items-total-showcase {
+                min-height: 82px;
+            }
+
+            #modalCadastro .product-entry-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            #modalCadastro .items-table-wrap {
+                max-height: 230px;
+            }
+
+            #modalCadastro .modal-content > .order-step-navigation {
+                min-height: 58px;
+                padding: 8px 10px;
+            }
+
+            #modalCadastro .order-step-finish-note {
+                display: none !important;
+            }
+
+            #modalCadastro .order-step-nav-button {
+                min-width: 0;
+                padding: 0 11px;
+            }
+
+            #modalCadastro .order-step-nav-button.is-save {
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+        }
+
+        /* =========================================================
+           MODO FOCO DO CADASTRO
+           Cada etapa exibe somente o conteúdo necessário. O topo
+           institucional e o cabeçalho repetido da etapa não ocupam
+           mais a área usada para cadastrar.
+           ========================================================= */
+        #modalCadastro .modal-content {
+            grid-template-rows: auto minmax(0, 1fr) auto !important;
+        }
+
+        #modalCadastro .order-modal-header {
+            width: auto;
+            min-height: 0;
+            padding: 0;
+            position: absolute;
+            top: 13px;
+            right: 15px;
+            background: transparent;
+            border: 0;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        #modalCadastro .modal-title-group {
+            width: 1px;
+            height: 1px;
+            position: absolute;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        #modalCadastro .order-live-status,
+        #modalCadastro .modal-shortcut {
+            display: none !important;
+        }
+
+        #modalCadastro .order-modal-actions {
+            display: block;
+            pointer-events: none;
+        }
+
+        #modalCadastro .close-modal {
+            width: 38px;
+            height: 38px;
+            pointer-events: auto;
+            color: #496078 !important;
+            background: #ffffff !important;
+            border: 1px solid #d6e0ea !important;
+            border-radius: 10px;
+            box-shadow: 0 7px 18px rgba(23, 42, 68, 0.13);
+        }
+
+        #modalCadastro .close-modal:hover {
+            color: #ffffff !important;
+            background: #d7545d !important;
+            border-color: #d7545d !important;
+            transform: none;
+        }
+
+        #modalCadastro .order-step-tabs {
+            min-height: 66px;
+            padding: 10px 68px 10px 14px;
+            align-items: stretch;
+            background: #ffffff;
+            border-bottom: 1px solid #dbe3ec;
+            box-shadow: 0 5px 18px rgba(23, 42, 68, 0.06);
+        }
+
+        #modalCadastro .order-step-tab {
+            min-height: 46px;
+            padding: 7px 10px;
+            grid-template-columns: 32px minmax(0, 1fr) auto;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        #modalCadastro .order-step-tab-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        #modalCadastro .order-step-tab.is-active {
+            background: rgba(var(--step-rgb), 0.075);
+            border-color: rgba(var(--step-rgb), 0.48);
+            box-shadow: inset 0 0 0 1px rgba(var(--step-rgb), 0.045);
+        }
+
+        #modalCadastro .modal-layout.guided-order-layout {
+            padding: 18px 22px 22px;
+            background: #f2f5f8;
+        }
+
+        #modalCadastro .order-step-header {
+            display: none !important;
+        }
+
+        #modalCadastro .guided-order-layout .form-section,
+        #modalCadastro .guided-order-layout .modal-summary {
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(23, 42, 68, 0.075);
+        }
+
+        #modalCadastro [data-order-stage-panel="items"] .section-heading,
+        #modalCadastro [data-order-stage-panel="details"] .section-heading {
+            display: none;
+        }
+
+        #modalCadastro [data-order-stage-panel="items"] {
+            padding: 20px;
+        }
+
+        #modalCadastro .items-total-showcase {
+            min-height: 136px;
+            margin-bottom: 16px;
+            padding: 20px 24px;
+            grid-template-columns: 66px minmax(0, 1fr) auto;
+            gap: 20px;
+            background:
+                radial-gradient(circle at 88% 15%, rgba(71, 222, 164, 0.31), transparent 29%),
+                radial-gradient(circle at 4% 115%, rgba(70, 132, 214, 0.34), transparent 35%),
+                linear-gradient(125deg, #0f2743 0%, #16486a 58%, #117050 135%);
+            border-radius: 18px;
+            box-shadow: 0 18px 40px rgba(15, 39, 67, 0.24);
+        }
+
+        #modalCadastro .items-total-icon {
+            width: 66px;
+            height: 66px;
+            border-radius: 18px;
+            font-size: 31px;
+        }
+
+        #modalCadastro .items-total-label {
+            color: #c9dae9;
+            font-size: 10px;
+            letter-spacing: 1.45px;
+        }
+
+        #modalCadastro .items-total-value {
+            margin-top: 7px;
+            gap: 10px;
+            font-size: clamp(48px, 6vw, 72px);
+            letter-spacing: -3px;
+        }
+
+        #modalCadastro .items-total-value > span:first-child {
+            color: #77e9bd;
+            font-size: 22px;
+        }
+
+        #modalCadastro .items-total-metrics {
+            margin-top: 10px;
+        }
+
+        #modalCadastro .items-total-metrics span {
+            min-height: 27px;
+            padding: 0 11px;
+            color: #e5eef6;
+            font-size: 8px;
+        }
+
+        #modalCadastro .items-total-preview {
+            min-width: 210px;
+            padding: 13px 15px;
+            background: rgba(255, 255, 255, 0.075);
+            border-color: rgba(119, 233, 189, 0.22);
+            box-shadow: none;
+        }
+
+        #modalCadastro .product-entry-grid {
+            padding: 14px;
+            gap: 12px;
+            background: #ffffff;
+            border: 1px solid #d7e1eb;
+            box-shadow: 0 7px 20px rgba(23, 42, 68, 0.045);
+        }
+
+        #modalCadastro .product-entry-grid input {
+            min-height: 49px;
+            background: #f7f9fc !important;
+        }
+
+        #modalCadastro #nomeProd {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        #modalCadastro #qtdProd {
+            font-size: 15px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        #modalCadastro #precoProd {
+            color: #116f4c !important;
+            background: #ecfaf4 !important;
+            border: 2px solid #87ccb1 !important;
+            font-size: 18px;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #modalCadastro #precoProd:focus {
+            border-color: #16875c !important;
+            box-shadow: 0 0 0 4px rgba(22, 135, 92, 0.13) !important;
+        }
+
+        #modalCadastro .insert-item-button {
+            height: 49px !important;
+            border-radius: 10px !important;
+            box-shadow: 0 7px 16px rgba(22, 135, 92, 0.18);
+        }
+
+        #modalCadastro .items-table-wrap {
+            max-height: 275px;
+            margin-top: 13px;
+            border-color: #d7e1eb;
+        }
+
+        #modalCadastro [data-order-stage-panel="details"] {
+            max-width: 1120px;
+            margin: 22px auto;
+            padding: clamp(24px, 4vw, 42px);
+        }
+
+        #modalCadastro [data-order-stage-panel="details"] input,
+        #modalCadastro [data-order-stage-panel="details"] select {
+            min-height: 50px;
+        }
+
+        #modalCadastro [data-order-stage-panel="details"] #obsPedido {
+            min-height: 125px !important;
+        }
+
+        #modalCadastro .guided-order-layout .modal-summary {
+            padding: clamp(20px, 3vw, 32px);
+        }
+
+        #modalCadastro .modal-summary > .summary-label,
+        #modalCadastro .modal-summary > h3 {
+            display: none;
+        }
+
+        #modalCadastro .modal-summary > .review-content-grid {
+            margin-top: 0;
+        }
+
+        #modalCadastro .summary-total-card {
+            min-height: 175px;
+        }
+
+        #modalCadastro .summary-total-value {
+            font-size: clamp(40px, 4.5vw, 60px);
+        }
+
+        @media (max-width: 980px) {
+            #modalCadastro .order-step-tab {
+                grid-template-columns: 32px minmax(0, 1fr);
+            }
+
+            #modalCadastro .items-total-showcase {
+                grid-template-columns: 58px minmax(0, 1fr);
+            }
+
+            #modalCadastro .items-total-icon {
+                width: 58px;
+                height: 58px;
+            }
+
+            #modalCadastro .items-total-preview {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            #modalCadastro .order-modal-header {
+                top: 11px;
+                right: 9px;
+            }
+
+            #modalCadastro .close-modal {
+                width: 36px;
+                height: 36px;
+            }
+
+            #modalCadastro .order-step-tabs {
+                min-height: 60px;
+                padding: 8px 54px 8px 8px;
+            }
+
+            #modalCadastro .modal-layout.guided-order-layout {
+                padding: 10px 8px 14px;
+            }
+
+            #modalCadastro [data-order-stage-panel="items"] {
+                padding: 12px;
+            }
+
+            #modalCadastro .items-total-showcase {
+                min-height: 112px;
+                padding: 17px 14px;
+                gap: 12px;
+            }
+
+            #modalCadastro .items-total-value {
+                font-size: clamp(39px, 12vw, 52px);
+            }
+
+            #modalCadastro [data-order-stage-panel="details"] {
+                margin: 0;
+                padding: 18px 14px;
+            }
+
+            #modalCadastro .guided-order-layout .modal-summary {
+                padding: 16px 13px;
+            }
+        }
+
+        /* LISTA LATERAL DOS PRODUTOS — ATUALIZAÇÃO EM TEMPO REAL */
+        #modalCadastro [data-order-stage-panel="items"] .items-total-showcase {
+            min-height: 194px;
+            grid-template-columns: 66px minmax(270px, .72fr) minmax(440px, 1.38fr);
+            align-items: stretch;
+        }
+
+        #modalCadastro [data-order-stage-panel="items"] .items-total-icon,
+        #modalCadastro [data-order-stage-panel="items"] .items-total-main {
+            align-self: center;
+        }
+
+        #modalCadastro [data-order-stage-panel="items"] .items-total-preview {
+            display: none !important;
+        }
+
+        #modalCadastro .items-live-panel {
+            min-width: 0;
+            height: 168px;
+            align-self: center;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            overflow: hidden;
+            color: #eff8ff;
+            background: rgba(5, 26, 44, 0.34);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 14px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        #modalCadastro .items-live-heading {
+            min-height: 38px;
+            padding: 8px 11px 8px 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+            background: rgba(255, 255, 255, 0.045);
+        }
+
+        #modalCadastro .items-live-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #dcecf8;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.105em;
+            text-transform: uppercase;
+        }
+
+        #modalCadastro .items-live-title::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            background: #6be3b5;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(107, 227, 181, 0.10);
+        }
+
+        #modalCadastro .items-live-count {
+            min-height: 22px;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            color: #8ef0cb;
+            background: rgba(107, 227, 181, 0.10);
+            border: 1px solid rgba(107, 227, 181, 0.17);
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .items-live-list {
+            min-height: 0;
+            padding: 5px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(167, 203, 225, 0.42) transparent;
+        }
+
+        #modalCadastro .items-live-list::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        #modalCadastro .items-live-list::-webkit-scrollbar-thumb {
+            background: rgba(167, 203, 225, 0.42);
+            border-radius: 99px;
+        }
+
+        #modalCadastro .items-live-empty {
+            height: 100%;
+            min-height: 84px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #a9bfd0;
+            text-align: left;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        #modalCadastro .items-live-empty span {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            background: rgba(255, 255, 255, 0.075);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        #modalCadastro .items-live-row {
+            min-height: 43px;
+            padding: 5px 6px;
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr) auto 54px;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+            transition: background 0.16s ease;
+        }
+
+        #modalCadastro .items-live-row:last-child {
+            border-bottom: 0;
+        }
+
+        #modalCadastro .items-live-row:hover {
+            background: rgba(255, 255, 255, 0.055);
+        }
+
+        #modalCadastro .items-live-qty {
+            min-height: 27px;
+            display: grid;
+            place-items: center;
+            color: #9cf0cf;
+            background: rgba(107, 227, 181, 0.10);
+            border: 1px solid rgba(107, 227, 181, 0.17);
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+        #modalCadastro .items-live-product {
+            min-width: 0;
+            display: grid;
+            gap: 2px;
+        }
+
+        #modalCadastro .items-live-product strong {
+            overflow: hidden;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 900;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .items-live-product small {
+            color: #a9bfd0;
+            font-size: 7px;
+            font-weight: 700;
+        }
+
+        #modalCadastro .items-live-subtotal {
+            color: #9cf0cf;
+            font-size: 10px;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        #modalCadastro .items-live-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        #modalCadastro .items-live-action {
+            width: 24px;
+            height: 24px;
+            display: grid;
+            place-items: center;
+            padding: 0;
+            color: #d8e7f2;
+            background: rgba(255, 255, 255, 0.075);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: 0.16s ease;
+        }
+
+        #modalCadastro .items-live-action.is-edit:hover {
+            color: #1b2d42;
+            background: #ffd98a;
+            border-color: #ffd98a;
+        }
+
+        #modalCadastro .items-live-action.is-remove {
+            font-size: 17px;
+        }
+
+        #modalCadastro .items-live-action.is-remove:hover {
+            color: #ffffff;
+            background: #d7545d;
+            border-color: #d7545d;
+        }
+
+        #modalCadastro [data-order-stage-panel="items"] > .items-table-wrap {
+            display: none !important;
+        }
+
+        @media (max-width: 1080px) {
+            #modalCadastro [data-order-stage-panel="items"] .items-total-showcase {
+                grid-template-columns: 58px minmax(0, 1fr);
+            }
+
+            #modalCadastro .items-live-panel {
+                height: 150px;
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            #modalCadastro [data-order-stage-panel="items"] .items-total-showcase {
+                min-height: 0;
+            }
+
+            #modalCadastro .items-live-panel {
+                height: 145px;
+            }
+
+            #modalCadastro .items-live-row {
+                grid-template-columns: 32px minmax(0, 1fr) auto 52px;
+                gap: 6px;
+            }
+        }
     </style>
 </head>
 <body onload="iniciarBoasVindas()">
@@ -3182,11 +4272,6 @@
         <div class="welcome-title">SEJA BEM-VINDO</div>
         <div class="welcome-sub">CONTROLE DE PEDIDOS MTX</div>
     </div>
-</div>
-
-<div class="zoom-controls">
-    <button class="btn-zoom" onclick="window.ajustarZoom(0.1)" title="Aumentar Zoom">＋</button>
-    <button class="btn-zoom" onclick="window.ajustarZoom(-0.1)" title="Diminuir Zoom">－</button>
 </div>
 
 <div class="container">
@@ -3220,7 +4305,7 @@
         </div>
     </div>
 
-    <div id="modalCadastro">
+    <div id="modalCadastro" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-content animar-entrada">
             <header class="order-modal-header">
                 <div class="modal-title-group">
@@ -3228,7 +4313,11 @@
                     <h2 id="modalTitle">Registrar novo pedido</h2>
                     <p id="modalSubtitle">Comece pelos itens, depois informe os dados e confira os valores antes de salvar.</p>
                 </div>
-                <span class="close-modal" onclick="window.toggleModal(false)" title="Fechar">&times;</span>
+                <div class="order-modal-actions">
+                    <span class="order-live-status"><i aria-hidden="true"></i>Cadastro em andamento</span>
+                    <span class="modal-shortcut">ESC para fechar</span>
+                    <button type="button" class="close-modal" onclick="window.toggleModal(false)" title="Fechar cadastro" aria-label="Fechar cadastro">&times;</button>
+                </div>
             </header>
 
             <input type="hidden" id="editId">
@@ -3249,7 +4338,7 @@
                         <div class="form-fields-grid three">
                             <div class="field-group">
                                 <label for="numPedido">Número do pedido <small>*</small></label>
-                                <input type="text" id="numPedido" placeholder="Ex.: 180644">
+                                <input type="text" id="numPedido" placeholder="Ex.: 180644" autocomplete="off" aria-required="true">
                             </div>
                             <div class="field-group">
                                 <label for="dataPedido">Data do pedido</label>
@@ -3265,7 +4354,7 @@
                             <div class="field-group">
                                 <label for="solicitante">Responsável pelo pedido</label>
                                 <div class="input-with-action">
-                                    <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Nome de quem solicitou" style="text-transform: uppercase;">
+                                    <input type="text" id="solicitante" list="listaSolicitantes" placeholder="Nome de quem solicitou" autocomplete="off" style="text-transform: uppercase;">
                                     <button type="button" class="history-button" onclick="window.abrirHistoricoNomes()" title="Selecionar do histórico">🕒</button>
                                     <datalist id="listaSolicitantes"></datalist>
                                 </div>
@@ -3312,20 +4401,32 @@
                                 <strong>R$ <span id="itemsProjectedValue">0,00</span></strong>
                                 <span class="items-total-preview-hint">Prévia calculada em tempo real</span>
                             </div>
+                            <section class="items-live-panel" aria-label="Produtos adicionados ao pedido">
+                                <header class="items-live-heading">
+                                    <span class="items-live-title">Produtos adicionados</span>
+                                    <span class="items-live-count" id="itemsLiveCount">0 itens</span>
+                                </header>
+                                <div class="items-live-list" id="itemsLiveList" aria-live="polite">
+                                    <div class="items-live-empty">
+                                        <span aria-hidden="true">📦</span>
+                                        <div>Os produtos aparecerão aqui<br>conforme forem inseridos.</div>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
 
                         <div class="product-entry-grid">
                             <div class="field-group">
                                 <label for="nomeProd">Produto / código <small>*</small></label>
-                                <input type="text" id="nomeProd" placeholder="Nome ou código do produto">
+                                <input type="text" id="nomeProd" placeholder="Nome ou código do produto" autocomplete="off" aria-required="true">
                             </div>
                             <div class="field-group">
                                 <label for="qtdProd">Quantidade</label>
-                                <input type="number" id="qtdProd" value="1" min="1">
+                                <input type="number" id="qtdProd" value="1" min="1" inputmode="numeric">
                             </div>
                             <div class="field-group">
                                 <label for="precoProd">Valor unitário <small>*</small></label>
-                                <input type="number" id="precoProd" step="0.01" placeholder="0,00" onkeydown="if(event.key==='Enter') window.adicionarItem()">
+                                <input type="number" id="precoProd" step="0.01" min="0" inputmode="decimal" placeholder="0,00" aria-required="true" onkeydown="if(event.key==='Enter') window.adicionarItem()">
                             </div>
                             <button type="button" class="btn-open-modal insert-item-button" onclick="window.adicionarItem()">＋ INSERIR</button>
                         </div>
@@ -3425,7 +4526,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, deleteDoc, doc, onSnapshot, updateDoc, getDoc, getDocs, query, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB0_kv4kQfcTdT7D5_Imf5NrG4EvY1p0lQ",
@@ -3451,6 +4552,11 @@
     let snapshotInicialCarregado = false;
     let lembreteAberturaAgendado = false;
     let notificacaoOcultacaoEnviada = false;
+    let reiniciarBuscaNaProximaDigitacao = false;
+    let salvamentoEmAndamento = false;
+    let linhasPedidosCache = [];
+    let filtroAgendado = 0;
+    const pedidosPorNumero = new Map();
 
     const formatBRL = (valor) => {
         const n = typeof valor === 'string' ? parseFloat(valor.replace(',','.')) : valor;
@@ -3471,6 +4577,57 @@
         .replace(/[\u0300-\u036f]/g, '')
         .trim()
         .toLowerCase();
+
+    const normalizarNumeroPedido = (valor) => normalizarTextoFiltro(valor)
+        .replace(/^#/, '')
+        .replace(/[^a-z0-9]/g, '');
+
+    const criarIdDocumentoPedido = (numero) => `pedido_${normalizarNumeroPedido(numero).slice(0, 180)}`;
+
+    const obterPedidoDuplicadoLocal = (numero, idAtual = '') => {
+        const chave = normalizarNumeroPedido(numero);
+        const candidatos = pedidosPorNumero.get(chave) || [];
+        return candidatos.find(pedido => String(pedido.id) !== String(idAtual)) || null;
+    };
+
+    const encontrarPedidoDuplicado = async (numero, idAtual = '') => {
+        const duplicadoLocal = obterPedidoDuplicadoLocal(numero, idAtual);
+        if(duplicadoLocal) return duplicadoLocal;
+
+        const numeroExato = String(numero ?? '').trim();
+        const numeroNormalizado = normalizarNumeroPedido(numeroExato);
+        const [porNumero, porNumeroNormalizado] = await Promise.all([
+            getDocs(query(pedidosRef, where('num', '==', numeroExato))),
+            getDocs(query(pedidosRef, where('num_normalizado', '==', numeroNormalizado)))
+        ]);
+
+        const documentos = [...porNumero.docs, ...porNumeroNormalizado.docs];
+        const encontrado = documentos.find(documento => documento.id !== String(idAtual));
+        return encontrado ? { id: encontrado.id, ...encontrado.data() } : null;
+    };
+
+    const avisarPedidoDuplicado = (numero) => Swal.fire({
+        title: 'PEDIDO JÁ CADASTRADO',
+        html: `O pedido <b>#${escaparHTML(numero)}</b> já possui um card. Abra o card existente para conferir ou editar.`,
+        icon: 'warning',
+        confirmButtonText: 'ENTENDI',
+        confirmButtonColor: '#2563eb',
+        background: '#1e293b',
+        color: '#fff'
+    });
+
+    const definirSalvamentoEmAndamento = (ativo) => {
+        salvamentoEmAndamento = ativo;
+        document.querySelectorAll('.save-order-button').forEach(button => {
+            button.disabled = ativo;
+            const label = button.querySelector('[data-save-label]');
+            if(label) {
+                label.textContent = ativo ? 'Conferindo e salvando...' : 'Salvar pedido';
+            } else {
+                button.textContent = ativo ? '⏳ CONFERINDO E SALVANDO...' : '💾 SALVAR PEDIDO';
+            }
+        });
+    };
 
     const notificacoesPermitidas = () => {
         return 'Notification' in window &&
@@ -3834,6 +4991,7 @@
         document.getElementById('itemCount').innerText = '0 itens';
         document.getElementById('itemEmptyState').style.display = 'flex';
         historicoEdicaoOriginal = [];
+        renderizarItens();
     };
     window.abrirNovoPedido = () => {
         document.getElementById('modalTitle').innerText = 'Registrar novo pedido';
@@ -3852,11 +5010,16 @@
 
     const renderizarItens = () => {
         const d = document.getElementById('displayItens');
-        d.innerHTML = ''; let t = 0;
-        itensAtuais.forEach((i, idx) => {
-            t += i.subtotal;
-            d.innerHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:12px;"><span class="qty-badge">${i.qtd}x</span></td><td style="color:white; font-weight:600;">${i.nome}</td><td style="text-align:right;">R$ ${formatBRL(i.preco)}</td><td style="text-align:right; font-weight:700; color:var(--accent); padding-right:12px;">R$ ${formatBRL(i.subtotal)}</td><td style="text-align:center; display:flex; gap:10px; justify-content:center; padding: 12px 0;"><button onclick="window.corrigirItem(${idx})" style="background:none; color:var(--warning); border:none; cursor:pointer; font-size:16px;">✏️</button><button onclick="window.removerItem(${idx})" style="background:none; color:var(--danger); border:none; cursor:pointer; font-size:20px;">&times;</button></td></tr>`;
-        });
+        const liveList = document.getElementById('itemsLiveList');
+        const liveCount = document.getElementById('itemsLiveCount');
+        const t = itensAtuais.reduce((total, item) => total + (Number(item.subtotal) || 0), 0);
+        d.innerHTML = itensAtuais.map((i, idx) => `<tr class="item-row"><td><span class="qty-badge">${escaparHTML(i.qtd)}x</span></td><td class="item-product-name">${escaparHTML(i.nome)}</td><td style="text-align:right;">R$ ${formatBRL(i.preco)}</td><td class="item-subtotal" style="text-align:right;">R$ ${formatBRL(i.subtotal)}</td><td><div class="item-actions"><button type="button" class="item-action-button is-edit" onclick="window.corrigirItem(${idx})" title="Editar item" aria-label="Editar item">✎</button><button type="button" class="item-action-button is-remove" onclick="window.removerItem(${idx})" title="Remover item" aria-label="Remover item">&times;</button></div></td></tr>`).join('');
+        if(liveList && liveCount) {
+            liveCount.textContent = `${itensAtuais.length} ${itensAtuais.length === 1 ? 'item' : 'itens'}`;
+            liveList.innerHTML = itensAtuais.length
+                ? itensAtuais.map((i, idx) => `<div class="items-live-row"><span class="items-live-qty">${escaparHTML(i.qtd)}x</span><div class="items-live-product"><strong title="${escaparHTML(i.nome)}">${escaparHTML(i.nome)}</strong><small>Unitário: R$ ${formatBRL(i.preco)}</small></div><strong class="items-live-subtotal">R$ ${formatBRL(i.subtotal)}</strong><div class="items-live-actions"><button type="button" class="items-live-action is-edit" onclick="window.corrigirItem(${idx})" title="Editar item" aria-label="Editar item">✎</button><button type="button" class="items-live-action is-remove" onclick="window.removerItem(${idx})" title="Remover item" aria-label="Remover item">&times;</button></div></div>`).join('')
+                : '<div class="items-live-empty"><span aria-hidden="true">📦</span><div>Os produtos aparecerão aqui<br>conforme forem inseridos.</div></div>';
+        }
         document.getElementById('totalFinal').innerText = formatBRL(t);
         document.getElementById('itemCount').innerText = `${itensAtuais.length} ${itensAtuais.length === 1 ? 'item' : 'itens'}`;
         document.getElementById('itemEmptyState').style.display = itensAtuais.length > 0 ? 'none' : 'flex';
@@ -3871,8 +5034,12 @@
     window.removerItem = (i) => { itensAtuais.splice(i, 1); renderizarItens(); };
 
     window.salvarNaNuvem = async () => {
+        if(salvamentoEmAndamento) {
+            return Toast.fire({ icon: 'info', title: 'O pedido já está sendo salvo.' });
+        }
+
         const id = document.getElementById('editId').value;
-        const numPed = document.getElementById('numPedido').value;
+        const numPed = document.getElementById('numPedido').value.trim();
         if(itensAtuais.length === 0) {
             window.abrirEtapaPedido?.('items');
             return Toast.fire({ icon: 'error', title: 'Adicione ao menos um item!' });
@@ -3882,30 +5049,44 @@
             return Toast.fire({ icon: 'error', title: 'Informe o número do pedido!' });
         }
 
-        const { value: nomeOperador } = await Swal.fire({
-            title: 'IDENTIFIQUE-SE',
-            html: `<div style="margin-top:20px">Nome para o registro de ${id ? 'ALTERAÇÃO' : 'LANÇAMENTO'}</div>`,
-            input: 'text', inputValue: document.getElementById('solicitante').value.toUpperCase(),
-            showCancelButton: true, confirmButtonText: 'SALVAR 🚀', background: '#1e293b', color: '#fff', confirmButtonColor: '#2563eb',
-            inputAttributes: { style: 'text-transform: uppercase;' }, inputValidator: (v) => !v && 'Digite seu nome!'
-        });
-
-        if (!nomeOperador) return;
-
-        const agora = new Date();
-        const nomeFinal = nomeOperador.toUpperCase().trim();
-        const infoLog = { quem: nomeFinal, quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`, tipo: id ? 'edicao' : 'criacao' };
-
-        const payload = { 
-            num: numPed, data: document.getElementById('dataPedido').value, hora: agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
-            situacao: document.getElementById('situacao').value, solicitante: nomeFinal,
-            obs: document.getElementById('obsPedido').value || "S/O", itens_detalhados: itensAtuais, 
-            total: document.getElementById('totalFinal').innerText, timestamp: Date.now(),
-            urgente: document.getElementById('checkUrgente').checked,
-            lembrete_entrada: document.getElementById('situacao').value !== 'Sim'
-        };
-
+        definirSalvamentoEmAndamento(true);
         try {
+            const duplicado = await encontrarPedidoDuplicado(numPed, id);
+            if(duplicado) {
+                await avisarPedidoDuplicado(numPed);
+                return;
+            }
+
+            const { value: nomeOperador } = await Swal.fire({
+                title: 'IDENTIFIQUE-SE',
+                html: `<div style="margin-top:20px">Nome para o registro de ${id ? 'ALTERAÇÃO' : 'LANÇAMENTO'}</div>`,
+                input: 'text', inputValue: document.getElementById('solicitante').value.toUpperCase(),
+                showCancelButton: true, confirmButtonText: 'SALVAR 🚀', background: '#1e293b', color: '#fff', confirmButtonColor: '#2563eb',
+                inputAttributes: { style: 'text-transform: uppercase;' }, inputValidator: (v) => !v && 'Digite seu nome!'
+            });
+
+            if (!nomeOperador) return;
+
+            const duplicadoRecente = obterPedidoDuplicadoLocal(numPed, id);
+            if(duplicadoRecente) {
+                await avisarPedidoDuplicado(numPed);
+                return;
+            }
+
+            const agora = new Date();
+            const nomeFinal = nomeOperador.toUpperCase().trim();
+            const infoLog = { quem: nomeFinal, quando: `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`, tipo: id ? 'edicao' : 'criacao' };
+
+            const payload = {
+                num: numPed, num_normalizado: normalizarNumeroPedido(numPed),
+                data: document.getElementById('dataPedido').value, hora: agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
+                situacao: document.getElementById('situacao').value, solicitante: nomeFinal,
+                obs: document.getElementById('obsPedido').value || "S/O", itens_detalhados: itensAtuais,
+                total: document.getElementById('totalFinal').innerText, timestamp: Date.now(),
+                urgente: document.getElementById('checkUrgente').checked,
+                lembrete_entrada: document.getElementById('situacao').value !== 'Sim'
+            };
+
             let histLocal = JSON.parse(localStorage.getItem('mtx_nomes') || "[]");
             if(!histLocal.includes(nomeFinal)) { histLocal.push(nomeFinal); localStorage.setItem('mtx_nomes', JSON.stringify(histLocal)); }
 
@@ -3915,7 +5096,16 @@
                 Toast.fire({ icon: 'success', title: 'Sincronizado!' });
             } else {
                 payload.historico_logs = [infoLog];
-                const pedidoCriado = await addDoc(pedidosRef, payload);
+                const pedidoCriado = doc(pedidosRef, criarIdDocumentoPedido(numPed));
+                await runTransaction(db, async transaction => {
+                    const existente = await transaction.get(pedidoCriado);
+                    if(existente.exists()) {
+                        const erro = new Error('PEDIDO_DUPLICADO');
+                        erro.code = 'pedido-duplicado';
+                        throw erro;
+                    }
+                    transaction.set(pedidoCriado, payload);
+                });
                 const escolhaEntrada = await Swal.fire({
                     title: '🚀 PEDIDO CONCLUÍDO!',
                     html: `<div style=\"font-size: 1.2rem; margin-bottom: 15px;\">Pedido registrado com sucesso!</div><div style=\"background: #fb7185; color: #fff; padding: 15px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;\">⚠️ NÃO ESQUEÇA DE AVISAR O MARCOS <br> PARA DAR ENTRADA NESSE PEDIDO!</div><div style=\"margin-top:18px; font-size:14px; font-weight:800; color:#e2e8f0;\">Escolha abaixo como o pedido deve ficar:</div>`,
@@ -3951,7 +5141,16 @@
                 });
             }
             window.toggleModal(false);
-        } catch (e) { Toast.fire({ icon: 'error', title: 'Erro de Banco' }); }
+        } catch (e) {
+            if(e?.code === 'pedido-duplicado' || e?.message === 'PEDIDO_DUPLICADO') {
+                await avisarPedidoDuplicado(numPed);
+            } else {
+                console.error('Falha ao salvar pedido:', e);
+                Toast.fire({ icon: 'error', title: 'Não foi possível conferir e salvar o pedido.' });
+            }
+        } finally {
+            definirSalvamentoEmAndamento(false);
+        }
     };
 
     /* FUNÇÕES PARA SELEÇÃO COLETIVA E MÚLTIPLA EXCLUSÃO */
@@ -3968,8 +5167,7 @@
     };
 
     window.toggleDetalhesPedido = (id, element) => {
-        const row = element || Array.from(document.querySelectorAll('.pedido-row'))
-            .find(card => card.dataset.pedidoId === String(id));
+        const row = element || linhasPedidosCache.find(card => card.dataset.pedidoId === String(id));
         if(!row) return;
 
         const details = row.querySelector('.pedido-card-details');
@@ -3987,8 +5185,13 @@
         }
         if(label) label.textContent = shouldExpand ? 'Ocultar itens' : 'Ver itens';
 
-        if(shouldExpand) pedidosExpandidos.add(String(id));
-        else pedidosExpandidos.delete(String(id));
+        if(shouldExpand) {
+            pedidosExpandidos.add(String(id));
+            reiniciarBuscaNaProximaDigitacao = true;
+            document.getElementById('inputBusca')?.blur();
+        } else {
+            pedidosExpandidos.delete(String(id));
+        }
     };
 
     function atualizarBotaoExcluirVarios() {
@@ -4035,12 +5238,44 @@
         }
     };
 
+    const corpoPedidos = document.getElementById('tabelaCorpo');
+    corpoPedidos.addEventListener('pointerdown', () => {
+        if(document.getElementById('inputBusca').value.trim()) {
+            reiniciarBuscaNaProximaDigitacao = true;
+        }
+    });
+
+    corpoPedidos.addEventListener('click', event => {
+        const summary = event.target.closest('.pedido-card-summary');
+        if(!summary || event.target.closest('button, a, input, select, textarea, .status-badge')) return;
+        const row = summary.closest('.pedido-row');
+        if(row) window.toggleDetalhesPedido(row.dataset.pedidoId, row);
+    });
+
+    corpoPedidos.addEventListener('keydown', event => {
+        const summary = event.target.closest('.pedido-card-summary');
+        if(!summary || event.target !== summary || !['Enter', ' '].includes(event.key)) return;
+        event.preventDefault();
+        const row = summary.closest('.pedido-row');
+        if(row) window.toggleDetalhesPedido(row.dataset.pedidoId, row);
+    });
+
     onSnapshot(pedidosRef, (snap) => {
-        const corpo = document.getElementById('tabelaCorpo'); corpo.innerHTML = '';
+        const corpo = document.getElementById('tabelaCorpo');
+        const fragmento = document.createDocumentFragment();
         let conc = 0, hj = 0, lista = [];
         const hojeISO = new Date().toISOString().split('T')[0];
+        pedidosPorNumero.clear();
         snap.forEach(d => {
-            const data = d.data(); lista.push({id: d.id, ...data});
+            const data = d.data();
+            const pedido = {id: d.id, ...data};
+            lista.push(pedido);
+            const chaveNumero = normalizarNumeroPedido(data.num);
+            if(chaveNumero) {
+                const cadastrados = pedidosPorNumero.get(chaveNumero) || [];
+                cadastrados.push(pedido);
+                pedidosPorNumero.set(chaveNumero, cadastrados);
+            }
             if(data.situacao === 'Sim') conc++;
             if(data.data === hojeISO) hj++;
         });
@@ -4225,19 +5460,11 @@
                     </div>
                 </div>`;
 
-            const summary = row.querySelector('.pedido-card-summary');
-            summary.addEventListener('click', event => {
-                if(event.target.closest('button, a, input, select, textarea, .status-badge')) return;
-                window.toggleDetalhesPedido(p.id, row);
-            });
-            summary.addEventListener('keydown', event => {
-                if(event.target !== summary || !['Enter', ' '].includes(event.key)) return;
-                event.preventDefault();
-                window.toggleDetalhesPedido(p.id, row);
-            });
-
-            corpo.appendChild(row);
+            fragmento.appendChild(row);
         });
+
+        corpo.replaceChildren(fragmento);
+        linhasPedidosCache = Array.from(corpo.children);
         
         // Sempre atualiza o contador em lote para evitar incoerência visual após novos snapshots
         atualizarBotaoExcluirVarios();
@@ -4279,11 +5506,16 @@
     }
 
     function aplicarFiltroPedidosAtual() {
+        if(filtroAgendado) {
+            cancelAnimationFrame(filtroAgendado);
+            filtroAgendado = 0;
+        }
+
         const hojeISO = new Date().toISOString().split('T')[0];
         const termo = normalizarTextoFiltro(filtroPedidosAtivo.valor);
         const termoNumero = termo.replace(/^#/, '').replace(/\s+/g, '');
 
-        document.querySelectorAll('.pedido-row').forEach(row => {
+        linhasPedidosCache.forEach(row => {
             row.style.removeProperty('display');
             let mostrar = true;
 
@@ -4303,9 +5535,26 @@
         atualizarCartaoFiltroAtivo();
     }
 
+    function agendarAplicacaoFiltro() {
+        if(filtroAgendado) return;
+        filtroAgendado = requestAnimationFrame(() => {
+            filtroAgendado = 0;
+            aplicarFiltroPedidosAtual();
+        });
+    }
+
+    const inputBuscaPedidos = document.getElementById('inputBusca');
+    inputBuscaPedidos.addEventListener('beforeinput', event => {
+        if(!reiniciarBuscaNaProximaDigitacao || !String(event.inputType).startsWith('insert')) return;
+        inputBuscaPedidos.value = '';
+        filtroPedidosAtivo = { tipo: 'todos', valor: '' };
+        reiniciarBuscaNaProximaDigitacao = false;
+    });
+
     window.limparFiltro = () => {
         const input = document.getElementById('inputBusca');
         input.value = '';
+        reiniciarBuscaNaProximaDigitacao = false;
         filtroPedidosAtivo = { tipo: 'todos', valor: '' };
         aplicarFiltroPedidosAtual();
         input.blur();
@@ -4313,12 +5562,14 @@
 
     window.filtrarHoje = () => {
         document.getElementById('inputBusca').value = '';
+        reiniciarBuscaNaProximaDigitacao = false;
         filtroPedidosAtivo = { tipo: 'hoje', valor: '' };
         aplicarFiltroPedidosAtual();
     };
 
     window.filtrarPorStatus = (status) => {
         document.getElementById('inputBusca').value = '';
+        reiniciarBuscaNaProximaDigitacao = false;
         filtroPedidosAtivo = { tipo: 'status', valor: status };
         aplicarFiltroPedidosAtual();
     };
@@ -4328,7 +5579,7 @@
         filtroPedidosAtivo = termo.trim()
             ? { tipo: 'busca', valor: termo }
             : { tipo: 'todos', valor: '' };
-        aplicarFiltroPedidosAtual();
+        agendarAplicacaoFiltro();
     };
 
     window.editarPedido = async (id) => {
@@ -4362,13 +5613,18 @@
             return;
         }
 
-        if (e.key.toLowerCase() === 'n' && !isTyping && !isModalOpen) {
+        if (e.key.toLowerCase() === 'n' && !isTyping && !isModalOpen && !reiniciarBuscaNaProximaDigitacao && !inputBusca.value.trim()) {
             e.preventDefault();
             window.abrirNovoPedido();
             return;
         }
 
-        if (!isTyping && !isModalOpen && e.key.length === 1 && /[a-zA-Z0-9]/.test(e.key)) {
+        if (!isTyping && !isModalOpen && !e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
+            if(reiniciarBuscaNaProximaDigitacao) {
+                inputBusca.value = '';
+                filtroPedidosAtivo = { tipo: 'todos', valor: '' };
+                reiniciarBuscaNaProximaDigitacao = false;
+            }
             inputBusca.focus();
         }
     });
@@ -4472,8 +5728,14 @@
         finishNote.className = 'order-step-finish-note';
         finishNote.innerHTML = '<span class="order-step-finish-dot"></span>Revise e salve o pedido';
 
-        navigation.append(previousButton, finishNote, nextButton);
-        layout.appendChild(navigation);
+        const saveButton = document.createElement('button');
+        saveButton.type = 'button';
+        saveButton.className = 'order-step-nav-button is-save save-order-button';
+        saveButton.innerHTML = '<span data-save-label>Salvar pedido</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>';
+        saveButton.hidden = true;
+
+        navigation.append(previousButton, finishNote, nextButton, saveButton);
+        modalContent.appendChild(navigation);
 
         const headerIcon = stageHeader.querySelector('[data-stage-icon]');
         const headerKicker = stageHeader.querySelector('[data-stage-kicker]');
@@ -4493,6 +5755,7 @@
         const reviewItemsTable = reviewItemsDisplay?.closest('table');
 
         let activeStage = 'items';
+        let ultimaAssinaturaRevisao = '';
 
         const getStatus = (stageId) => {
             const hasNumber = Boolean(document.getElementById('numPedido').value.trim());
@@ -4559,6 +5822,10 @@
         };
 
         const refreshReviewItems = () => {
+            const assinaturaAtual = JSON.stringify(itensAtuais.map(item => [item.nome, item.qtd, item.preco, item.subtotal]));
+            if(assinaturaAtual === ultimaAssinaturaRevisao) return;
+            ultimaAssinaturaRevisao = assinaturaAtual;
+
             const fragment = document.createDocumentFragment();
 
             itensAtuais.forEach(item => {
@@ -4603,7 +5870,7 @@
                 ? document.getElementById('numPedido')
                 : stageId === 'items'
                     ? document.getElementById('nomeProd')
-                    : summary.querySelector('.save-order-button');
+                    : saveButton;
 
             if (target && typeof target.focus === 'function') {
                 window.setTimeout(() => target.focus({ preventScroll: true }), 40);
@@ -4638,6 +5905,7 @@
 
             previousButton.disabled = index === 0;
             nextButton.hidden = index === stages.length - 1;
+            saveButton.hidden = index !== stages.length - 1;
             finishNote.classList.toggle('is-visible', index === stages.length - 1);
 
             if (index < stages.length - 1) {
@@ -4645,7 +5913,7 @@
             }
 
             refreshStatuses();
-            modalContent.scrollTop = 0;
+            layout.scrollTop = 0;
             if (options.focus) focusStageField(stageId);
         };
 
@@ -4672,6 +5940,8 @@
             if (index < stages.length - 1) activateStage(stages[index + 1].id, { focus: true });
         });
 
+        saveButton.addEventListener('click', () => window.salvarNaNuvem());
+
         modal.addEventListener('input', refreshStatuses);
         modal.addEventListener('change', refreshStatuses);
 
@@ -4681,6 +5951,8 @@
         const originalToggleModal = window.toggleModal;
         window.toggleModal = function(show) {
             const result = originalToggleModal.apply(this, arguments);
+            document.body.classList.toggle('modal-open', Boolean(show));
+            modal.setAttribute('aria-hidden', show ? 'false' : 'true');
             if (show) {
                 window.requestAnimationFrame(() => {
                     refreshStatuses();
@@ -4689,6 +5961,13 @@
             }
             return result;
         };
+
+        modal.addEventListener('keydown', event => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                event.preventDefault();
+                window.salvarNaNuvem();
+            }
+        });
 
         window.abrirEtapaPedido = stageId => activateStage(stageId, { focus: true });
         activateStage('items', { focus: false });
